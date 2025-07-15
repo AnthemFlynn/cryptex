@@ -6,12 +6,12 @@ These tests verify basic functionality and imports work correctly.
 """
 
 import pytest
-from codename import protect_secrets, secure_session, SecretManager
+from codename import SecretManager, protect_secrets, secure_session
 
 
 class TestBasicIntegration:
     """Basic integration tests for core functionality."""
-    
+
     def test_imports(self):
         """Test that basic imports work."""
         assert protect_secrets is not None
@@ -21,7 +21,8 @@ class TestBasicIntegration:
     def test_version(self):
         """Test that version is accessible."""
         import codename
-        assert hasattr(codename, '__version__')
+
+        assert hasattr(codename, "__version__")
         assert codename.__version__ == "0.1.0"
 
     @pytest.mark.asyncio
@@ -31,7 +32,7 @@ class TestBasicIntegration:
         await manager.initialize()
         await manager.cleanup()
 
-    @pytest.mark.asyncio  
+    @pytest.mark.asyncio
     async def test_secure_session(self):
         """Test secure_session context manager."""
         async with secure_session() as session:
@@ -39,19 +40,21 @@ class TestBasicIntegration:
 
     def test_protect_secrets_decorator(self):
         """Test protect_secrets decorator basic functionality."""
-        @protect_secrets(['api_key'])
+
+        @protect_secrets(["api_key"])
         def sync_function(data: str) -> str:
             return f"processed: {data}"
-        
+
         result = sync_function("test")
         assert result == "processed: test"
 
     @pytest.mark.asyncio
     async def test_protect_secrets_async(self):
         """Test protect_secrets decorator with async functions."""
-        @protect_secrets(['api_key'])
+
+        @protect_secrets(["api_key"])
         async def async_function(data: str) -> str:
             return f"processed: {data}"
-        
+
         result = await async_function("test")
         assert result == "processed: test"

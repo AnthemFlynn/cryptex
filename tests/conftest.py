@@ -2,16 +2,18 @@
 Pytest configuration and shared fixtures for Codename tests.
 """
 
-import pytest
-import tempfile
-import shutil
-from pathlib import Path
-from typing import Dict, Any, Generator
 import os
+import shutil
+import tempfile
+from collections.abc import Generator
+from pathlib import Path
+from typing import Any
+
+import pytest
 
 
 @pytest.fixture
-def temp_dir() -> Generator[Path, None, None]:
+def temp_dir() -> Generator[Path]:
     """Create a temporary directory for test isolation."""
     temp_path = Path(tempfile.mkdtemp())
     try:
@@ -21,34 +23,29 @@ def temp_dir() -> Generator[Path, None, None]:
 
 
 @pytest.fixture
-def sample_secrets() -> Dict[str, str]:
+def sample_secrets() -> dict[str, str]:
     """Sample secrets for testing."""
     return {
         "api_key": "sk-test1234567890abcdef",
         "database_url": "postgresql://user:pass@localhost/db",
-        "secret_token": "secret_abc123xyz789"
+        "secret_token": "secret_abc123xyz789",
     }
 
 
 @pytest.fixture
-def sample_config() -> Dict[str, Any]:
+def sample_config() -> dict[str, Any]:
     """Sample configuration for testing."""
     return {
-        "secrets": {
-            "api_keys": ["api_key", "secret_token"]
-        },
-        "security": {
-            "enforcement_mode": "strict",
-            "block_exposure": True
-        }
+        "secrets": {"api_keys": ["api_key", "secret_token"]},
+        "security": {"enforcement_mode": "strict", "block_exposure": True},
     }
 
 
 @pytest.fixture
-def config_file(temp_dir: Path, sample_config: Dict[str, Any]) -> Path:
+def config_file(temp_dir: Path, sample_config: dict[str, Any]) -> Path:
     """Create a temporary config file."""
     import tomli_w
-    
+
     config_path = temp_dir / "codename.toml"
     with open(config_path, "wb") as f:
         tomli_w.dump(sample_config, f)
@@ -56,19 +53,19 @@ def config_file(temp_dir: Path, sample_config: Dict[str, Any]) -> Path:
 
 
 @pytest.fixture
-def mock_env_vars(sample_secrets: Dict[str, str]) -> Generator[None, None, None]:
+def mock_env_vars(sample_secrets: dict[str, str]) -> Generator[None]:
     """Mock environment variables with test secrets."""
     original_env = {}
-    
+
     # Store original values
     for key in sample_secrets:
         if key in os.environ:
             original_env[key] = os.environ[key]
-    
+
     # Set test values
     for key, value in sample_secrets.items():
         os.environ[key] = value
-    
+
     try:
         yield
     finally:
@@ -86,7 +83,7 @@ def sample_user_input() -> str:
     return "Generate a report using the API key and database connection"
 
 
-@pytest.fixture 
+@pytest.fixture
 def expected_sanitized_input() -> str:
     """Expected sanitized version of sample user input."""
     return "Generate a report using the {{API_KEY_PLACEHOLDER}} and {{DATABASE_URL_PLACEHOLDER}}"
@@ -100,7 +97,7 @@ def large_payload() -> str:
 
 
 @pytest.fixture
-def multiple_secrets() -> Dict[str, str]:
+def multiple_secrets() -> dict[str, str]:
     """Multiple secrets for performance testing."""
     return {f"secret_{i}": f"value_{i}_" + "x" * 20 for i in range(10)}
 
@@ -121,5 +118,5 @@ def injection_attempts() -> list[str]:
         "#{secret_token}",
         "<!-- API_KEY -->",
         "<script>alert(API_KEY)</script>",
-        "'; DROP TABLE secrets; --"
+        "'; DROP TABLE secrets; --",
     ]
