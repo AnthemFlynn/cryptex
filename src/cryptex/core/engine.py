@@ -13,6 +13,8 @@ from typing import Any, Dict, List, Optional, Pattern, Union
 import asyncio
 import json
 import time
+import threading
+from collections import OrderedDict
 
 
 @dataclass
@@ -75,16 +77,30 @@ class TemporalIsolationEngine:
     3. Resolution: Convert placeholders back to real values for execution
     """
     
-    def __init__(self, patterns: Optional[List[SecretPattern]] = None):
+    def __init__(self, 
+                 patterns: Optional[List[SecretPattern]] = None,
+                 max_cache_size: int = 1000,
+                 max_cache_age: int = 3600,
+                 enable_background_cleanup: bool = True):
         """
         Initialize the isolation engine.
         
         Args:
             patterns: List of secret patterns to detect. Uses defaults if None.
+            max_cache_size: Maximum number of contexts to cache (LRU eviction)
+            max_cache_age: Maximum age of cached contexts in seconds
+            enable_background_cleanup: Whether to run background cache cleanup
         """
         self.patterns = patterns or self._get_default_patterns()
-        self._context_cache: Dict[str, SanitizedData] = {}
-        self._max_cache_age = 3600  # 1 hour
+        self._context_cache: OrderedDict[str, SanitizedData] = OrderedDict()
+        self._max_cache_size = max_cache_size
+        self._max_cache_age = max_cache_age
+        self._cache_lock = threading.RLock()  # Thread-safe cache operations
+        self._cleanup_task: Optional[asyncio.Task] = None
+        self._enable_background_cleanup = enable_background_cleanup
+        self._last_access_times: Dict[str, float] = {}
+        
+        # Background cleanup will be started when first needed (lazy initialization)
         
     def _get_default_patterns(self) -> List[SecretPattern]:
         """Get default secret patterns for common use cases."""
@@ -138,6 +154,9 @@ class TemporalIsolationEngine:
         if context_id is None:
             context_id = str(uuid.uuid4())
             
+        # Start background cleanup if not already running
+        self._start_background_cleanup()
+        
         # Clean expired cache entries
         await self._clean_expired_cache()
         
@@ -158,8 +177,8 @@ class TemporalIsolationEngine:
             context_id=context_id
         )
         
-        # Cache the context for later resolution
-        self._context_cache[context_id] = result
+        # Cache the context for later resolution with LRU management
+        self._cache_context(context_id, result)
         
         return result
     
@@ -177,8 +196,8 @@ class TemporalIsolationEngine:
         Raises:
             ValueError: If context not found or resolution fails
         """
-        # Get the sanitized context
-        sanitized_context = self._context_cache.get(context_id)
+        # Get the sanitized context with access tracking
+        sanitized_context = self._get_cached_context(context_id)
         if not sanitized_context:
             raise ValueError(f"Context {context_id} not found or expired")
         
@@ -204,7 +223,7 @@ class TemporalIsolationEngine:
         Returns:
             Sanitized response safe for AI consumption
         """
-        sanitized_context = self._context_cache.get(context_id)
+        sanitized_context = self._get_cached_context(context_id)
         if not sanitized_context:
             # No context found, scan for secrets anyway
             result = await self.sanitize_for_ai(response)
@@ -432,16 +451,81 @@ class TemporalIsolationEngine:
         
         return result
     
+    def _start_background_cleanup(self) -> None:
+        """Start background cache cleanup task if event loop is available."""
+        if not self._enable_background_cleanup:
+            return
+            
+        try:
+            # Only start if we have a running event loop
+            loop = asyncio.get_running_loop()
+            if self._cleanup_task is None or self._cleanup_task.done():
+                self._cleanup_task = loop.create_task(self._background_cleanup_loop())
+        except RuntimeError:
+            # No event loop running, background cleanup will start later
+            pass
+    
+    async def _background_cleanup_loop(self) -> None:
+        """Background task to periodically clean expired cache entries."""
+        cleanup_interval = min(300, self._max_cache_age // 6)  # Clean every 5 minutes or 1/6 of max age
+        
+        while True:
+            try:
+                await asyncio.sleep(cleanup_interval)
+                await self._clean_expired_cache()
+                self._enforce_cache_size_limit()
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                # Log error but continue cleanup loop
+                import logging
+                logging.getLogger(__name__).warning(f"Cache cleanup error: {e}")
+    
+    def _cache_context(self, context_id: str, context: SanitizedData) -> None:
+        """Cache a context with LRU eviction."""
+        with self._cache_lock:
+            # Remove if already exists (to update position)
+            if context_id in self._context_cache:
+                del self._context_cache[context_id]
+            
+            # Add to end (most recently used)
+            self._context_cache[context_id] = context
+            self._last_access_times[context_id] = time.time()
+            
+            # Enforce size limit
+            self._enforce_cache_size_limit()
+    
+    def _get_cached_context(self, context_id: str) -> Optional[SanitizedData]:
+        """Get a cached context and update access time (LRU)."""
+        with self._cache_lock:
+            context = self._context_cache.get(context_id)
+            if context:
+                # Move to end (mark as recently used)
+                del self._context_cache[context_id]
+                self._context_cache[context_id] = context
+                self._last_access_times[context_id] = time.time()
+            return context
+    
+    def _enforce_cache_size_limit(self) -> None:
+        """Enforce cache size limit by evicting least recently used entries."""
+        while len(self._context_cache) > self._max_cache_size:
+            # Remove oldest entry (least recently used)
+            oldest_context_id, _ = self._context_cache.popitem(last=False)
+            self._last_access_times.pop(oldest_context_id, None)
+    
     async def _clean_expired_cache(self) -> None:
         """Remove expired contexts from cache."""
         current_time = time.time()
-        expired_keys = [
-            context_id for context_id, context in self._context_cache.items()
-            if current_time - context.created_at > self._max_cache_age
-        ]
         
-        for key in expired_keys:
-            del self._context_cache[key]
+        with self._cache_lock:
+            expired_keys = [
+                context_id for context_id, context in self._context_cache.items()
+                if current_time - context.created_at > self._max_cache_age
+            ]
+            
+            for key in expired_keys:
+                del self._context_cache[key]
+                self._last_access_times.pop(key, None)
     
     def clear_context(self, context_id: str) -> bool:
         """
@@ -453,12 +537,45 @@ class TemporalIsolationEngine:
         Returns:
             True if context was found and removed, False otherwise
         """
-        return self._context_cache.pop(context_id, None) is not None
+        with self._cache_lock:
+            context_existed = self._context_cache.pop(context_id, None) is not None
+            self._last_access_times.pop(context_id, None)
+            return context_existed
     
     def get_cache_stats(self) -> Dict[str, Any]:
         """Get cache statistics for monitoring."""
-        return {
-            "cached_contexts": len(self._context_cache),
-            "max_cache_age": self._max_cache_age,
-            "patterns_loaded": len(self.patterns)
-        }
+        with self._cache_lock:
+            current_time = time.time()
+            
+            # Calculate age distribution
+            ages = [current_time - context.created_at for context in self._context_cache.values()]
+            avg_age = sum(ages) / len(ages) if ages else 0
+            
+            return {
+                "cached_contexts": len(self._context_cache),
+                "max_cache_size": self._max_cache_size,
+                "cache_utilization": len(self._context_cache) / self._max_cache_size,
+                "max_cache_age": self._max_cache_age,
+                "average_context_age": avg_age,
+                "patterns_loaded": len(self.patterns),
+                "background_cleanup_enabled": self._enable_background_cleanup,
+                "cleanup_task_active": self._cleanup_task is not None and not self._cleanup_task.done()
+            }
+    
+    def stop_background_cleanup(self) -> None:
+        """Stop the background cleanup task."""
+        if self._cleanup_task and not self._cleanup_task.done():
+            self._cleanup_task.cancel()
+    
+    def clear_all_contexts(self) -> int:
+        """
+        Clear all cached contexts.
+        
+        Returns:
+            Number of contexts that were cleared
+        """
+        with self._cache_lock:
+            count = len(self._context_cache)
+            self._context_cache.clear()
+            self._last_access_times.clear()
+            return count
