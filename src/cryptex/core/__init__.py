@@ -2,11 +2,10 @@
 
 from .api import protect_secrets, secure_session
 from .exceptions import (
-    CodenameError,
     ConfigError,
     CryptexError,
     SecurityError,
-)  # CodenameError is legacy alias
+)
 from .manager import SecretManager
 
 __all__ = [
@@ -14,7 +13,6 @@ __all__ = [
     "secure_session",
     "SecretManager",
     "CryptexError",
-    "CodenameError",  # Legacy alias
     "SecurityError",
     "ConfigError",
 ]

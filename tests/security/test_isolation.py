@@ -1,7 +1,7 @@
 """Security tests for secrets isolation."""
 
 import pytest
-from codename import protect_secrets
+from cryptex import protect_secrets
 
 
 class TestSecretsIsolation:

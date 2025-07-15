@@ -458,6 +458,3 @@ def create_protected_app(
     return app
 
 
-# Legacy aliases for backward compatibility
-CodenameMiddleware = CryptexMiddleware
-setup_codename_protection = setup_cryptex_protection

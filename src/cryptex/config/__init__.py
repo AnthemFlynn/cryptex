@@ -8,12 +8,8 @@ from .loader import (
     SecurityPolicy,
 )
 
-# Legacy alias for backward compatibility
-CodenameConfig = CryptexConfig
-
 __all__ = [
     "CryptexConfig",
-    "CodenameConfig",  # Legacy alias
     "SecurityPolicy",
     "PerformanceConfig",
     "MiddlewareConfig",

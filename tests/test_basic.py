@@ -6,7 +6,7 @@ These tests verify basic functionality and imports work correctly.
 """
 
 import pytest
-from codename import SecretManager, protect_secrets, secure_session
+from cryptex import SecretManager, protect_secrets, secure_session
 
 
 class TestBasicIntegration:
@@ -20,10 +20,10 @@ class TestBasicIntegration:
 
     def test_version(self):
         """Test that version is accessible."""
-        import codename
+        import cryptex
 
-        assert hasattr(codename, "__version__")
-        assert codename.__version__ == "0.1.0"
+        assert hasattr(cryptex, "__version__")
+        assert cryptex.__version__ == "0.1.0"
 
     @pytest.mark.asyncio
     async def test_secret_manager_init(self):

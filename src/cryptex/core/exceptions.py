@@ -229,5 +229,3 @@ def security_breach_error(
     )
 
 
-# Legacy aliases for backward compatibility
-CodenameError = CryptexError

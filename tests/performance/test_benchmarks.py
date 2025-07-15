@@ -3,7 +3,7 @@
 import time
 
 import pytest
-from codename import protect_secrets, secure_session
+from cryptex import protect_secrets, secure_session
 
 
 class TestPerformanceBenchmarks:

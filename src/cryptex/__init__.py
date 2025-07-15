@@ -175,34 +175,23 @@ __email__ = "team@cryptex-ai.com"
 
 # Core components
 from .config import (
-    CodenameConfig,
     ConfigurationLoader,
     CryptexConfig,
     PerformanceConfig,
     SecurityPolicy,
 )
+from .core.api import protect_secrets, secure_session
 from .core.engine import (
     ResolvedData,
     SanitizedData,
     SecretPattern,
     TemporalIsolationEngine,
 )
-from .core.exceptions import CodenameError, ConfigError, CryptexError, SecurityError
+from .core.exceptions import ConfigError, CryptexError, SecurityError
+from .core.manager import SecretManager
 
 # Main Cryptex decorator
-# Convenience decorators for backward compatibility
-from .decorators import (
-    cryptex,
-    protect_api_tool,
-    protect_auth_endpoint,
-    protect_database_endpoint,
-    protect_database_tool,
-    protect_endpoint,
-    protect_external_api_endpoint,
-    protect_file_endpoint,
-    protect_file_tool,
-    protect_tool,
-)
+from .decorators import cryptex
 
 # Middleware integrations
 try:
@@ -260,27 +249,19 @@ __all__ = [
     "SecretPattern",
     "SanitizedData",
     "ResolvedData",
+    "SecretManager",
     "CryptexConfig",
-    "CodenameConfig",  # Legacy alias
     "SecurityPolicy",
     "PerformanceConfig",
     "ConfigurationLoader",
     "CryptexError",
-    "CodenameError",  # Legacy alias
     "SecurityError",
     "ConfigError",
+    # Core API
+    "protect_secrets",
+    "secure_session",
     # Main Cryptex decorator
     "cryptex",
-    # Legacy decorators for backward compatibility
-    "protect_tool",
-    "protect_file_tool",
-    "protect_api_tool",
-    "protect_database_tool",
-    "protect_endpoint",
-    "protect_auth_endpoint",
-    "protect_database_endpoint",
-    "protect_external_api_endpoint",
-    "protect_file_endpoint",
     # Universal setup
     "setup_protection",
 ]

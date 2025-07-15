@@ -57,6 +57,9 @@ class ReadWriteLock:
         with self._write_ready:
             self._writers -= 1
             self._write_ready.notify_all()
+        
+        # Notify readers separately to avoid lock ordering issues
+        with self._read_ready:
             self._read_ready.notify_all()
 
     def __enter__(self):

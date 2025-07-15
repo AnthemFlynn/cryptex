@@ -451,6 +451,3 @@ def create_protected_server(
     return asyncio.run(_create_and_protect())
 
 
-# Legacy aliases for backward compatibility
-FastMCPCodenameMiddleware = FastMCPCryptexMiddleware
-setup_codename_protection = setup_cryptex_protection

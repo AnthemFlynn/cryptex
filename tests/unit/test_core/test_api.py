@@ -2,8 +2,8 @@
 
 
 import pytest
-from codename.core.api import protect_secrets, secure_session
-from codename.core.manager import SecretManager
+from cryptex.core.api import protect_secrets, secure_session
+from cryptex.core.manager import SecretManager
 
 
 class TestProtectSecretsDecorator:
