@@ -17,6 +17,16 @@ from dataclasses import dataclass, field
 from re import Pattern
 from typing import Any
 
+from .exceptions import (
+    ContextError,
+    PerformanceError,
+    ResolutionError,
+    SanitizationError,
+    context_not_found_error,
+    resolution_timeout_error,
+    sanitization_timeout_error,
+)
+
 
 class ReadWriteLock:
     """
@@ -57,7 +67,7 @@ class ReadWriteLock:
         with self._write_ready:
             self._writers -= 1
             self._write_ready.notify_all()
-        
+
         # Notify readers separately to avoid lock ordering issues
         with self._read_ready:
             self._read_ready.notify_all()
@@ -86,15 +96,6 @@ class ReadLockContext:
         self.lock.release_read()
 
 
-from .exceptions import (
-    ContextError,
-    PerformanceError,
-    ResolutionError,
-    SanitizationError,
-    context_not_found_error,
-    resolution_timeout_error,
-    sanitization_timeout_error,
-)
 
 
 @dataclass
@@ -329,7 +330,7 @@ class TemporalIsolationEngine:
         elif isinstance(data, dict):
             for key, value in data.items():
                 self._validate_string_lengths(value, f"{path}.{key}")
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, list | tuple):
             for i, item in enumerate(data):
                 self._validate_string_lengths(item, f"{path}[{i}]")
         elif hasattr(data, "__dict__"):
@@ -442,7 +443,7 @@ class TemporalIsolationEngine:
             return result
 
         except Exception as e:
-            if isinstance(e, (SanitizationError, PerformanceError)):
+            if isinstance(e, SanitizationError | PerformanceError):
                 raise
 
             # Wrap unexpected errors
@@ -451,7 +452,7 @@ class TemporalIsolationEngine:
                 context_id=context_id,
                 details={"data_type": type(data).__name__, "error": str(e)},
                 cause=e,
-            )
+            ) from e
 
     async def resolve_for_execution(self, data: Any, context_id: str) -> ResolvedData:
         """
@@ -505,7 +506,7 @@ class TemporalIsolationEngine:
             )
 
         except Exception as e:
-            if isinstance(e, (ContextError, ResolutionError, PerformanceError)):
+            if isinstance(e, ContextError | ResolutionError | PerformanceError):
                 raise
 
             # Wrap unexpected errors
@@ -514,7 +515,7 @@ class TemporalIsolationEngine:
                 context_id=context_id,
                 details={"data_type": type(data).__name__, "error": str(e)},
                 cause=e,
-            )
+            ) from e
 
     async def sanitize_response(self, response: Any, context_id: str) -> Any:
         """
@@ -548,7 +549,7 @@ class TemporalIsolationEngine:
             detected_secrets.extend(await self._detect_secrets_in_string(data))
         elif isinstance(data, dict):
             detected_secrets.extend(await self._detect_secrets_in_dict(data))
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, list | tuple):
             detected_secrets.extend(await self._detect_secrets_in_list(data))
         elif hasattr(data, "__dict__"):
             # Handle custom objects
@@ -590,10 +591,10 @@ class TemporalIsolationEngine:
         """Detect secrets in a dictionary."""
         detected = []
 
-        for key, value in data.items():
+        for _key, value in data.items():
             if isinstance(value, str):
                 detected.extend(await self._detect_secrets_in_string(value))
-            elif isinstance(value, (dict, list, tuple)):
+            elif isinstance(value, dict | list | tuple):
                 detected.extend(await self._detect_secrets(value))
 
         return detected
@@ -649,7 +650,7 @@ class TemporalIsolationEngine:
                         sanitized_data[key] = sanitized_value
                     else:
                         sanitized_data[key] = value
-                elif isinstance(value, (dict, list, tuple)):
+                elif isinstance(value, dict | list | tuple):
                     # Recursively handle nested structures
                     (
                         sanitized_value,
@@ -661,7 +662,7 @@ class TemporalIsolationEngine:
                     sanitized_data[key] = value
             return sanitized_data, placeholders
 
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, list | tuple):
             sanitized_data = []
             for item in data:
                 if isinstance(item, str):
@@ -674,7 +675,7 @@ class TemporalIsolationEngine:
                         sanitized_data.append(sanitized_item)
                     else:
                         sanitized_data.append(item)
-                elif isinstance(item, (dict, list, tuple)):
+                elif isinstance(item, dict | list | tuple):
                     # Recursively handle nested structures
                     (
                         sanitized_item,
@@ -712,7 +713,7 @@ class TemporalIsolationEngine:
                 resolved_count += count
             return resolved_data, resolved_count
 
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, list | tuple):
             resolved_data = []
             for item in data:
                 resolved_item, count = await self._resolve_placeholders(
@@ -743,7 +744,7 @@ class TemporalIsolationEngine:
                 )
             return sanitized
 
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, list | tuple):
             sanitized = []
             for item in data:
                 sanitized.append(
@@ -1067,7 +1068,7 @@ class TemporalIsolationEngine:
     def reset_performance_metrics(self) -> None:
         """Reset all performance metrics to zero."""
         for key in self._performance_metrics:
-            if isinstance(self._performance_metrics[key], (int, float)):
+            if isinstance(self._performance_metrics[key], int | float):
                 self._performance_metrics[key] = (
                     0 if isinstance(self._performance_metrics[key], int) else 0.0
                 )

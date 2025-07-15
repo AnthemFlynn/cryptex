@@ -161,7 +161,7 @@ class FastMCPCryptexMiddleware:
             # Sanitize error and re-raise
             sanitized_error = await self._sanitize_error(e)
             logger.error(f"FastMCP request failed: {sanitized_error}")
-            raise sanitized_error
+            raise sanitized_error from e
 
     async def _sanitize_request(self, request: MCPRequest) -> MCPRequest:
         """Sanitize MCP request parameters."""
@@ -174,7 +174,7 @@ class FastMCPCryptexMiddleware:
         import sys
         request_size = sys.getsizeof(request.params)
         if request_size > self.max_request_size:
-            raise Exception(f"Request size {request_size} exceeds limit of {self.max_request_size} bytes")
+            raise ValueError(f"Request size {request_size} exceeds limit of {self.max_request_size} bytes")
 
         # Sanitize the request parameters
         sanitized_data = await self.engine.sanitize_for_ai(request.params)

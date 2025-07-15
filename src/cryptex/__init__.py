@@ -195,7 +195,6 @@ from .decorators import cryptex
 
 # Middleware integrations
 try:
-    from .fastmcp import FastMCPCryptexMiddleware
     from .fastmcp import setup_cryptex_protection as setup_fastmcp_protection
 
     _FASTMCP_AVAILABLE = True
@@ -203,7 +202,6 @@ except ImportError:
     _FASTMCP_AVAILABLE = False
 
 try:
-    from .fastapi import CryptexMiddleware as FastAPICryptexMiddleware
     from .fastapi import setup_cryptex_protection as setup_fastapi_protection
 
     _FASTAPI_AVAILABLE = True

@@ -3,6 +3,7 @@
 import time
 
 import pytest
+
 from cryptex import protect_secrets, secure_session
 
 

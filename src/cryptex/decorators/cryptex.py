@@ -158,7 +158,7 @@ def _detect_framework_context(frame: FrameType | None, func: Callable) -> str:
             annotations = func.__annotations__
 
             # Look for FastAPI-specific patterns in annotations
-            for param_name, annotation in annotations.items():
+            for _param_name, annotation in annotations.items():
                 annotation_str = str(annotation)
                 if any(
                     fastapi_indicator in annotation_str.lower()
@@ -192,7 +192,7 @@ def _detect_framework_context(frame: FrameType | None, func: Callable) -> str:
         return "unknown"
 
     except Exception as e:
-        raise RuntimeError(f"Framework detection failed: {e}")
+        raise RuntimeError(f"Framework detection failed: {e}") from e
 
 
 def _get_calling_module() -> str | None:

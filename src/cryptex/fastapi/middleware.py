@@ -168,7 +168,7 @@ class CryptexMiddleware(BaseHTTPMiddleware):
                 if body:
                     # Check request size limit
                     if len(body) > self.max_request_size:
-                        raise Exception(f"Request body size {len(body)} exceeds limit of {self.max_request_size} bytes")
+                        raise ValueError(f"Request body size {len(body)} exceeds limit of {self.max_request_size} bytes")
 
                     try:
                         # Try to parse as JSON
@@ -445,7 +445,7 @@ def create_protected_app(
     except ImportError:
         raise ImportError(
             "FastAPI is required for create_protected_app. Install with: pip install fastapi"
-        )
+        ) from None
 
     # Create FastAPI app
     app = FastAPI(**app_kwargs)

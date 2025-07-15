@@ -2,6 +2,7 @@
 
 
 import pytest
+
 from cryptex.core.api import protect_secrets, secure_session
 from cryptex.core.manager import SecretManager
 

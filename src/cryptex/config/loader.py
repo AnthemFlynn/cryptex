@@ -98,7 +98,7 @@ class CryptexConfig:
             with open(config_path, "rb") as f:
                 config_data = tomllib.load(f)
         except Exception as e:
-            raise ValueError(f"Failed to parse TOML configuration: {e}")
+            raise ValueError(f"Failed to parse TOML configuration: {e}") from e
 
         return await cls._from_dict(config_data)
 
@@ -149,7 +149,7 @@ class CryptexConfig:
                     pattern = SecretPattern.from_dict(pattern_data)
                     secret_patterns.append(pattern)
                 except Exception as e:
-                    raise ValueError(f"Invalid secret pattern configuration: {e}")
+                    raise ValueError(f"Invalid secret pattern configuration: {e}") from e
 
         # Parse security policy
         security_data = config_data.get("security", {})
@@ -477,7 +477,7 @@ class ConfigurationLoader:
         try:
             return await CryptexConfig.from_env(env_prefix)
         except Exception as e:
-            raise ValueError(f"Failed to load configuration from any source: {e}")
+            raise ValueError(f"Failed to load configuration from any source: {e}") from e
 
     @staticmethod
     async def create_default_config(output_path: str | Path) -> None:

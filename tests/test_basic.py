@@ -6,6 +6,7 @@ These tests verify basic functionality and imports work correctly.
 """
 
 import pytest
+
 from cryptex import SecretManager, protect_secrets, secure_session
 
 

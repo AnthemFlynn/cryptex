@@ -77,7 +77,7 @@ class MCPToolProtection:
             sanitized_error = await self._sanitize_error(
                 e, context_id if "context_id" in locals() else None
             )
-            raise sanitized_error
+            raise sanitized_error from e
 
     async def _sanitize_arguments(
         self, args: tuple, kwargs: dict
