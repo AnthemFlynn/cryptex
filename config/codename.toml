@@ -1,0 +1,36 @@
+# Codename Configuration File
+# This file configures secret isolation for Codename middleware
+
+[secrets]
+# Define patterns for automatic secret detection
+patterns = [
+    { name = "openai_key", pattern = "sk-[a-zA-Z0-9]{48}", template = "{{OPENAI_API_KEY}}", description = "OpenAI API key" },
+    { name = "anthropic_key", pattern = "sk-ant-[a-zA-Z0-9-]{95}", template = "{{ANTHROPIC_API_KEY}}", description = "Anthropic API key" },
+    { name = "github_token", pattern = "ghp_[a-zA-Z0-9]{36}", template = "{{GITHUB_TOKEN}}", description = "GitHub personal access token" },
+    { name = "file_path", pattern = "/(?:Users|home)/[^/\\s]+(?:/[^/\\s]*)*", template = "/{USER_HOME}/...", description = "User file system paths" },
+    { name = "database_url", pattern = "(?:postgres|mysql|redis|mongodb)://[^\\s]+", template = "{{DATABASE_URL}}", description = "Database connection URLs" },
+]
+
+[security]
+# Security policy configuration
+enforcement_mode = "strict"  # strict, permissive, audit_only
+block_exposure = true
+max_placeholder_age = 3600  # seconds
+audit_logging = true
+auto_detect_secrets = true
+
+[performance]
+# Performance tuning
+cache_size = 10000
+sanitization_timeout_ms = 5
+resolution_timeout_ms = 10
+batch_size = 100
+enable_streaming = true
+
+[middleware]
+# Middleware behavior configuration
+auto_protect_endpoints = true
+auto_protect_tools = true
+inject_context_headers = true
+response_sanitization = true
+error_sanitization = true

@@ -1,0 +1,112 @@
+name: Pre-release
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  pre-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+      
+    - name: Create virtual environment
+      run: uv venv
+      
+    - name: Install dependencies
+      run: uv pip install -e ".[dev]" bump2version
+      
+    - name: Run full test suite
+      run: uv run pytest tests/ -v --cov=codename
+      
+    - name: Run security checks
+      run: |
+        uv run bandit -r src/
+        uv run safety check
+        
+    - name: Run linting
+      run: |
+        uv run ruff check src/ tests/
+        uv run mypy src/
+        
+    - name: Build and test package
+      run: |
+        uv run python -m build
+        uv run twine check dist/*
+        
+    - name: Determine version bump
+      id: version
+      run: |
+        VERSION_TYPE=${{ github.event.inputs.version_type || 'patch' }}
+        echo "version_type=$VERSION_TYPE" >> $GITHUB_OUTPUT
+        
+    - name: Bump version
+      run: |
+        uv run bump2version ${{ steps.version.outputs.version_type }}
+        
+    - name: Get new version
+      id: new_version
+      run: |
+        VERSION=$(uv run python -c "import codename; print(codename.__version__)")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: bump version to ${{ steps.new_version.outputs.version }}"
+        title: "chore: prepare release ${{ steps.new_version.outputs.version }}"
+        body: |
+          ## Release Preparation
+          
+          This PR prepares for release `${{ steps.new_version.outputs.version }}`.
+          
+          ### Changes
+          - Version bumped from previous to `${{ steps.new_version.outputs.version }}`
+          - All tests passing ✅
+          - Security checks passed ✅
+          - Linting passed ✅
+          
+          ### Next Steps
+          1. Review and merge this PR
+          2. Create and push tag `v${{ steps.new_version.outputs.version }}`
+          3. Release workflow will automatically publish to PyPI
+          
+          ### Checklist
+          - [ ] Changelog updated
+          - [ ] Documentation updated
+          - [ ] Version bumped correctly
+          - [ ] All tests passing
+        branch: release/${{ steps.new_version.outputs.version }}
+        base: master
+        labels: |
+          release
+          automated

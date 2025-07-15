@@ -1,0 +1,122 @@
+name: Security Issue
+description: Report a security vulnerability (please use private reporting for critical issues)
+title: "[Security]: "
+labels: ["security", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Important**: For critical security vulnerabilities, please use GitHub's private security reporting feature instead of creating a public issue.
+        
+        This form is for non-critical security improvements and discussions.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      description: Please check the following before submitting
+      options:
+        - label: This is NOT a critical security vulnerability (use private reporting for those)
+          required: true
+        - label: I have searched existing issues and this is not a duplicate
+          required: true
+        - label: I have read the security policy
+          required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Security Severity
+      description: How severe is this security issue?
+      options:
+        - "Low - Security improvement suggestion"
+        - "Medium - Potential security concern"
+        - "High - Security vulnerability (consider private reporting)"
+        - "Critical - Immediate security threat (use private reporting)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Security Issue Description
+      description: Describe the security issue or improvement
+      placeholder: |
+        The security issue is...
+        This could potentially...
+        Impact: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could happen if this security issue is exploited?
+      placeholder: |
+        An attacker could...
+        This might lead to...
+        Affected users: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce (if applicable)
+      description: How can this security issue be reproduced?
+      placeholder: |
+        1. Configure Codename with...
+        2. Run the following code...
+        3. Observe that...
+      
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: Do you have suggestions for how to fix or mitigate this issue?
+      placeholder: |
+        This could be fixed by...
+        A workaround is...
+        Consider implementing...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide information about your environment
+      placeholder: |
+        - OS: [e.g. macOS 13.0, Ubuntu 22.04]
+        - Python version: [e.g. 3.13.0]
+        - Codename version: [e.g. 0.1.0]
+        - Configuration: [relevant config details]
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: components
+    attributes:
+      label: Affected Components
+      description: Which components are affected by this security issue?
+      options:
+        - label: Core API (@protect_secrets, secure_session)
+        - label: Sanitization Engine
+        - label: Secret Resolution Engine
+        - label: Security Validation
+        - label: Configuration Management
+        - label: FastMCP Integration
+        - label: FastAPI Integration
+        - label: Audit Trail
+        - label: Documentation/Examples
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the security issue
+      placeholder: |
+        References: ...
+        Related issues: ...
+        Additional notes: ...
