@@ -1,5 +1,6 @@
 """Exception classes for Cryptex."""
 
+import re
 import time
 from typing import Any
 
@@ -29,23 +30,78 @@ class CryptexError(Exception):
             details: Additional error context and debugging information
             cause: Original exception that caused this error
         """
-        super().__init__(message)
+        super().__init__(self._sanitize_message(message))
         self.context_id = context_id
         self.error_code = error_code
         self.details = details or {}
         self.cause = cause
         self.timestamp = time.time()
+        
+        # Store original message for debugging (when safe)
+        self._original_message = message
+
+    def _sanitize_message(self, message: str) -> str:
+        """Sanitize message to remove potential secrets."""
+        if not message:
+            return message
+            
+        # Remove OpenAI API keys
+        message = re.sub(r'sk-[a-zA-Z0-9]{48}', '[OPENAI_KEY_REDACTED]', message)
+        message = re.sub(r'sk-proj-[a-zA-Z0-9]{48}', '[OPENAI_PROJECT_KEY_REDACTED]', message) 
+        message = re.sub(r'sk-ant-[a-zA-Z0-9]{48}', '[ANTHROPIC_KEY_REDACTED]', message)
+        
+        # Remove GitHub tokens
+        message = re.sub(r'ghp_[a-zA-Z0-9]{36}', '[GITHUB_TOKEN_REDACTED]', message)
+        message = re.sub(r'gho_[a-zA-Z0-9]{36}', '[GITHUB_OAUTH_REDACTED]', message)
+        
+        # Remove generic API keys (common patterns)
+        message = re.sub(r'[a-zA-Z0-9]{32,}', lambda m: '[KEY_REDACTED]' if len(m.group()) >= 32 else m.group(), message)
+        
+        # Remove file paths that might contain sensitive info
+        message = re.sub(r'/[/\w\-\.]+/[/\w\-\.]+', '/[PATH_REDACTED]', message)
+        
+        return message
+    
+    def _sanitize_details(self, details: dict[str, Any]) -> dict[str, Any]:
+        """Sanitize details dictionary to remove potential secrets."""
+        if not details:
+            return {}
+            
+        sanitized = {}
+        sensitive_keys = {
+            'secret_value', 'api_key', 'token', 'password', 'key', 'auth',
+            'resolved_value', 'placeholder_value', 'pattern_string',
+            'input_data', 'secret', 'credential', 'auth_token'
+        }
+        
+        for key, value in details.items():
+            if key in sensitive_keys:
+                sanitized[key] = '[REDACTED]'
+            elif isinstance(value, str):
+                sanitized[key] = self._sanitize_message(value)
+            elif isinstance(value, dict):
+                # Check if nested dict has sensitive keys, if so redact entirely
+                if any(k in sensitive_keys for k in value.keys()):
+                    sanitized[key] = '[REDACTED]'
+                else:
+                    sanitized[key] = self._sanitize_details(value)
+            elif isinstance(value, list):
+                sanitized[key] = [self._sanitize_message(item) if isinstance(item, str) else item for item in value]
+            else:
+                sanitized[key] = value
+                
+        return sanitized
 
     def to_dict(self) -> dict[str, Any]:
         """Convert error to dictionary format for logging/serialization."""
         return {
             "error_type": self.__class__.__name__,
             "message": str(self),
-            "context_id": self.context_id,
+            "context_id": self._sanitize_message(self.context_id) if self.context_id else None,
             "error_code": self.error_code,
-            "details": self.details,
+            "details": self._sanitize_details(self.details),
             "timestamp": self.timestamp,
-            "cause": str(self.cause) if self.cause else None,
+            "cause": self._sanitize_message(str(self.cause)) if self.cause else None,
         }
 
 
