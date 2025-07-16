@@ -74,9 +74,17 @@ class FastAPIEndpointProtection:
 
         except Exception as e:
             # Sanitize error messages to prevent secret exposure
-            sanitized_error = await self._sanitize_error(
-                e, context_id if "context_id" in locals() else None
-            )
+            sanitized_message = self.engine.sanitize_error_message(str(e))
+            sanitized_error = type(e)(sanitized_message)
+            
+            # Preserve traceback and other attributes
+            if hasattr(e, "__traceback__"):
+                sanitized_error.__traceback__ = e.__traceback__
+            if hasattr(e, "__cause__"):
+                sanitized_error.__cause__ = e.__cause__
+            if hasattr(e, "__context__"):
+                sanitized_error.__context__ = e.__context__
+                
             raise sanitized_error from e
 
     async def _sanitize_arguments(
@@ -94,31 +102,6 @@ class FastAPIEndpointProtection:
             sanitized_data.data["kwargs"],
             sanitized_data.context_id,
         )
-
-    async def _sanitize_error(
-        self, error: Exception, context_id: str | None
-    ) -> Exception:
-        """Sanitize error messages to prevent secret leakage."""
-        error_message = str(error)
-
-        if context_id:
-            sanitized_message = await self.engine.sanitize_response(
-                error_message, context_id
-            )
-        else:
-            # Fallback: create new sanitization context for error
-            sanitized_data = await self.engine.sanitize_for_ai(error_message)
-            sanitized_message = sanitized_data.data
-
-        # Create new exception with sanitized message
-        sanitized_error = type(error)(sanitized_message)
-
-        # Preserve traceback if possible
-        if hasattr(error, "__traceback__"):
-            sanitized_error.__traceback__ = error.__traceback__
-
-        return sanitized_error
-
 
 def protect_endpoint(
     secrets: list[str] | None = None,

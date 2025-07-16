@@ -446,11 +446,13 @@ class TemporalIsolationEngine:
             if isinstance(e, SanitizationError | PerformanceError):
                 raise
 
-            # Wrap unexpected errors
+            # Sanitize error message to prevent secret leakage
+            sanitized_message = self.sanitize_error_message(f"Failed to sanitize data: {str(e)}")
+            
+            # Wrap unexpected errors with sanitized message
             raise SanitizationError(
-                f"Failed to sanitize data: {str(e)}",
+                sanitized_message,
                 context_id=context_id,
-                details={"data_type": type(data).__name__, "error": str(e)},
                 cause=e,
             ) from e
 
@@ -509,11 +511,13 @@ class TemporalIsolationEngine:
             if isinstance(e, ContextError | ResolutionError | PerformanceError):
                 raise
 
-            # Wrap unexpected errors
+            # Sanitize error message to prevent secret leakage
+            sanitized_message = self.sanitize_error_message(f"Failed to resolve placeholders: {str(e)}")
+            
+            # Wrap unexpected errors with sanitized message
             raise ResolutionError(
-                f"Failed to resolve placeholders: {str(e)}",
+                sanitized_message,
                 context_id=context_id,
-                details={"data_type": type(data).__name__, "error": str(e)},
                 cause=e,
             ) from e
 
@@ -1138,3 +1142,63 @@ class TemporalIsolationEngine:
             sanitized_line = "    <local variables redacted for security>\n"
 
         return sanitized_line
+
+    def sanitize_error_message(self, error_message: str) -> str:
+        """
+        Simple error message sanitization for decorator use.
+        
+        Applies basic pattern matching to remove secrets from error messages
+        without creating complex isolation contexts.
+        
+        Args:
+            error_message: Error message that may contain secrets
+            
+        Returns:
+            Sanitized error message safe for AI context
+        """
+        if not error_message:
+            return error_message
+            
+        sanitized_text = error_message
+        
+        # Simple patterns to catch common secret formats in error messages
+        simple_patterns = [
+            (r'sk-[a-zA-Z0-9_-]+', '{SANITIZED:API_KEY}'),
+            (r'sk-ant-[a-zA-Z0-9_-]+', '{SANITIZED:ANTHROPIC_KEY}'),  
+            (r'ghp_[a-zA-Z0-9_-]+', '{SANITIZED:GITHUB_TOKEN}'),
+            (r'(?:postgresql|postgres|mysql|redis|mongodb)://[^\s\'"<>]+', '{SANITIZED:DATABASE_URL}'),
+            (r'/(?:Users|home)/[^\s\'"<>]+', '{SANITIZED:FILE_PATH}'),
+        ]
+        
+        # Apply simple pattern replacement
+        for pattern_str, placeholder in simple_patterns:
+            try:
+                pattern = re.compile(pattern_str, re.IGNORECASE)
+                sanitized_text = pattern.sub(placeholder, sanitized_text)
+            except Exception:
+                continue
+        
+        return sanitized_text
+    
+    def _describe_data_structure(self, data: Any) -> str:
+        """
+        Safely describe data structure without exposing content.
+        
+        Args:
+            data: Data to describe
+            
+        Returns:
+            Safe description of data structure
+        """
+        if isinstance(data, str):
+            return f"string(length={len(data)})"
+        elif isinstance(data, dict):
+            return f"dict(keys={len(data)})"
+        elif isinstance(data, list):
+            return f"list(items={len(data)})"
+        elif isinstance(data, tuple):
+            return f"tuple(items={len(data)})"
+        elif hasattr(data, "__dict__"):
+            return f"object({type(data).__name__})"
+        else:
+            return f"primitive({type(data).__name__})"

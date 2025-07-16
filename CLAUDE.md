@@ -52,15 +52,25 @@ make pre-commit             # All quality gates
 
 ## Core API Patterns
 
-### Primary Protection Decorator
+### Primary Protection Decorator (Main Interface)
 ```python
 @cryptex(secrets=['api_key', 'database_url'])
-async def ai_powered_function(user_input: str) -> str:
-    # AI sees placeholders, execution gets real values
-    return await ai_workflow(user_input)
+async def my_tool(user_input: str, api_key: str, database_url: str) -> str:
+    # Developer writes normal code - no special handling needed
+    # AI sees placeholders, tool execution gets real values
+    # ALL errors are automatically sanitized before reaching AI
+    result = await external_api.call(user_input, api_key)
+    await database.save(result, database_url)
+    return result
 ```
 
-### Context Manager for Fine Control
+**Developer Experience Principles:**
+- **One decorator line** = complete temporal isolation
+- **Zero cognitive overhead** = developers write normal code
+- **Bulletproof security** = automatic error sanitization, input/output protection
+- **Framework agnostic** = works with FastMCP, FastAPI automatically
+
+### Context Manager for Advanced Use Cases
 ```python
 async with cryptex.secure_session() as session:
     sanitized_data = await session.sanitize_for_ai(raw_data)
@@ -115,3 +125,21 @@ block_exposure = true
 - **Type Safety**: Full type hints using Python 3.13+ features
 - **Zero Dependencies**: Core functionality uses standard library only
 - **Security First**: Every change requires security review and validation
+
+## Architecture Guidelines
+
+### Error Handling Strategy
+- **Decorator-First**: All error sanitization happens in the `@cryptex` decorator
+- **Automatic**: Developers never handle errors manually - decorator catches and sanitizes ALL exceptions
+- **Transparent**: Decorated functions work exactly like normal functions, just secure
+
+### Library Boundaries
+- **Cryptex provides utilities** for FastMCP/FastAPI middleware, not its own middleware layer
+- **Decorator pattern is primary interface** - simplest developer experience
+- **Engine utilities support decorator** - not standalone middleware orchestration
+
+### Refactoring Priorities
+1. **Fix decorator error handling** - ensure ALL exceptions are sanitized automatically
+2. **Remove over-complex engine utilities** - keep only what decorator needs
+3. **Simplify error sanitization** - direct pattern replacement, not complex context management
+4. **Maintain developer experience** - one decorator line should provide complete protection
