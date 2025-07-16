@@ -36,7 +36,7 @@ class CryptexError(Exception):
         self.details = details or {}
         self.cause = cause
         self.timestamp = time.time()
-        
+
         # Store original message for debugging (when safe)
         self._original_message = message
 
@@ -44,36 +44,36 @@ class CryptexError(Exception):
         """Sanitize message to remove potential secrets."""
         if not message:
             return message
-            
+
         # Remove OpenAI API keys
         message = re.sub(r'sk-[a-zA-Z0-9]{48}', '[OPENAI_KEY_REDACTED]', message)
-        message = re.sub(r'sk-proj-[a-zA-Z0-9]{48}', '[OPENAI_PROJECT_KEY_REDACTED]', message) 
+        message = re.sub(r'sk-proj-[a-zA-Z0-9]{48}', '[OPENAI_PROJECT_KEY_REDACTED]', message)
         message = re.sub(r'sk-ant-[a-zA-Z0-9]{48}', '[ANTHROPIC_KEY_REDACTED]', message)
-        
+
         # Remove GitHub tokens
         message = re.sub(r'ghp_[a-zA-Z0-9]{36}', '[GITHUB_TOKEN_REDACTED]', message)
         message = re.sub(r'gho_[a-zA-Z0-9]{36}', '[GITHUB_OAUTH_REDACTED]', message)
-        
+
         # Remove generic API keys (common patterns)
         message = re.sub(r'[a-zA-Z0-9]{32,}', lambda m: '[KEY_REDACTED]' if len(m.group()) >= 32 else m.group(), message)
-        
+
         # Remove file paths that might contain sensitive info
         message = re.sub(r'/[/\w\-\.]+/[/\w\-\.]+', '/[PATH_REDACTED]', message)
-        
+
         return message
-    
+
     def _sanitize_details(self, details: dict[str, Any]) -> dict[str, Any]:
         """Sanitize details dictionary to remove potential secrets."""
         if not details:
             return {}
-            
+
         sanitized = {}
         sensitive_keys = {
             'secret_value', 'api_key', 'token', 'password', 'key', 'auth',
             'resolved_value', 'placeholder_value', 'pattern_string',
             'input_data', 'secret', 'credential', 'auth_token'
         }
-        
+
         for key, value in details.items():
             if key in sensitive_keys:
                 sanitized[key] = '[REDACTED]'
@@ -89,7 +89,7 @@ class CryptexError(Exception):
                 sanitized[key] = [self._sanitize_message(item) if isinstance(item, str) else item for item in value]
             else:
                 sanitized[key] = value
-                
+
         return sanitized
 
     def to_dict(self) -> dict[str, Any]:
