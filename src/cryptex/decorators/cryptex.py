@@ -10,7 +10,7 @@ from collections.abc import Callable
 from types import FrameType
 from typing import Any, TypeVar
 
-from ..config.loader import CryptexConfig
+# Config system eliminated - zero config architecture
 from ..core.engine import TemporalIsolationEngine
 from .fastapi import protect_endpoint
 from .mcp import protect_tool
@@ -20,8 +20,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 def cryptex(
     secrets: list[str] | None = None,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_detect: bool = True,
     engine: TemporalIsolationEngine | None = None,
     framework: str | None = None,
@@ -33,9 +31,7 @@ def cryptex(
     on a FastMCP tool or FastAPI endpoint and applies appropriate protection.
 
     Args:
-        secrets: List of secret names/patterns to protect
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
+        secrets: List of secret names/patterns to protect (e.g., ["openai_key"])
         auto_detect: Whether to auto-detect secrets beyond specified list
         engine: Pre-configured TemporalIsolationEngine instance
         framework: Explicit framework specification ("fastmcp" or "fastapi").
@@ -46,31 +42,26 @@ def cryptex(
 
     Examples:
         ```python
-        # FastMCP tool (auto-detected)
+        # Zero config - works immediately!
         @server.tool()
-        @cryptex(secrets=["api_key", "file_paths"])
-        async def read_file_tool(file_path: str, api_key: str) -> str:
+        @cryptex(secrets=["openai_key"])
+        async def ai_tool(prompt: str, api_key: str) -> str:
+            # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
+            # Tool gets: real API key for execution
+            return await openai_call(prompt, api_key)
+
+        # Multiple secrets
+        @cryptex(secrets=["file_path", "github_token"])
+        async def file_tool(file_path: str, token: str) -> str:
             # AI sees placeholders, tool gets real values
-            return process_file(file_path, api_key)
+            return await process_file(file_path, token)
 
-        # FastMCP tool (explicit)
-        @server.tool()
-        @cryptex(secrets=["api_key"], framework="fastmcp")
-        async def explicit_mcp_tool(api_key: str) -> str:
-            return call_api(api_key)
-
-        # FastAPI endpoint (auto-detected)
+        # FastAPI endpoint
         @app.post("/api/process")
-        @cryptex(secrets=["api_key"])
-        async def process_data(data: dict, api_key: str):
-            # Request/response sanitized, endpoint gets real values
-            return await external_api_call(data, api_key)
-
-        # FastAPI endpoint (explicit - recommended for reliability)
-        @app.get("/secure")
-        @cryptex(secrets=["database_url"], framework="fastapi")
-        async def secure_endpoint(database_url: str):
-            return query_database(database_url)
+        @cryptex(secrets=["database_url"])
+        async def api_endpoint(data: dict, db_url: str):
+            # Request/response sanitized automatically
+            return await query_database(db_url, data)
         ```
     """
 
@@ -101,8 +92,6 @@ def cryptex(
             # Apply FastMCP tool protection
             return protect_tool(
                 secrets=secrets,
-                config_path=config_path,
-                config=config,
                 auto_detect=auto_detect,
                 engine=engine,
             )(func)
@@ -111,8 +100,6 @@ def cryptex(
             # Apply FastAPI endpoint protection
             return protect_endpoint(
                 secrets=secrets,
-                config_path=config_path,
-                config=config,
                 auto_detect=auto_detect,
                 engine=engine,
             )(func)
@@ -121,8 +108,6 @@ def cryptex(
             # Default to FastMCP tool protection for unknown contexts
             return protect_tool(
                 secrets=secrets,
-                config_path=config_path,
-                config=config,
                 auto_detect=auto_detect,
                 engine=engine,
             )(func)
@@ -266,7 +251,7 @@ def _analyze_call_stack_safely(frame: FrameType, max_depth: int = 5) -> str:
 
 # Alias decorators for specific use cases
 def cryptex_tool(
-    secrets: list[str] | None = None, config_path: str | None = None, **kwargs
+    secrets: list[str] | None = None, **kwargs
 ) -> Callable[[F], F]:
     """
     Explicit Cryptex decorator for FastMCP tools.
@@ -274,11 +259,11 @@ def cryptex_tool(
     This is equivalent to @cryptex but specifically for FastMCP tools,
     bypassing context detection.
     """
-    return protect_tool(secrets=secrets, config_path=config_path, **kwargs)
+    return protect_tool(secrets=secrets, **kwargs)
 
 
 def cryptex_endpoint(
-    secrets: list[str] | None = None, config_path: str | None = None, **kwargs
+    secrets: list[str] | None = None, **kwargs
 ) -> Callable[[F], F]:
     """
     Explicit Cryptex decorator for FastAPI endpoints.
@@ -286,41 +271,37 @@ def cryptex_endpoint(
     This is equivalent to @cryptex but specifically for FastAPI endpoints,
     bypassing context detection.
     """
-    return protect_endpoint(secrets=secrets, config_path=config_path, **kwargs)
+    return protect_endpoint(secrets=secrets, **kwargs)
 
 
 # Convenience decorators with common secret patterns
-def cryptex_file(config_path: str | None = None) -> Callable[[F], F]:
+def cryptex_file() -> Callable[[F], F]:
     """Cryptex decorator for file operations."""
     return cryptex(
-        secrets=["file_paths", "home_directory", "project_dir"],
-        config_path=config_path,
+        secrets=["file_path"],
         auto_detect=True,
     )
 
 
-def cryptex_api(config_path: str | None = None) -> Callable[[F], F]:
+def cryptex_api() -> Callable[[F], F]:
     """Cryptex decorator for API operations."""
     return cryptex(
-        secrets=["api_key", "openai_key", "anthropic_key", "github_token"],
-        config_path=config_path,
+        secrets=["openai_key", "anthropic_key", "github_token"],
         auto_detect=True,
     )
 
 
-def cryptex_database(config_path: str | None = None) -> Callable[[F], F]:
+def cryptex_database() -> Callable[[F], F]:
     """Cryptex decorator for database operations."""
     return cryptex(
-        secrets=["database_url", "db_password", "connection_string"],
-        config_path=config_path,
+        secrets=["database_url"],
         auto_detect=True,
     )
 
 
-def cryptex_auth(config_path: str | None = None) -> Callable[[F], F]:
+def cryptex_auth() -> Callable[[F], F]:
     """Cryptex decorator for authentication operations."""
     return cryptex(
-        secrets=["api_key", "auth_token", "jwt_secret", "oauth_secret"],
-        config_path=config_path,
+        secrets=["github_token"],
         auto_detect=True,
     )
