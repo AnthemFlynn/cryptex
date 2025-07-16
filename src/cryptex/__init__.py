@@ -82,7 +82,7 @@ For comprehensive documentation and examples:
 https://github.com/yourusername/cryptex
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Cryptex Team"
 __email__ = "team@cryptex-ai.com"
 
