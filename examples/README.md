@@ -2,6 +2,8 @@
 
 Comprehensive examples demonstrating Cryptex's temporal isolation capabilities for AI/LLM applications. These examples show how to protect secrets across FastMCP servers and FastAPI applications.
 
+> **New to Cryptex?** Start with the "Simple Hello World" examples (`01_simple_*`) - they're designed to be approachable and demonstrate core concepts in ~350 lines. The advanced examples show production-ready patterns but can be explored later.
+
 ## 🔒 What is Temporal Isolation?
 
 Cryptex implements a **three-phase security architecture** to ensure AI models never access real secrets:

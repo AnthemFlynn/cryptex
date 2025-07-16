@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Cryptex: Bulletproof Secrets Isolation for AI/LLM Applications"
+abstract: "Cryptex provides temporal isolation that allows AI to process data safely while ensuring secrets are only resolved during execution. It implements a three-phase security architecture: Sanitization → AI Processing → Secret Resolution."
+authors:
+  - name: "Cryptex Team"
+version: "1.0.0"
+date-released: "2024-07-16"
+url: "https://github.com/cryptex-ai/cryptex"
+repository-code: "https://github.com/cryptex-ai/cryptex"
+license: MIT
+keywords:
+  - ai
+  - llm
+  - security
+  - secrets
+  - isolation
+  - temporal-isolation
+  - middleware
+  - fastapi
+  - fastmcp
+  - mcp
+preferred-citation:
+  type: software
+  title: "Cryptex: Bulletproof Secrets Isolation for AI/LLM Applications"
+  authors:
+    - name: "Cryptex Team"
+  version: "1.0.0"
+  url: "https://github.com/cryptex-ai/cryptex"
+  year: 2024
