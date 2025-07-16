@@ -1,0 +1,44 @@
+# FastMCP Requirements for Cryptex Examples
+# Install with: pip install -r requirements.txt
+
+# Core dependencies
+cryptex>=1.0.0
+
+# FastMCP framework (when available)
+# fastmcp>=0.1.0
+
+# Optional dependencies for extended functionality
+aiofiles>=23.0.0          # Async file operations
+aiohttp>=3.8.0            # HTTP client for external APIs
+asyncio-mqtt>=0.11.0      # MQTT client for messaging
+redis>=4.5.0              # Redis client for caching
+psycopg2-binary>=2.9.0    # PostgreSQL client
+pymongo>=4.3.0            # MongoDB client
+
+# Development and testing
+pytest>=7.0.0             # Testing framework
+pytest-asyncio>=0.21.0    # Async testing support
+pytest-cov>=4.0.0         # Coverage reporting
+black>=23.0.0             # Code formatting
+ruff>=0.1.0               # Linting and formatting
+
+# Optional AI/ML integrations
+openai>=1.0.0             # OpenAI API client
+anthropic>=0.7.0          # Anthropic API client
+# google-generativeai>=0.3.0  # Google AI client
+# azure-ai-inference>=1.0.0   # Azure AI client
+
+# Configuration and utilities
+toml>=0.10.0              # TOML configuration parsing
+pydantic>=2.0.0           # Data validation
+structlog>=23.0.0         # Structured logging
+python-dotenv>=1.0.0      # Environment variable loading
+
+# Performance monitoring
+prometheus-client>=0.16.0 # Prometheus metrics
+psutil>=5.9.0             # System monitoring
+
+# Security
+cryptography>=41.0.0      # Cryptographic operations
+passlib>=1.7.0            # Password hashing
+python-jose>=3.3.0        # JWT handling
