@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Cryptex is a production-ready Python library that provides bulletproof secrets isolation for AI/LLM applications. It implements a **Temporal Isolation Engine** with three-phase security architecture: Sanitization → AI Processing → Secret Resolution.
+Cryptex is a **zero-config** temporal isolation engine for AI/LLM applications. It provides bulletproof secrets isolation with **zero cognitive overhead** - one decorator line = complete temporal isolation.
+
+**Key Philosophy**: No config files, no environment variables, no setup required. Built-in patterns handle 95% of real-world usage.
 
 ## Key Directories
 
@@ -52,21 +54,47 @@ make pre-commit             # All quality gates
 
 ## Core API Patterns
 
-### Primary Protection Decorator
+### Zero-Config Protection (95% of users)
 ```python
-@cryptex(secrets=['api_key', 'database_url'])
-async def ai_powered_function(user_input: str) -> str:
-    # AI sees placeholders, execution gets real values
-    return await ai_workflow(user_input)
+from cryptex.decorators.mcp import protect_tool
+
+# Works immediately - no setup required!
+@protect_tool(secrets=["openai_key"])
+async def ai_tool(prompt: str, api_key: str) -> str:
+    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
+    # Tool gets: real API key for execution
+    return await openai_call(prompt, api_key)
+
+@protect_tool(secrets=["file_path", "github_token"])
+async def file_tool(file_path: str, token: str) -> str:
+    # AI sees: file_tool("/{USER_HOME}/doc.txt", "{{GITHUB_TOKEN}}")
+    # Tool gets: real path and token
+    return await process_file(file_path, token)
 ```
 
-### Context Manager for Fine Control
+### Custom Patterns (5% of users)
 ```python
-async with cryptex.secure_session() as session:
-    sanitized_data = await session.sanitize_for_ai(raw_data)
-    ai_result = await ai_function(sanitized_data)
-    resolved_result = await session.resolve_secrets(ai_result)
+from cryptex.patterns import register_pattern
+
+# Register custom pattern once
+register_pattern(
+    name="slack_token",
+    regex=r"xoxb-[0-9-a-zA-Z]{51}",
+    placeholder="{{SLACK_TOKEN}}"
+)
+
+# Use in decorators
+@protect_tool(secrets=["slack_token"])
+async def slack_tool(token: str) -> str:
+    return await slack_api_call(token)
 ```
+
+### Built-in Patterns (Work Out of the Box)
+- `openai_key`: OpenAI API keys (sk-...)
+- `anthropic_key`: Anthropic API keys (sk-ant-...)
+- `github_token`: GitHub tokens (ghp_...)
+- `file_path`: User file system paths (/Users/..., /home/...)
+- `database_url`: Database connection URLs (postgres://, mysql://, etc.)
 
 ## Testing Approach
 
@@ -91,16 +119,19 @@ make test-security           # Security tests only
 make test-performance        # Performance benchmarks
 ```
 
-## Configuration
+## Zero-Config Architecture
 
-Configuration via `cryptex.toml`:
-```toml
-[secrets]
-api_keys = ["openai_api_key", "anthropic_api_key"]
+**NO CONFIGURATION REQUIRED!** The library works perfectly without any config files.
 
-[security]
-enforcement_mode = "strict"
-block_exposure = true
+### Pattern Registration API (Advanced)
+```python
+from cryptex.patterns import register_pattern, list_patterns
+
+# List available patterns
+patterns = list_patterns()  # ['openai_key', 'anthropic_key', ...]
+
+# Register custom pattern (rare use case)
+register_pattern("my_token", r"myapp-[a-f0-9]{32}", "{{MY_TOKEN}}")
 ```
 
 ## Performance Requirements
@@ -111,7 +142,17 @@ block_exposure = true
 
 ## Development Notes
 
+- **Zero-Config Philosophy**: No config files belong in middleware libraries
+- **95/5 Rule**: 95% of users need zero config, 5% use registration API
 - **Async-First Design**: All core operations are async/await compatible
 - **Type Safety**: Full type hints using Python 3.13+ features
 - **Zero Dependencies**: Core functionality uses standard library only
 - **Security First**: Every change requires security review and validation
+
+## Architecture Principles
+
+1. **Config files eliminated**: Pure code-based configuration only
+2. **Built-in defaults**: Excellent patterns for common secrets (OpenAI, GitHub, etc.)
+3. **Minimal API surface**: Simple registration for custom patterns
+4. **No external dependencies**: No TOML parsing, file I/O, or config loading
+5. **Middleware library**: Lightweight, fast startup, predictable behavior

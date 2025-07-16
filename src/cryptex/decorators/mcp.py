@@ -9,7 +9,7 @@ import functools
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from ..config.loader import ConfigurationLoader, CryptexConfig
+from ..patterns import get_all_patterns
 from ..core.engine import TemporalIsolationEngine
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -21,7 +21,6 @@ class MCPToolProtection:
     def __init__(
         self,
         engine: TemporalIsolationEngine,
-        config: CryptexConfig,
         secrets: list[str],
         auto_detect: bool = True,
     ):
@@ -30,12 +29,10 @@ class MCPToolProtection:
 
         Args:
             engine: Temporal isolation engine
-            config: Cryptex configuration
             secrets: List of secret names to protect
             auto_detect: Whether to auto-detect additional secrets
         """
         self.engine = engine
-        self.config = config
         self.secrets = secrets
         self.auto_detect = auto_detect
 
@@ -122,8 +119,6 @@ class MCPToolProtection:
 
 def protect_tool(
     secrets: list[str] | None = None,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_detect: bool = True,
     engine: TemporalIsolationEngine | None = None,
 ) -> Callable[[F], F]:
@@ -136,9 +131,7 @@ def protect_tool(
     - Responses are sanitized before returning to AI
 
     Args:
-        secrets: List of secret names/patterns to protect
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
+        secrets: List of secret names/patterns to protect (e.g., ["openai_key", "file_path"])
         auto_detect: Whether to auto-detect secrets beyond specified list
         engine: Pre-configured TemporalIsolationEngine instance
 
@@ -147,7 +140,8 @@ def protect_tool(
 
     Example:
         ```python
-        @protect_tool(secrets=["api_key", "file_paths"])
+        # Zero configuration needed - built-in patterns work perfectly!
+        @protect_tool(secrets=["file_path"])
         async def read_file_tool(file_path: str) -> str:
             # AI sees: read_file_tool("/{USER_HOME}/documents/file.txt")
             # Tool executes: with real path "/Users/john/documents/file.txt"
@@ -156,9 +150,17 @@ def protect_tool(
 
         @protect_tool(secrets=["openai_key"])
         async def ai_completion_tool(prompt: str, api_key: str) -> str:
-            # AI sees: ai_completion_tool("Hello", "{{API_KEY}}")
+            # AI sees: ai_completion_tool("Hello", "{{OPENAI_API_KEY}}")
             # Tool executes: with real API key "sk-real-key..."
             return await openai_api_call(prompt, api_key)
+            
+        # For custom patterns (5% of users):
+        from cryptex.patterns import register_pattern
+        register_pattern("slack_token", r"xoxb-[0-9-a-zA-Z]{51}", "{{SLACK_TOKEN}}")
+        
+        @protect_tool(secrets=["slack_token"])
+        async def slack_tool(token: str) -> str:
+            return await slack_api_call(token)
         ```
     """
 
@@ -167,7 +169,7 @@ def protect_tool(
         async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Initialize protection components
             protection = await _get_or_create_protection(
-                secrets or [], config_path, config, auto_detect, engine
+                secrets or [], auto_detect, engine
             )
 
             # Execute with protection
@@ -189,27 +191,16 @@ def protect_tool(
 
 async def _get_or_create_protection(
     secrets: list[str],
-    config_path: str | None,
-    config: CryptexConfig | None,
     auto_detect: bool,
     engine: TemporalIsolationEngine | None,
 ) -> MCPToolProtection:
     """Get or create protection components."""
-    # Load configuration
-    if config is None:
-        if config_path:
-            config = await CryptexConfig.from_toml(config_path)
-        else:
-            # Try to load from default locations
-            config = await ConfigurationLoader.load_with_fallbacks(
-                ["cryptex.toml", "config/cryptex.toml", ".cryptex.toml"]
-            )
-
-    # Create engine if not provided
+    # Create engine with all available patterns (built-ins + custom registered)
     if engine is None:
-        engine = TemporalIsolationEngine(config.secret_patterns)
-
-    return MCPToolProtection(engine, config, secrets, auto_detect)
+        all_patterns = get_all_patterns()
+        engine = TemporalIsolationEngine(patterns=all_patterns)
+    
+    return MCPToolProtection(engine, secrets, auto_detect)
 
 
 class MCPToolRegistry:
@@ -265,29 +256,25 @@ def get_tool_registry() -> MCPToolRegistry:
 # Convenience decorators for common use cases
 
 
-def protect_file_tool(config_path: str | None = None) -> Callable[[F], F]:
+def protect_file_tool() -> Callable[[F], F]:
     """Convenience decorator for file operation tools."""
     return protect_tool(
-        secrets=["file_paths", "home_directory"],
-        config_path=config_path,
+        secrets=["file_path"],
         auto_detect=True,
     )
 
 
-def protect_api_tool(
-    api_secrets: list[str] | None = None, config_path: str | None = None
-) -> Callable[[F], F]:
+def protect_api_tool(api_secrets: list[str] | None = None) -> Callable[[F], F]:
     """Convenience decorator for API-calling tools."""
-    default_secrets = ["api_key", "openai_key", "anthropic_key", "github_token"]
+    default_secrets = ["openai_key", "anthropic_key", "github_token"]
     secrets = (api_secrets or []) + default_secrets
 
-    return protect_tool(secrets=secrets, config_path=config_path, auto_detect=True)
+    return protect_tool(secrets=secrets, auto_detect=True)
 
 
-def protect_database_tool(config_path: str | None = None) -> Callable[[F], F]:
+def protect_database_tool() -> Callable[[F], F]:
     """Convenience decorator for database tools."""
     return protect_tool(
-        secrets=["database_url", "db_password", "connection_string"],
-        config_path=config_path,
+        secrets=["database_url"],
         auto_detect=True,
     )

@@ -9,7 +9,7 @@ import functools
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from ..config.loader import ConfigurationLoader, CryptexConfig
+from ..patterns import get_all_patterns
 from ..core.engine import TemporalIsolationEngine
 
 F = TypeVar("F", bound=Callable[..., Any])
@@ -21,7 +21,6 @@ class FastAPIEndpointProtection:
     def __init__(
         self,
         engine: TemporalIsolationEngine,
-        config: CryptexConfig,
         secrets: list[str],
         auto_detect: bool = True,
     ):
@@ -30,12 +29,10 @@ class FastAPIEndpointProtection:
 
         Args:
             engine: Temporal isolation engine
-            config: Codename configuration
             secrets: List of secret names to protect
             auto_detect: Whether to auto-detect additional secrets
         """
         self.engine = engine
-        self.config = config
         self.secrets = secrets
         self.auto_detect = auto_detect
 
@@ -122,8 +119,6 @@ class FastAPIEndpointProtection:
 
 def protect_endpoint(
     secrets: list[str] | None = None,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_detect: bool = True,
     engine: TemporalIsolationEngine | None = None,
 ) -> Callable[[F], F]:
@@ -136,9 +131,7 @@ def protect_endpoint(
     - Responses are sanitized before client sees them
 
     Args:
-        secrets: List of secret names/patterns to protect
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
+        secrets: List of secret names/patterns to protect (e.g., ["openai_key", "database_url"])
         auto_detect: Whether to auto-detect secrets beyond specified list
         engine: Pre-configured TemporalIsolationEngine instance
 
@@ -172,7 +165,7 @@ def protect_endpoint(
         async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             # Initialize protection components
             protection = await _get_or_create_endpoint_protection(
-                secrets or [], config_path, config, auto_detect, engine
+                secrets or [], auto_detect, engine
             )
 
             # Execute with protection
@@ -194,27 +187,16 @@ def protect_endpoint(
 
 async def _get_or_create_endpoint_protection(
     secrets: list[str],
-    config_path: str | None,
-    config: CryptexConfig | None,
     auto_detect: bool,
     engine: TemporalIsolationEngine | None,
 ) -> FastAPIEndpointProtection:
     """Get or create endpoint protection components."""
-    # Load configuration
-    if config is None:
-        if config_path:
-            config = await CryptexConfig.from_toml(config_path)
-        else:
-            # Try to load from default locations
-            config = await ConfigurationLoader.load_with_fallbacks(
-                ["cryptex.toml", "config/cryptex.toml", ".cryptex.toml"]
-            )
-
-    # Create engine if not provided
+    # Create engine with all available patterns (built-ins + custom registered)
     if engine is None:
-        engine = TemporalIsolationEngine(config.secret_patterns)
-
-    return FastAPIEndpointProtection(engine, config, secrets, auto_detect)
+        all_patterns = get_all_patterns()
+        engine = TemporalIsolationEngine(patterns=all_patterns)
+    
+    return FastAPIEndpointProtection(engine, secrets, auto_detect)
 
 
 class FastAPIEndpointRegistry:
@@ -274,38 +256,33 @@ def get_endpoint_registry() -> FastAPIEndpointRegistry:
 # Convenience decorators for common FastAPI use cases
 
 
-def protect_auth_endpoint(config_path: str | None = None) -> Callable[[F], F]:
+def protect_auth_endpoint() -> Callable[[F], F]:
     """Convenience decorator for authentication endpoints."""
     return protect_endpoint(
-        secrets=["api_key", "auth_token", "jwt_secret", "oauth_secret"],
-        config_path=config_path,
+        secrets=["github_token"],
         auto_detect=True,
     )
 
 
-def protect_database_endpoint(config_path: str | None = None) -> Callable[[F], F]:
+def protect_database_endpoint() -> Callable[[F], F]:
     """Convenience decorator for database-accessing endpoints."""
     return protect_endpoint(
-        secrets=["database_url", "db_password", "connection_string"],
-        config_path=config_path,
+        secrets=["database_url"],
         auto_detect=True,
     )
 
 
-def protect_external_api_endpoint(
-    api_secrets: list[str] | None = None, config_path: str | None = None
-) -> Callable[[F], F]:
+def protect_external_api_endpoint(api_secrets: list[str] | None = None) -> Callable[[F], F]:
     """Convenience decorator for endpoints that call external APIs."""
-    default_secrets = ["api_key", "openai_key", "anthropic_key", "github_token"]
+    default_secrets = ["openai_key", "anthropic_key", "github_token"]
     secrets = (api_secrets or []) + default_secrets
 
-    return protect_endpoint(secrets=secrets, config_path=config_path, auto_detect=True)
+    return protect_endpoint(secrets=secrets, auto_detect=True)
 
 
-def protect_file_endpoint(config_path: str | None = None) -> Callable[[F], F]:
+def protect_file_endpoint() -> Callable[[F], F]:
     """Convenience decorator for file operation endpoints."""
     return protect_endpoint(
-        secrets=["file_paths", "upload_path", "storage_url"],
-        config_path=config_path,
+        secrets=["file_path"],
         auto_detect=True,
     )
