@@ -144,3 +144,22 @@ celerybeat.pid
 *.bak
 *.backup
 *~
+
+# Development tools and editor configs
+.claude/
+.llm/
+.zed/
+.editorconfig
+.python-version
+.pre-commit-config.yaml
+.mcp.json
+
+# AI/LLM tooling
+*.taskmaster/
+.anthropic/
+.openai/
+
+# Local development configs
+local.toml
+dev.toml
+*.local.toml
