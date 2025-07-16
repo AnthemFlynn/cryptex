@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """
-FastMCP Simple Hello World Example
+FastMCP Simple Hello World Example - Zero-Config Architecture
 
-This example demonstrates basic secret protection using the @cryptex decorator
-with a FastMCP server. It shows how Cryptex provides temporal isolation -
-AI models see safe placeholders while tools get real secret values.
+This example demonstrates basic secret protection using the @protect_tool decorator
+with a FastMCP server. It shows how Cryptex provides temporal isolation with
+ZERO configuration required - built-in patterns handle common secrets automatically.
 
 What you'll learn:
-- How to use the @cryptex decorator for individual tool protection
+- How to use the @protect_tool decorator for individual tool protection
 - How temporal isolation works (sanitization → AI processing → resolution)
 - What AI models see vs what tools actually execute with
-- Basic environment variable protection
+- Zero-config protection for OpenAI, GitHub, database URLs, file paths
+- Built-in patterns that work immediately without any setup
 """
 
 import asyncio
@@ -21,8 +22,8 @@ from pathlib import Path
 # Add the project root to the Python path so we can import cryptex
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Import Cryptex components
-from cryptex import cryptex
+# Import Cryptex components - Zero Config!
+from cryptex.decorators.mcp import protect_tool
 from cryptex.core import secure_session
 
 # Import example utilities
@@ -90,14 +91,15 @@ class MockFastMCPServer:
 server = MockFastMCPServer("hello-world-server")
 
 @server.tool("read_secret_file", "Read a file that contains sensitive information")
-@cryptex(secrets=["file_path"])
+@protect_tool(secrets=["file_path"])
 async def read_secret_file(file_path: str) -> str:
     """
     Read a file containing sensitive information.
     
-    This demonstrates temporal isolation:
+    This demonstrates temporal isolation with ZERO CONFIG:
     - AI sees: file_path = "/{USER_HOME}/.../{filename}"
     - Tool gets: file_path = "/Users/developer/sensitive-data/secrets.json"
+    - Built-in file_path pattern works automatically!
     """
     print_phase("Tool Execution", "Reading file with real path")
     
@@ -115,14 +117,15 @@ async def read_secret_file(file_path: str) -> str:
 
 
 @server.tool("call_ai_api", "Call an AI API with protected credentials")
-@cryptex(secrets=["api_key"])
+@protect_tool(secrets=["openai_key"])
 async def call_ai_api(prompt: str, api_key: str) -> str:
     """
     Call an AI API with protected credentials.
     
-    This demonstrates API key protection:
-    - AI sees: api_key = "{RESOLVE:API_KEY:a1b2c3d4}"
+    This demonstrates OpenAI key protection with ZERO CONFIG:
+    - AI sees: api_key = "{{OPENAI_API_KEY}}"
     - Tool gets: api_key = "sk-1234567890abcdef..."
+    - Built-in openai_key pattern works automatically!
     """
     print_phase("Tool Execution", "Making API call with real credentials")
     
@@ -145,14 +148,15 @@ async def call_ai_api(prompt: str, api_key: str) -> str:
 
 
 @server.tool("database_query", "Execute a database query with protected connection")
-@cryptex(secrets=["database_url"])
+@protect_tool(secrets=["database_url"])
 async def database_query(query: str, database_url: str) -> dict:
     """
     Execute a database query with protected connection string.
     
-    This demonstrates database URL protection:
-    - AI sees: database_url = "{RESOLVE:DATABASE_URL:x5y6z7w8}"
+    This demonstrates database URL protection with ZERO CONFIG:
+    - AI sees: database_url = "{{DATABASE_URL}}"
     - Tool gets: database_url = "postgresql://user:secret@localhost:5432/mydb"
+    - Built-in database_url pattern works automatically!
     """
     print_phase("Tool Execution", "Connecting to database with real credentials")
     
@@ -247,7 +251,7 @@ async def demonstrate_context_manager():
 # =============================================================================
 
 @server.tool("process_user_data", "Process user data with multiple secret types")
-@cryptex(secrets=["api_key", "database_url", "file_path", "email"])
+@protect_tool(secrets=["openai_key", "database_url", "file_path"])
 async def process_user_data(
     user_input: str,
     api_key: str,
@@ -258,19 +262,19 @@ async def process_user_data(
     """
     Process user data with multiple types of secrets.
     
-    This demonstrates protection of multiple secret types:
-    - API keys → {RESOLVE:API_KEY:hash}
-    - Database URLs → {RESOLVE:DATABASE_URL:hash}
+    This demonstrates protection of multiple secret types with ZERO CONFIG:
+    - OpenAI keys → {{OPENAI_API_KEY}}
+    - Database URLs → {{DATABASE_URL}}
     - File paths → /{USER_HOME}/.../{filename}
-    - Email addresses → {RESOLVE:EMAIL:hash}
+    - All built-in patterns work automatically!
     """
     print_phase("Tool Execution", "Processing with multiple protected secrets")
     
     # Show all the protections in action
-    print_security_demo("API Key", "{RESOLVE:API_KEY:hash}", f"{api_key[:15]}...")
-    print_security_demo("Database URL", "{RESOLVE:DATABASE_URL:hash}", f"{database_url[:25]}...")
+    print_security_demo("OpenAI Key", "{{OPENAI_API_KEY}}", f"{api_key[:15]}...")
+    print_security_demo("Database URL", "{{DATABASE_URL}}", f"{database_url[:25]}...")
     print_security_demo("File Path", "/{USER_HOME}/.../{filename}", config_file)
-    print_security_demo("Email", "{RESOLVE:EMAIL:hash}", user_email)
+    print_security_demo("Email", user_email, user_email)  # Not protected in this example
     
     # Simulate processing
     await asyncio.sleep(0.1)
@@ -289,9 +293,10 @@ async def process_user_data(
 
 async def main():
     """Run all FastMCP simple examples."""
-    print_separator("FastMCP Simple Hello World Example", "=")
-    print("🔒 Demonstrating temporal isolation with @cryptex decorator")
-    print("   AI models see safe placeholders, tools get real secrets")
+    print_separator("FastMCP Simple Hello World Example - Zero Config", "=")
+    print("🔒 Demonstrating temporal isolation with @protect_tool decorator")
+    print("   ✨ ZERO CONFIGURATION REQUIRED - Built-in patterns work automatically!")
+    print("   🤖 AI models see safe placeholders, tools get real secrets")
     
     # Setup environment
     setup_example_environment()
@@ -352,7 +357,9 @@ async def main():
     print_separator("Summary", "=")
     print("✅ All examples completed successfully!")
     print("\n💡 Key Takeaways:")
-    print("   🔒 The @cryptex decorator provides automatic secret protection")
+    print("   🔒 The @protect_tool decorator provides automatic secret protection")
+    print("   ✨ ZERO CONFIGURATION - Built-in patterns work immediately!")
+    print("   🎯 95% of users need zero setup - openai_key, database_url, file_path all built-in")
     print("   ⚡ Zero-impact on performance - protection happens transparently")
     print("   🤖 AI models never see real secrets, only safe placeholders")
     print("   🔧 Tools receive real values for actual operations")

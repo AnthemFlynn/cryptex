@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-FastAPI Simple Hello World Example
+FastAPI Simple Hello World Example - Zero-Config Architecture
 
-This example demonstrates basic secret protection using the @cryptex decorator
+This example demonstrates basic secret protection using the @protect_endpoint decorator
 with FastAPI endpoints. It shows how Cryptex provides temporal isolation for
-web applications - AI processing sees safe placeholders while endpoints get
-real secret values.
+web applications with ZERO configuration required - built-in patterns handle
+common secrets automatically.
 
 What you'll learn:
-- How to use the @cryptex decorator for individual endpoint protection
+- How to use the @protect_endpoint decorator for individual endpoint protection
 - How temporal isolation works for web requests and responses
 - What gets logged vs what endpoints actually execute with
-- Basic authentication and API key protection
+- Zero-config protection for OpenAI, GitHub, database URLs, file paths
+- Built-in patterns that work immediately without any setup
 - Request/response sanitization patterns
 """
 
@@ -26,8 +27,8 @@ from typing import Dict, Any, Optional
 # Add the project root to the Python path so we can import cryptex
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Import Cryptex components
-from cryptex import cryptex
+# Import Cryptex components - Zero Config!
+from cryptex.decorators.fastapi import protect_endpoint
 from cryptex.core import secure_session
 
 # Import example utilities

@@ -1,41 +1,49 @@
-# Cryptex Examples
+# Cryptex Examples - Zero-Config Architecture
 
-Comprehensive examples demonstrating Cryptex's temporal isolation capabilities for AI/LLM applications. These examples show how to protect secrets across FastMCP servers and FastAPI applications.
+Comprehensive examples demonstrating Cryptex's **zero-config temporal isolation** for AI/LLM applications. These examples show how to protect secrets across FastMCP servers and FastAPI applications with **ZERO configuration required**.
 
-> **New to Cryptex?** Start with the "Simple Hello World" examples (`01_simple_*`) - they're designed to be approachable and demonstrate core concepts in ~350 lines. The advanced examples show production-ready patterns but can be explored later.
+> **New to Cryptex?** Start with the "Simple Hello World" examples (`01_simple_*`) - they work immediately without any setup! Built-in patterns handle 95% of real-world usage. The advanced examples show production-ready patterns and custom configurations.
 
 ## 🔒 What is Temporal Isolation?
 
 Cryptex implements a **three-phase security architecture** to ensure AI models never access real secrets:
 
-1. **Sanitization**: Convert secrets to `{RESOLVE:SECRET_TYPE:HASH}` placeholders
+1. **Sanitization**: Convert secrets to safe placeholders (`{{OPENAI_API_KEY}}`, `/{USER_HOME}/file.txt`)
 2. **AI Processing**: AI processes data with placeholders, never real secrets  
 3. **Resolution**: Convert placeholders back to real values for tool execution
 
 ### Security Guarantee
 
-- **AI Context**: Sees safe placeholders like `{RESOLVE:API_KEY:a1b2c3d4}` or `/{USER_HOME}/...`
+- **AI Context**: Sees safe placeholders like `{{OPENAI_API_KEY}}` or `/{USER_HOME}/...`
 - **Tool Execution**: Gets real values for actual operations
 - **Response Sanitization**: Tool outputs cleaned before returning to AI
 - **Context Expiration**: Automatic cleanup prevents secret accumulation
+
+## ✨ Zero Configuration Required
+
+All examples work **immediately without any setup**! Built-in patterns handle 95% of real-world usage:
+
+- **OpenAI API Keys** (`sk-...`) → `{{OPENAI_API_KEY}}`
+- **Anthropic API Keys** (`sk-ant-...`) → `{{ANTHROPIC_API_KEY}}`
+- **GitHub Tokens** (`ghp_...`) → `{{GITHUB_TOKEN}}`
+- **File Paths** (`/Users/...`) → `/{USER_HOME}/.../{filename}`
+- **Database URLs** (`postgres://...`) → `{{DATABASE_URL}}`
 
 ## 📁 Examples Structure
 
 ```
 examples/
 ├── README.md                    # This file
-├── fastmcp/
-│   ├── 01_simple_hello_world.py    # Basic @cryptex decorator usage
+├── demo_new_architecture.py     # Architecture demonstration
+├── fastmcp/                     # FastMCP server examples
+│   ├── 01_simple_hello_world.py    # Basic @protect_tool decorator usage
 │   ├── 02_advanced_middleware.py   # Full middleware with monitoring
 │   └── requirements.txt             # FastMCP dependencies
-├── fastapi/
-│   ├── 01_simple_hello_world.py    # Basic @cryptex decorator usage
+├── fastapi/                     # FastAPI web app examples
+│   ├── 01_simple_hello_world.py    # Basic @protect_endpoint decorator usage
 │   ├── 02_advanced_middleware.py   # Full middleware with monitoring
 │   └── requirements.txt             # FastAPI dependencies
-├── config/
-│   ├── simple.toml                 # Basic configuration
-│   └── advanced.toml               # Advanced configuration
-└── shared/
+└── shared/                      # Shared utilities
     └── utils.py                    # Common utilities
 ```
 
