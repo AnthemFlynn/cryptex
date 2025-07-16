@@ -1,12 +1,12 @@
 """FastAPI integration for Cryptex middleware."""
 
 from .middleware import (
-    CryptexMiddleware,
     CodenameMiddleware,  # Legacy alias
+    CryptexMiddleware,
     FastAPIAppProtection,
-    setup_cryptex_protection,
+    create_protected_app,
     setup_codename_protection,  # Legacy alias
-    create_protected_app
+    setup_cryptex_protection,
 )
 
 __all__ = [
@@ -15,5 +15,5 @@ __all__ = [
     "FastAPIAppProtection",
     "setup_cryptex_protection",
     "setup_codename_protection",  # Legacy alias
-    "create_protected_app"
+    "create_protected_app",
 ]

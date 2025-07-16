@@ -1,0 +1,61 @@
+# Simple Cryptex Configuration for Examples
+# This configuration provides basic secret protection with default settings
+
+[secrets]
+# Basic secret patterns for common use cases
+[[secrets.patterns]]
+name = "openai_api_key"
+pattern = "sk-[a-zA-Z0-9]{48}"
+template = "{RESOLVE:OPENAI_API_KEY:{hash}}"
+description = "OpenAI API key detection"
+
+[[secrets.patterns]]
+name = "anthropic_api_key"
+pattern = "sk-ant-[a-zA-Z0-9]{95}"
+template = "{RESOLVE:ANTHROPIC_API_KEY:{hash}}"
+description = "Anthropic API key detection"
+
+[[secrets.patterns]]
+name = "database_url"
+pattern = "postgresql://[^\\s]+"
+template = "{RESOLVE:DATABASE_URL:{hash}}"
+description = "PostgreSQL connection string"
+
+[[secrets.patterns]]
+name = "generic_api_key"
+pattern = "[a-zA-Z0-9]{32,}"
+template = "{RESOLVE:API_KEY:{hash}}"
+description = "Generic API key pattern"
+
+[[secrets.patterns]]
+name = "file_path"
+pattern = "/[^\\s]+"
+template = "/{USER_HOME}/.../{filename}"
+description = "File path sanitization"
+
+[security]
+# Basic security settings
+enforcement_mode = "strict"
+block_exposure = true
+max_placeholder_age = 3600  # 1 hour
+audit_logging = false
+auto_detect_secrets = true
+
+[performance]
+# Basic performance settings
+cache_size = 1000
+sanitization_timeout_ms = 1000
+resolution_timeout_ms = 2000
+batch_size = 100
+enable_background_cleanup = true
+
+[middleware]
+# Basic middleware settings
+auto_protect_endpoints = true
+auto_protect_tools = true
+sanitize_request_headers = true
+sanitize_response_headers = true
+sanitize_request_body = true
+sanitize_response_body = true
+max_request_size = 10485760  # 10MB
+max_response_size = 10485760  # 10MB
