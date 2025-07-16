@@ -6,11 +6,11 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-    target-branch: "develop"
+    target-branch: "main"
     reviewers:
-      - "codename-team"
+      - "AnthemFlynn"
     assignees:
-      - "codename-team"
+      - "AnthemFlynn"
     labels:
       - "dependencies"
       - "automated"
@@ -49,11 +49,11 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "06:00"
-    target-branch: "develop"
+    target-branch: "main"
     reviewers:
-      - "codename-team"
+      - "AnthemFlynn"
     assignees:
-      - "codename-team"
+      - "AnthemFlynn"
     labels:
       - "github-actions"
       - "automated"
