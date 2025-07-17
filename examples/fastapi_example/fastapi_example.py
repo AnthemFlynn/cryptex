@@ -6,7 +6,7 @@ This example shows how to use cryptex with FastAPI using simple decorators
 rather than complex middleware. This is the recommended approach.
 
 Requirements:
-    pip install cryptex fastapi uvicorn
+    pip install cryptex-ai fastapi uvicorn
 
 What you'll learn:
 - How to protect FastAPI endpoints with @protect_secrets
@@ -15,7 +15,12 @@ What you'll learn:
 """
 
 import os
+import sys
 from typing import Any
+
+# Add src to path for local development
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Simple imports - no middleware needed!
 from cryptex import protect_secrets

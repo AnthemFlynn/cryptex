@@ -1,0 +1,20 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://pypi.org/project/cryptex-ai/"
+    },
+    {
+      "pattern": "^https://anthemflynn.github.io/cryptex/"
+    },
+    {
+      "pattern": "^https://badge.fury.io/py/cryptex-ai"
+    },
+    {
+      "pattern": "^https://pepy.tech/project/cryptex-ai"
+    }
+  ],
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30s",
+  "aliveStatusCodes": [200, 206]
+}

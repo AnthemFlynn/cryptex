@@ -6,16 +6,18 @@ Simple, practical examples showing how to use cryptex for universal secret prote
 
 After installing cryptex:
 ```bash
-pip install cryptex
+pip install cryptex-ai
+# or
+uv add cryptex-ai
 ```
 
 Run any of these examples:
 
 ## 📚 Available Examples
 
-### 1. `basic_usage.py` - Start Here!
+### 1. [Basic Usage](basic_usage/) - Start Here!
 ```bash
-python examples/basic_usage.py
+python examples/basic_usage/basic_usage.py
 ```
 
 **What you'll learn:**
@@ -29,10 +31,11 @@ python examples/basic_usage.py
 
 ---
 
-### 2. `fastapi_example.py` - Web API Integration
+### 2. [FastAPI Integration](fastapi_example/) - Web API Integration
 ```bash
 pip install fastapi uvicorn
-python examples/fastapi_example.py
+# or: uv add fastapi uvicorn
+python examples/fastapi_example/fastapi_example.py
 ```
 
 **What you'll learn:**
@@ -45,9 +48,9 @@ python examples/fastapi_example.py
 
 ---
 
-### 3. `real_world_usage.py` - Production Patterns  
+### 3. [Real World Usage](real_world_usage/) - Production Patterns  
 ```bash
-python examples/real_world_usage.py
+python examples/real_world_usage/real_world_usage.py
 ```
 
 **What you'll learn:**
@@ -97,9 +100,9 @@ The same decorator works with:
 ### Option 1: Direct Execution
 ```bash
 # From project root
-python examples/basic_usage.py
-python examples/fastapi_example.py  
-python examples/real_world_usage.py
+python examples/basic_usage/basic_usage.py
+python examples/fastapi_example/fastapi_example.py  
+python examples/real_world_usage/real_world_usage.py
 ```
 
 ### Option 2: With Environment Setup
@@ -110,7 +113,7 @@ export DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 export GITHUB_TOKEN="ghp_your-real-token"
 
 # Run examples
-python examples/basic_usage.py
+python examples/basic_usage/basic_usage.py
 ```
 
 ---

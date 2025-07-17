@@ -6,14 +6,14 @@
 
 *Bulletproof secrets isolation with zero cognitive overhead*
 
-[![PyPI version](https://badge.fury.io/py/cryptex.svg)](https://badge.fury.io/py/cryptex)
-[![Python Support](https://img.shields.io/pypi/pyversions/cryptex.svg)](https://pypi.org/project/cryptex/)
-[![Downloads](https://static.pepy.tech/badge/cryptex)](https://pepy.tech/project/cryptex)
+[![PyPI version](https://badge.fury.io/py/cryptex-ai.svg)](https://badge.fury.io/py/cryptex-ai)
+[![Python Support](https://img.shields.io/pypi/pyversions/cryptex-ai.svg)](https://pypi.org/project/cryptex-ai/)
+[![Downloads](https://static.pepy.tech/badge/cryptex-ai)](https://pepy.tech/project/cryptex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/AnthemFlynn/cryptex/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex/actions)
 [![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex)
 
-[**Documentation**](https://docs.cryptex-ai.com) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex/) | [**Changelog**](./CHANGELOG.md)
+[**Documentation**](https://anthemflynn.github.io/cryptex/) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex-ai/) | [**Changelog**](./CHANGELOG.md)
 
 </div>
 
@@ -57,8 +57,14 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 
 ## 📦 Installation
 
+### Using pip (recommended)
 ```bash
-pip install cryptex
+pip install cryptex-ai
+```
+
+### Using uv (modern Python package manager)
+```bash
+uv add cryptex-ai
 ```
 
 **Requirements**: Python 3.11+ • Zero dependencies
@@ -317,6 +323,7 @@ Cryptex follows security-first principles:
 
 ## 🧪 Testing
 
+### Using pip
 ```bash
 # Install dependencies
 pip install -e ".[dev]"
@@ -332,6 +339,24 @@ make test-performance
 
 # Security tests
 make test-security
+```
+
+### Using uv
+```bash
+# Install dependencies
+uv sync --dev
+
+# Run test suite
+uv run make test
+
+# Run with coverage
+uv run make test-coverage
+
+# Performance benchmarks
+uv run make test-performance
+
+# Security tests
+uv run make test-security
 ```
 
 ---

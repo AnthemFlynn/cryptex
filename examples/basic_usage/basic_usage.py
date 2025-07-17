@@ -14,10 +14,20 @@ What you'll learn:
 
 import asyncio
 import os
+import sys
 from typing import Any
 
-# Simple import - works immediately after: pip install cryptex
+# Add src to path for local development
+if __name__ == "__main__":
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+
+# Simple import - works immediately after: pip install cryptex-ai
 from cryptex import protect_secrets, register_pattern
+try:
+    from cryptex import protect_all, protect_api_keys, protect_files
+except ImportError:
+    # For compatibility - convenience decorators might not be in all versions
+    protect_all = protect_api_keys = protect_files = None
 
 # =============================================================================
 # Example 1: Basic Secret Protection
@@ -131,32 +141,56 @@ async def send_slack_message(message: str, token: str) -> str:
 # Example 4: Convenience Decorators
 # =============================================================================
 
-from cryptex import protect_all, protect_api_keys, protect_files
+if protect_api_keys:
+    @protect_api_keys()  # Protects openai_key, anthropic_key automatically
+    async def multi_ai_call(prompt: str, openai_key: str, anthropic_key: str) -> str:
+        """Use multiple AI services with automatic key protection."""
+        print(f"🤖 Calling OpenAI: {openai_key[:15]}...")
+        print(f"🤖 Calling Anthropic: {anthropic_key[:15]}...")
+        return f"Combined AI response to: {prompt}"
+else:
+    @protect_secrets(["openai_key", "anthropic_key"])
+    async def multi_ai_call(prompt: str, openai_key: str, anthropic_key: str) -> str:
+        """Use multiple AI services with explicit key protection."""
+        print(f"🤖 Calling OpenAI: {openai_key[:15]}...")
+        print(f"🤖 Calling Anthropic: {anthropic_key[:15]}...")
+        return f"Combined AI response to: {prompt}"
 
+if protect_files:
+    @protect_files()  # Protects file_path automatically
+    async def backup_file(source_path: str, dest_path: str) -> str:
+        """Backup file with automatic path protection."""
+        print(f"💾 Backing up {source_path} to {dest_path}")
+        return "Backup completed"
+else:
+    @protect_secrets(["file_path"])
+    async def backup_file(source_path: str, dest_path: str) -> str:
+        """Backup file with explicit path protection."""
+        print(f"💾 Backing up {source_path} to {dest_path}")
+        return "Backup completed"
 
-@protect_api_keys()  # Protects openai_key, anthropic_key automatically
-async def multi_ai_call(prompt: str, openai_key: str, anthropic_key: str) -> str:
-    """Use multiple AI services with automatic key protection."""
-    print(f"🤖 Calling OpenAI: {openai_key[:15]}...")
-    print(f"🤖 Calling Anthropic: {anthropic_key[:15]}...")
-    return f"Combined AI response to: {prompt}"
-
-@protect_files()  # Protects file_path automatically
-async def backup_file(source_path: str, dest_path: str) -> str:
-    """Backup file with automatic path protection."""
-    print(f"💾 Backing up {source_path} to {dest_path}")
-    return "Backup completed"
-
-@protect_all()  # Protects all built-in secret types
-async def kitchen_sink_function(
-    api_key: str,
-    db_url: str,
-    file_path: str,
-    token: str
-) -> str:
-    """Function that might use any type of secret."""
-    print("🔒 All secrets automatically protected!")
-    return "All operations completed safely"
+if protect_all:
+    @protect_all()  # Protects all built-in secret types
+    async def kitchen_sink_function(
+        api_key: str,
+        db_url: str,
+        file_path: str,
+        token: str
+    ) -> str:
+        """Function that might use any type of secret."""
+        print("🔒 All secrets automatically protected!")
+        return "All operations completed safely"
+else:
+    @protect_secrets(["openai_key", "database_url", "file_path", "github_token"])
+    async def kitchen_sink_function(
+        api_key: str,
+        db_url: str,
+        file_path: str,
+        token: str
+    ) -> str:
+        """Function that uses multiple types of secrets."""
+        print("🔒 All secrets explicitly protected!")
+        return "All operations completed safely"
 
 
 # =============================================================================

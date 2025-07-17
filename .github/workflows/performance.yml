@@ -1,0 +1,132 @@
+name: Performance Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run performance tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.11
+      run: uv python install 3.11
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run performance benchmarks
+      run: |
+        uv run pytest tests/performance/ -v --benchmark-only --benchmark-json=benchmark.json
+
+    - name: Validate performance requirements
+      run: |
+        uv run python -c "
+        import json
+        with open('benchmark.json') as f:
+            data = json.load(f)
+        
+        # Check sanitization latency < 5ms for 1KB payloads
+        sanitization_benchmarks = [b for b in data['benchmarks'] if 'sanitization' in b['name'].lower()]
+        for bench in sanitization_benchmarks:
+            mean_time = bench['stats']['mean']
+            if mean_time > 0.005:  # 5ms
+                print(f'❌ FAIL: {bench[\"name\"]} took {mean_time:.3f}s, requirement is <0.005s')
+                exit(1)
+            else:
+                print(f'✅ PASS: {bench[\"name\"]} took {mean_time:.3f}s')
+        
+        # Check resolution latency < 10ms for 10 placeholders  
+        resolution_benchmarks = [b for b in data['benchmarks'] if 'resolution' in b['name'].lower()]
+        for bench in resolution_benchmarks:
+            mean_time = bench['stats']['mean']
+            if mean_time > 0.010:  # 10ms
+                print(f'❌ FAIL: {bench[\"name\"]} took {mean_time:.3f}s, requirement is <0.010s')
+                exit(1)
+            else:
+                print(f'✅ PASS: {bench[\"name\"]} took {mean_time:.3f}s')
+        
+        print('✅ All performance requirements met!')
+        "
+
+    - name: Store benchmark results
+      uses: benchmark-action/github-action-benchmark@v1
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      with:
+        tool: 'pytest'
+        output-file-path: benchmark.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        comment-on-alert: true
+        alert-threshold: '150%'
+        fail-on-alert: true
+
+  memory-usage:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+
+    - name: Set up Python 3.11
+      run: uv python install 3.11
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Install memory profiler
+      run: uv add memory-profiler
+
+    - name: Run memory usage tests
+      run: |
+        uv run python -c "
+        import tracemalloc
+        import sys
+        from cryptex import protect_secrets
+        
+        # Measure baseline memory
+        tracemalloc.start()
+        baseline = tracemalloc.get_traced_memory()[0]
+        
+        # Test memory usage with decorator
+        @protect_secrets(['openai_key'])
+        def test_func(api_key: str) -> str:
+            return f'processed: {api_key}'
+        
+        # Execute multiple times to test for memory leaks
+        for i in range(1000):
+            result = test_func('sk-test-key-for-memory-testing')
+        
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        
+        overhead_mb = (current - baseline) / 1024 / 1024
+        peak_mb = peak / 1024 / 1024
+        
+        print(f'Memory overhead: {overhead_mb:.2f} MB')
+        print(f'Peak memory: {peak_mb:.2f} MB')
+        
+        # Validate <5% memory overhead (assume baseline app uses ~100MB)
+        baseline_app_mb = 100
+        if overhead_mb > baseline_app_mb * 0.05:
+            print(f'❌ FAIL: Memory overhead {overhead_mb:.2f}MB exceeds 5% of {baseline_app_mb}MB')
+            sys.exit(1)
+        else:
+            print(f'✅ PASS: Memory overhead {overhead_mb:.2f}MB is within 5% requirement')
+        "
+
+    - name: Check for memory leaks
+      run: |
+        uv run pytest tests/performance/ -k memory -v
