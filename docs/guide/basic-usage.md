@@ -296,6 +296,5 @@ result = await protected_function(test_api_key)
 ## Next Steps
 
 - **[Zero Config Guide](zero-config.md)**: Learn about the zero-configuration philosophy
-- **[Custom Patterns](custom-patterns.md)**: Create your own secret patterns
-- **[Performance Guide](performance.md)**: Optimize for your specific use case
-- **[Examples](../examples/)**: See real-world implementations
+- **[Custom Patterns](custom-patterns.md)**: Create organization-specific patterns  
+- **[Examples](../examples/index.md)**: See real-world implementations

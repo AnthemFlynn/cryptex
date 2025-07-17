@@ -427,7 +427,6 @@ async def robust_function(api_key: str) -> str:
 
 ## Next Steps
 
-- **[FastAPI Example](fastapi.md)** - Web framework integration
-- **[Real World Example](real-world.md)** - Production-ready patterns
+- **[User Guide](../guide/basic-usage.md)** - Learn all the features
 - **[Custom Patterns Guide](../guide/custom-patterns.md)** - Create your own patterns
-- **[Performance Guide](../guide/performance.md)** - Optimization techniques
+- **[GitHub Repository](https://github.com/anthemflynn/cryptex)** - Full source code and examples

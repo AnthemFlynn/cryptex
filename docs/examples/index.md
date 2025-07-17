@@ -17,7 +17,7 @@ Simple examples demonstrating core Cryptex functionality with common secret type
 
 ---
 
-### [FastAPI Integration](fastapi.md)  
+### FastAPI Integration
 Complete FastAPI application with Cryptex protecting API endpoints that use secrets.
 
 **What you'll learn:**
@@ -30,7 +30,7 @@ Complete FastAPI application with Cryptex protecting API endpoints that use secr
 
 ---
 
-### [Real World Usage](real-world.md)
+### Real World Usage
 Complex application simulating real production scenarios with multiple services and secret types.
 
 **What you'll learn:**

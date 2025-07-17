@@ -77,4 +77,4 @@ No middleware library should require configuration files.
 
 ---
 
-Ready to get started? Check out our [Quick Start Guide](quickstart.md) or explore [Examples](examples/).
+Ready to get started? Check out our [Quick Start Guide](quickstart.md) or explore [Examples](examples/index.md).

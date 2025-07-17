@@ -37,21 +37,9 @@ nav:
     - Basic Usage: guide/basic-usage.md
     - Zero Config: guide/zero-config.md
     - Custom Patterns: guide/custom-patterns.md
-    - Performance: guide/performance.md
   - Examples:
     - Overview: examples/index.md
     - Basic Usage: examples/basic-usage.md
-    - FastAPI Integration: examples/fastapi.md
-    - Real World Usage: examples/real-world.md
-  - API Reference:
-    - Core API: api/core.md
-    - Decorators: api/decorators.md
-    - Patterns: api/patterns.md
-    - Security: api/security.md
-  - Development:
-    - Contributing: development/contributing.md
-    - Testing: development/testing.md
-    - Performance Requirements: development/performance.md
 
 plugins:
   - search

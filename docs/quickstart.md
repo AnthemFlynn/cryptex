@@ -139,9 +139,8 @@ async def timed_function(api_key: str) -> str:
 ## Next Steps
 
 - **[Basic Usage Guide](guide/basic-usage.md)**: Learn all the features
-- **[Examples](examples/)**: See real-world implementations  
-- **[Performance Guide](guide/performance.md)**: Optimize for your use case
-- **[API Reference](api/)**: Complete API documentation
+- **[Examples](examples/index.md)**: See real-world implementations  
+- **[Custom Patterns](guide/custom-patterns.md)**: Create organization-specific patterns
 
 ## Zero Configuration Promise
 
