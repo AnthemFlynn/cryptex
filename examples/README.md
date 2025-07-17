@@ -1,215 +1,136 @@
-# Cryptex Examples - Zero-Config Architecture
+# Cryptex Examples
 
-Comprehensive examples demonstrating Cryptex's **zero-config temporal isolation** for AI/LLM applications. These examples show how to protect secrets across FastMCP servers and FastAPI applications with **ZERO configuration required**.
+Simple, practical examples showing how to use cryptex for universal secret protection.
 
-> **New to Cryptex?** Start with the "Simple Hello World" examples (`01_simple_*`) - they work immediately without any setup! Built-in patterns handle 95% of real-world usage. The advanced examples show production-ready patterns and custom configurations.
+## Quick Start
 
-## 🔒 What is Temporal Isolation?
-
-Cryptex implements a **three-phase security architecture** to ensure AI models never access real secrets:
-
-1. **Sanitization**: Convert secrets to safe placeholders (`{{OPENAI_API_KEY}}`, `/{USER_HOME}/file.txt`)
-2. **AI Processing**: AI processes data with placeholders, never real secrets  
-3. **Resolution**: Convert placeholders back to real values for tool execution
-
-### Security Guarantee
-
-- **AI Context**: Sees safe placeholders like `{{OPENAI_API_KEY}}` or `/{USER_HOME}/...`
-- **Tool Execution**: Gets real values for actual operations
-- **Response Sanitization**: Tool outputs cleaned before returning to AI
-- **Context Expiration**: Automatic cleanup prevents secret accumulation
-
-## ✨ Zero Configuration Required
-
-All examples work **immediately without any setup**! Built-in patterns handle 95% of real-world usage:
-
-- **OpenAI API Keys** (`sk-...`) → `{{OPENAI_API_KEY}}`
-- **Anthropic API Keys** (`sk-ant-...`) → `{{ANTHROPIC_API_KEY}}`
-- **GitHub Tokens** (`ghp_...`) → `{{GITHUB_TOKEN}}`
-- **File Paths** (`/Users/...`) → `/{USER_HOME}/.../{filename}`
-- **Database URLs** (`postgres://...`) → `{{DATABASE_URL}}`
-
-## 📁 Examples Structure
-
-```
-examples/
-├── README.md                    # This file
-├── demo_new_architecture.py     # Architecture demonstration
-├── fastmcp/                     # FastMCP server examples
-│   ├── 01_simple_hello_world.py    # Basic @protect_tool decorator usage
-│   ├── 02_advanced_middleware.py   # Full middleware with monitoring
-│   └── requirements.txt             # FastMCP dependencies
-├── fastapi/                     # FastAPI web app examples
-│   ├── 01_simple_hello_world.py    # Basic @protect_endpoint decorator usage
-│   ├── 02_advanced_middleware.py   # Full middleware with monitoring
-│   └── requirements.txt             # FastAPI dependencies
-└── shared/                      # Shared utilities
-    └── utils.py                    # Common utilities
-```
-
-## 🚀 Quick Start
-
-### 1. Setup Environment
-
+After installing cryptex:
 ```bash
-# Install Cryptex
 pip install cryptex
-
-# Set up example environment variables
-export OPENAI_API_KEY="sk-example1234567890abcdef"
-export ANTHROPIC_API_KEY="sk-ant-example1234567890abcdef"
-export DATABASE_URL="postgresql://user:secret@localhost:5432/mydb"
-export JWT_SECRET="my-secret-jwt-key-123"
 ```
 
-### 2. Run FastMCP Examples
+Run any of these examples:
 
+## 📚 Available Examples
+
+### 1. `basic_usage.py` - Start Here!
 ```bash
-# Install FastMCP dependencies
-pip install -r examples/fastmcp/requirements.txt
-
-# Run simple example
-python examples/fastmcp/01_simple_hello_world.py
-
-# Run advanced example
-python examples/fastmcp/02_advanced_middleware.py
+python examples/basic_usage.py
 ```
 
-### 3. Run FastAPI Examples
+**What you'll learn:**
+- Core `@protect_secrets` decorator usage
+- Zero-config protection with built-in patterns
+- Multiple secret types in one function  
+- Custom pattern registration
+- Convenience decorators
 
+**Perfect for:** First-time users, understanding core concepts
+
+---
+
+### 2. `fastapi_example.py` - Web API Integration
 ```bash
-# Install FastAPI dependencies
-pip install -r examples/fastapi/requirements.txt
-
-# Run simple example
-python examples/fastapi/01_simple_hello_world.py
-
-# Run advanced example
-python examples/fastapi/02_advanced_middleware.py
+pip install fastapi uvicorn
+python examples/fastapi_example.py
 ```
 
-## 📚 Example Progression
+**What you'll learn:**
+- Clean FastAPI integration without middleware complexity
+- Protecting API endpoints with dependency injection
+- Real-world web service patterns
+- Multiple secrets in HTTP endpoints
 
-### Level 1: Simple Hello World
-- **Purpose**: Basic secret protection with `@cryptex` decorator
-- **Features**: Single tool/endpoint, environment variables, basic sanitization
-- **Learning**: How temporal isolation works in practice
+**Perfect for:** Web developers, API developers
 
-### Level 2: Advanced Middleware
-- **Purpose**: Production-ready middleware integration
-- **Features**: Multiple tools/endpoints, TOML configuration, monitoring, metrics
-- **Learning**: Full middleware capabilities, performance tuning, error handling
+---
 
-## 🛠️ Key Features Demonstrated
-
-### Core Functionality
-- ✅ **Temporal Isolation**: Sanitization → AI Processing → Resolution
-- ✅ **Secret Detection**: API keys, database URLs, file paths, JWT tokens
-- ✅ **Multiple Integration Patterns**: Decorator, middleware, context manager
-
-### Security Features
-- ✅ **Complete Isolation**: AI models never see real secret values
-- ✅ **Pattern Detection**: Comprehensive regex patterns for common secrets
-- ✅ **Response Sanitization**: Tool outputs cleaned before AI access
-- ✅ **Error Sanitization**: Tracebacks cleaned to prevent secret leakage
-
-### Performance Features
-- ✅ **<5ms Sanitization**: Ultra-fast secret replacement
-- ✅ **<10ms Resolution**: Quick placeholder resolution
-- ✅ **Cache Optimization**: >95% cache hit rate for typical workloads
-- ✅ **Background Cleanup**: Automatic context expiration
-
-### Production Features
-- ✅ **Configuration Management**: TOML-based configuration
-- ✅ **Performance Monitoring**: Real-time metrics and statistics
-- ✅ **Audit Logging**: Complete trail of secret transformations
-- ✅ **Error Handling**: Comprehensive exception hierarchy
-
-## 🔧 Configuration
-
-### Simple Configuration (`config/simple.toml`)
-Basic secret patterns and default security settings.
-
-### Advanced Configuration (`config/advanced.toml`)
-Custom patterns, performance tuning, audit logging, and advanced security features.
-
-## 📊 What You'll See
-
-### Before (AI Sees)
-```json
-{
-  "api_key": "{RESOLVE:API_KEY:a1b2c3d4}",
-  "database_url": "{RESOLVE:DATABASE_URL:x5y6z7w8}",
-  "file_path": "/{USER_HOME}/documents/secret.txt"
-}
-```
-
-### After (Tool Executes)
-```json
-{
-  "api_key": "sk-1234567890abcdef1234567890abcdef",
-  "database_url": "postgresql://user:secret@localhost:5432/mydb",
-  "file_path": "/Users/john/documents/secret.txt"
-}
-```
-
-## 🔍 Framework-Specific Examples
-
-### FastMCP Integration
-- **Simple**: Basic tool protection with `@cryptex` decorator
-- **Advanced**: Complete middleware with `setup_cryptex_protection()`
-- **Use Cases**: File operations, API calls, database queries, system commands
-
-### FastAPI Integration  
-- **Simple**: Basic endpoint protection with `@cryptex` decorator
-- **Advanced**: Complete middleware with request/response sanitization
-- **Use Cases**: Authentication, data processing, file uploads, external API calls
-
-## 📈 Performance Metrics
-
-Each advanced example includes performance monitoring:
-
-- **Request Processing Time**: <5ms for typical payloads
-- **Cache Hit Rate**: >95% for repeated patterns
-- **Memory Usage**: <5% overhead vs unprotected applications
-- **Secrets Detected**: Real-time detection statistics
-- **Context Cleanup**: Automatic expiration metrics
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Environment Variables**: Ensure all required environment variables are set
-2. **Dependencies**: Install framework-specific requirements
-3. **Configuration**: Check TOML syntax and pattern definitions
-4. **Imports**: Verify Cryptex is properly installed
-
-### Debug Mode
-
-Set `CRYPTEX_DEBUG=true` to enable verbose logging:
-
+### 3. `real_world_usage.py` - Production Patterns  
 ```bash
-export CRYPTEX_DEBUG=true
-python examples/fastmcp/01_simple_hello_world.py
+python examples/real_world_usage.py
 ```
 
-## 📖 Further Reading
+**What you'll learn:**
+- Production-ready secret management
+- Error handling with secret protection
+- Performance monitoring with sanitized logs
+- Complex multi-service workflows
+- Advanced context manager usage
 
-- [Cryptex Documentation](../README.md)
-- [Configuration Guide](../docs/configuration.md)
-- [Security Model](../docs/security.md)
-- [Performance Tuning](../docs/performance.md)
+**Perfect for:** Production applications, enterprise usage
 
-## 🤝 Contributing
+---
 
-Found an issue or want to add more examples? Please contribute!
+## 🎯 Key Concepts Demonstrated
 
-1. Fork the repository
-2. Create a feature branch
-3. Add your example following the existing pattern
-4. Include comprehensive documentation
-5. Submit a pull request
+### Universal Protection
+All examples show the same core pattern:
+```python
+from cryptex import protect_secrets
 
-## 📝 License
+@protect_secrets(["openai_key", "database_url"])
+async def my_function(api_key: str, db_url: str):
+    # AI sees: placeholders like {{OPENAI_API_KEY}}
+    # Function gets: real values for execution
+    return await process(api_key, db_url)
+```
 
-These examples are provided under the same license as the Cryptex project.
+### Built-in Patterns (Zero Config)
+- `openai_key`: OpenAI API keys (`sk-...`)
+- `anthropic_key`: Anthropic API keys (`sk-ant-...`)  
+- `github_token`: GitHub tokens (`ghp_...`)
+- `file_path`: File system paths (`/Users/...`, `/home/...`)
+- `database_url`: Database URLs (`postgresql://...`, `mysql://...`)
+
+### Framework Agnostic
+The same decorator works with:
+- ✅ Standalone functions
+- ✅ FastAPI endpoints
+- ✅ AsyncIO applications
+- ✅ Class methods
+- ✅ Any Python framework
+
+---
+
+## 🚀 Running Examples
+
+### Option 1: Direct Execution
+```bash
+# From project root
+python examples/basic_usage.py
+python examples/fastapi_example.py  
+python examples/real_world_usage.py
+```
+
+### Option 2: With Environment Setup
+```bash
+# Set up your real secrets (optional - examples provide defaults)
+export OPENAI_API_KEY="sk-your-real-key"
+export DATABASE_URL="postgresql://user:pass@localhost:5432/db" 
+export GITHUB_TOKEN="ghp_your-real-token"
+
+# Run examples
+python examples/basic_usage.py
+```
+
+---
+
+## 📖 Next Steps
+
+1. **Start with `basic_usage.py`** - Learn the fundamentals
+2. **Try `fastapi_example.py`** - See web integration
+3. **Study `real_world_usage.py`** - Production patterns
+4. **Read the main README.md** - Full documentation
+5. **Check the source code** - `src/cryptex/` for internals
+
+---
+
+## 💡 Tips
+
+- **No configuration needed** - Examples work immediately
+- **Built-in patterns** handle 95% of real-world usage  
+- **Same decorator everywhere** - Learn once, use anywhere
+- **Production ready** - These patterns scale to real applications
+- **Zero dependencies** - Core cryptex has no external requirements
+
+Happy coding with secure temporal isolation! 🔒

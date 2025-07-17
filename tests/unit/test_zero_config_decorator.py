@@ -7,7 +7,7 @@ or explicit configuration, using sensible defaults from the engine.
 
 import pytest
 
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 
 
 class TestZeroConfigDecorator:
@@ -17,7 +17,7 @@ class TestZeroConfigDecorator:
     async def test_decorator_works_without_config(self):
         """Test that @protect_tool works without any configuration."""
 
-        @protect_tool(secrets=["openai_key"])
+        @protect_secrets(["openai_key"])
         async def test_tool(api_key: str) -> str:
             return f"Using key: {api_key}"
 
@@ -33,7 +33,7 @@ class TestZeroConfigDecorator:
     async def test_decorator_with_real_openai_pattern(self):
         """Test decorator with a real OpenAI API key pattern."""
 
-        @protect_tool(secrets=["openai_key"])
+        @protect_secrets(["openai_key"])
         async def ai_tool(openai_key: str) -> str:
             return f"Making AI call with: {openai_key}"
 
@@ -49,7 +49,7 @@ class TestZeroConfigDecorator:
     async def test_decorator_multiple_secrets(self):
         """Test decorator with multiple secret types."""
 
-        @protect_tool(secrets=["api_key", "file_path"])
+        @protect_secrets(["api_key", "file_path"])
         async def multi_secret_tool(api_key: str, file_path: str) -> str:
             return f"API: {api_key}, File: {file_path}"
 
@@ -65,7 +65,7 @@ class TestZeroConfigDecorator:
     def test_sync_decorator_works_without_config(self):
         """Test that sync functions also work without config."""
 
-        @protect_tool(secrets=["api_key"])
+        @protect_secrets(["api_key"])
         def sync_tool(api_key: str) -> str:
             return f"Sync processing: {api_key}"
 

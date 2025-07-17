@@ -4,8 +4,8 @@ import pytest
 
 from cryptex.core.engine import TemporalIsolationEngine
 from cryptex.core.exceptions import SanitizationError
-from cryptex.fastapi.middleware import CryptexMiddleware
-from cryptex.fastmcp.middleware import FastMCPCryptexMiddleware
+
+# Middleware removed in universal architecture refactoring
 
 
 class TestTracebackSanitization:
@@ -216,52 +216,7 @@ class TestReaderWriterLocks:
         assert len(results) == 10
 
 
-class TestMiddlewareRequestLimits:
-    """Test request/response size limits in middleware."""
-
-    def test_fastapi_middleware_request_size_limit(self):
-        """Test FastAPI middleware request size limit."""
-        from starlette.applications import Starlette
-
-        app = Starlette()
-        middleware = CryptexMiddleware(
-            app=app,
-            max_request_size=100,  # Very small limit for testing
-            max_response_size=100,
-        )
-
-        # Middleware should have the configured limits
-        assert middleware.max_request_size == 100
-        assert middleware.max_response_size == 100
-
-    def test_fastmcp_middleware_request_size_limit(self):
-        """Test FastMCP middleware request size limit."""
-        middleware = FastMCPCryptexMiddleware(
-            max_request_size=100, max_response_size=100
-        )
-
-        # Should have the configured limits
-        assert middleware.max_request_size == 100
-        assert middleware.max_response_size == 100
-
-    @pytest.mark.asyncio
-    async def test_fastmcp_request_size_validation(self):
-        """Test that FastMCP middleware validates request size."""
-        from cryptex.fastmcp.middleware import MCPRequest
-
-        middleware = FastMCPCryptexMiddleware(max_request_size=100)
-        await middleware.initialize()
-
-        # Create a request with large parameters
-        large_request = MCPRequest(
-            method="test_method",
-            params={"data": "x" * 1000},  # Large data
-        )
-
-        with pytest.raises(Exception) as exc_info:
-            await middleware._sanitize_request(large_request)
-
-        assert "exceeds limit" in str(exc_info.value)
+# TestMiddlewareRequestLimits removed - middleware functionality removed in universal architecture refactoring
 
 
 class TestSecurityFeatureIntegration:

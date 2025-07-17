@@ -10,10 +10,10 @@
 [![Python Support](https://img.shields.io/pypi/pyversions/cryptex.svg)](https://pypi.org/project/cryptex/)
 [![Downloads](https://static.pepy.tech/badge/cryptex)](https://pepy.tech/project/cryptex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/anthemflynn/cryptex/workflows/Tests/badge.svg)](https://github.com/anthemflynn/cryptex/actions)
-[![Coverage](https://codecov.io/gh/anthemflynn/cryptex/branch/main/graph/badge.svg)](https://codecov.io/gh/anthemflynn/cryptex)
+[![Tests](https://github.com/AnthemFlynn/cryptex/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex/actions)
+[![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex)
 
-[**Documentation**](https://cryptex.readthedocs.io) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex/) | [**Changelog**](./CHANGELOG.md)
+[**Documentation**](https://docs.cryptex-ai.com) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex/) | [**Changelog**](./CHANGELOG.md)
 
 </div>
 
@@ -27,16 +27,16 @@ AI/LLM applications face an impossible choice:
 
 ## The Solution
 
-Cryptex provides **temporal isolation** - AI sees safe placeholders while tools get real secrets.
+Cryptex provides **temporal isolation** - AI sees safe placeholders while your code gets real secrets.
 
 ```python
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 
 # Works immediately - no config files required!
-@protect_tool(secrets=["openai_key"])
+@protect_secrets(["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
     # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")  
-    # Tool gets: real API key for execution
+    # Function gets: real API key for execution
     return await openai_call(prompt, api_key)
 ```
 
@@ -48,9 +48,9 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 
 - **🔧 Zero Configuration**: Works immediately, no setup required
 - **⚡ Built-in Patterns**: OpenAI, Anthropic, GitHub, file paths, databases  
-- **🛡️ Security First**: No config files, no parsing vulnerabilities
+- **🛡️ Security First**: Zero dependencies, no config files, no parsing vulnerabilities
 - **🚄 High Performance**: <5ms sanitization, <10ms resolution
-- **🔗 Framework Agnostic**: FastMCP, FastAPI, any Python async/await
+- **🔗 Universal**: Works with any Python function - FastMCP, FastAPI, Django, Flask, etc.
 - **📝 Simple API**: 95% of users need zero config, 5% get simple registration
 
 ---
@@ -61,7 +61,7 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 pip install cryptex
 ```
 
-**Requirements**: Python 3.8+
+**Requirements**: Python 3.11+ • Zero dependencies
 
 ---
 
@@ -72,13 +72,13 @@ pip install cryptex
 Cryptex works immediately with built-in patterns for common secrets:
 
 ```python
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 
 # Protect OpenAI API calls
-@protect_tool(secrets=["openai_key"])
+@protect_secrets(["openai_key"])
 async def ai_completion(prompt: str, api_key: str) -> str:
     # AI context: "{{OPENAI_API_KEY}}"
-    # Tool execution: "sk-real-key-here..."
+    # Function execution: "sk-real-key-here..."
     return await openai.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
@@ -86,34 +86,44 @@ async def ai_completion(prompt: str, api_key: str) -> str:
     )
 
 # Protect file operations  
-@protect_tool(secrets=["file_path"])
+@protect_secrets(["file_path"])
 async def read_file(file_path: str) -> str:
-    # AI context: "/{USER_HOME}/document.txt"
-    # Tool execution: "/Users/alice/secrets/document.txt"
+    # AI context: "/{USER_HOME}/.../{filename}"
+    # Function execution: "/Users/alice/secrets/document.txt"
     with open(file_path, 'r') as f:
         return f.read()
 
-# Protect multiple secrets
-@protect_tool(secrets=["github_token", "file_path"])
-async def git_operations(repo_path: str, token: str) -> str:
-    # Both secrets automatically protected
-    return await github_api_call(repo_path, token)
+# Protect multiple secrets at once
+@protect_secrets(["github_token", "file_path", "database_url"])
+async def process_data(repo_path: str, token: str, db_url: str) -> dict:
+    # All secrets automatically protected
+    data = await fetch_from_github(repo_path, token)
+    result = await process_ai_data(data)
+    await save_to_database(result, db_url)
+    return result
 ```
 
-### FastAPI Integration
+### Convenience Decorators
+
+For common patterns, use convenience decorators:
 
 ```python
-from fastapi import FastAPI
-from cryptex.decorators.fastapi import protect_endpoint
+from cryptex import protect_api_keys, protect_files, protect_all
 
-app = FastAPI()
+@protect_api_keys()  # Protects OpenAI + Anthropic keys
+async def ai_function(openai_key: str, anthropic_key: str) -> str:
+    # Both API keys automatically protected
+    pass
 
-@app.post("/api/process")
-@protect_endpoint(secrets=["database_url", "openai_key"])
-async def process_data(data: dict, db_url: str, api_key: str):
-    # Request/response automatically sanitized
-    # Endpoint gets real secrets for execution
-    return await process_with_secrets(data, db_url, api_key)
+@protect_files()  # Protects file system paths
+async def file_function(file_path: str) -> str:
+    # File paths automatically protected
+    pass
+
+@protect_all()  # Protects all built-in patterns
+async def comprehensive_function(api_key: str, file_path: str, db_url: str) -> str:
+    # Everything automatically protected
+    pass
 ```
 
 ---
@@ -127,7 +137,7 @@ Cryptex includes battle-tested patterns that handle **95% of real-world usage**:
 | `openai_key` | OpenAI API keys | `sk-...` | `{{OPENAI_API_KEY}}` |
 | `anthropic_key` | Anthropic API keys | `sk-ant-...` | `{{ANTHROPIC_API_KEY}}` |
 | `github_token` | GitHub tokens | `ghp_...` | `{{GITHUB_TOKEN}}` |
-| `file_path` | User file paths | `/Users/...`, `/home/...` | `/{USER_HOME}/...` |
+| `file_path` | User file paths | `/Users/...`, `/home/...` | `/{USER_HOME}/.../{filename}` |
 | `database_url` | Database URLs | `postgres://...`, `mysql://...` | `{{DATABASE_URL}}` |
 
 **No configuration required** - patterns work out of the box! 📦
@@ -139,8 +149,7 @@ Cryptex includes battle-tested patterns that handle **95% of real-world usage**:
 For edge cases, register custom patterns programmatically:
 
 ```python
-from cryptex.patterns import register_pattern
-from cryptex.decorators.mcp import protect_tool
+from cryptex import register_pattern, protect_secrets
 
 # Register custom pattern once
 register_pattern(
@@ -150,17 +159,82 @@ register_pattern(
     description="Slack bot token"
 )
 
-# Use in decorators
-@protect_tool(secrets=["slack_token"])
+# Use immediately in decorators
+@protect_secrets(["slack_token"])
 async def slack_integration(token: str) -> str:
     return await slack_api_call(token)
 
 # Bulk registration
-from cryptex.patterns import register_patterns
-register_patterns(
-    discord_token=(r"[MNO][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}", "{{DISCORD_TOKEN}}"),
-    custom_key=(r"myapp-[a-f0-9]{32}", "{{CUSTOM_KEY}}")
-)
+from cryptex import register_patterns
+register_patterns([
+    ("discord_token", r"[MNO][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}", "{{DISCORD_TOKEN}}"),
+    ("custom_key", r"myapp-[a-f0-9]{32}", "{{CUSTOM_KEY}}")
+])
+```
+
+---
+
+## 🏗️ Framework Examples
+
+### FastMCP Tools
+
+```python
+from fastmcp import FastMCPServer
+from cryptex import protect_secrets
+
+server = FastMCPServer("my-server")
+
+@server.tool()
+@protect_secrets(["openai_key"])
+async def ai_tool(prompt: str, api_key: str) -> str:
+    # MCP sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
+    # Tool gets: real API key for execution
+    return await openai_call(prompt, api_key)
+```
+
+### FastAPI Endpoints
+
+```python
+from fastapi import FastAPI
+from cryptex import protect_secrets
+
+app = FastAPI()
+
+@app.post("/api/process")
+@protect_secrets(["database_url", "openai_key"])
+async def process_endpoint(data: dict, db_url: str, api_key: str):
+    # Request/response logs show placeholders
+    # Endpoint gets real secrets for execution
+    return await process_with_secrets(data, db_url, api_key)
+```
+
+### Django Views
+
+```python
+from django.http import JsonResponse
+from cryptex import protect_secrets
+
+@protect_secrets(["database_url"])
+async def django_view(request, db_url: str):
+    # Django logs show placeholders
+    # View gets real database URL
+    return JsonResponse(await query_database(db_url))
+```
+
+### Any Python Function
+
+```python
+from cryptex import protect_secrets
+
+@protect_secrets(["github_token"])
+def sync_function(token: str) -> str:
+    # Works with sync functions too!
+    return github_api_call(token)
+
+@protect_secrets(["openai_key"])
+async def async_function(api_key: str) -> str:
+    # And async functions
+    return await openai_call(api_key)
 ```
 
 ---
@@ -174,7 +248,7 @@ Cryptex is designed for production workloads:
 | **Sanitization** | <5ms | 1KB payloads |
 | **Resolution** | <10ms | 10 placeholders |
 | **Memory Overhead** | <5% | vs unprotected apps |
-| **Startup Time** | 0ms | No config loading |
+| **Startup Time** | 0ms | Zero dependencies |
 | **Throughput** | >1000 req/s | Typical workloads |
 
 *Benchmarked on MacBook Pro M1, Python 3.11*
@@ -193,58 +267,18 @@ Cryptex is designed for production workloads:
 │ /Users/alice/   │    │ /{USER_HOME}/    │    │ /Users/alice/   │
 │ ghp_xyz789...   │    │ {{GITHUB_TOKEN}} │    │ ghp_xyz789...   │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
-      Phase 1:              Phase 2:              Phase 3: 
-   Sanitization          AI sees safe          Resolution for
-   for AI context       placeholders          tool execution
+     Phase 1:              Phase 2:              Phase 3: 
+  Sanitization          AI sees safe          Resolution for
+  for AI context       placeholders          tool execution
 ```
 
-### Why Zero Config?
+### Zero-Config Philosophy
 
 - **🚫 No Attack Surface**: No config files to inject, no parsing to exploit
 - **⚡ Lightning Fast**: Zero file I/O, zero parsing overhead  
-- **🎯 Middleware Focused**: Lightweight, predictable, no external dependencies
+- **🎯 Middleware Focused**: Lightweight, predictable, zero dependencies
 - **👨‍💻 Developer Friendly**: Works immediately, no setup friction
 - **🔒 Security First**: Configuration in version-controlled code only
-
----
-
-## 🔗 Framework Support
-
-### FastMCP Tools
-```python
-from fastmcp import FastMCPServer
-from cryptex.decorators.mcp import protect_tool
-
-server = FastMCPServer("my-server")
-
-@server.tool()
-@protect_tool(secrets=["openai_key"])
-async def ai_tool(prompt: str, api_key: str) -> str:
-    return await openai_call(prompt, api_key)
-```
-
-### FastAPI Endpoints
-```python
-from fastapi import FastAPI
-from cryptex.decorators.fastapi import protect_endpoint
-
-app = FastAPI()
-
-@app.post("/secure")
-@protect_endpoint(secrets=["database_url"]) 
-async def secure_endpoint(data: dict, db_url: str):
-    return await process_data(data, db_url)
-```
-
-### Universal Decorator
-```python
-from cryptex.decorators.cryptex import cryptex
-
-# Auto-detects FastMCP or FastAPI context
-@cryptex(secrets=["openai_key"])
-async def universal_protection(api_key: str) -> str:
-    return await ai_call(api_key)
-```
 
 ---
 
@@ -252,10 +286,17 @@ async def universal_protection(api_key: str) -> str:
 
 Explore comprehensive examples in the [`examples/`](./examples/) directory:
 
-- **[Basic Usage](./examples/fastmcp/01_simple_hello_world.py)**: Zero-config protection
-- **[FastAPI Integration](./examples/fastapi/01_simple_hello_world.py)**: Web API protection  
-- **[Advanced Patterns](./examples/fastmcp/02_advanced_middleware.py)**: Custom patterns and middleware
-- **[Performance Demo](./demo_new_architecture.py)**: Architecture showcase
+- **[Basic Usage](./examples/basic_usage.py)**: Zero-config protection patterns
+- **[FastAPI Integration](./examples/fastapi_example.py)**: Web API protection  
+- **[Real World Usage](./examples/real_world_usage.py)**: Complex multi-pattern scenarios
+
+Run examples locally:
+
+```bash
+git clone https://github.com/AnthemFlynn/cryptex.git
+cd cryptex
+python examples/basic_usage.py
+```
 
 ---
 
@@ -263,13 +304,35 @@ Explore comprehensive examples in the [`examples/`](./examples/) directory:
 
 Cryptex follows security-first principles:
 
+- **Zero Dependencies**: No external packages, no supply chain attacks
 - **Zero Config Files**: No TOML parsing, no injection attacks
-- **Minimal Attack Surface**: No file I/O, no external dependencies  
+- **Minimal Attack Surface**: No file I/O, pure Python standard library  
 - **Secure by Default**: Built-in patterns tested against real-world secrets
 - **Audit Trail**: Full temporal isolation with context tracking
-- **Pattern Validation**: Runtime regex validation and error handling
+- **Pattern Validation**: Runtime regex validation and comprehensive error handling
 
 **Security Policy**: See [SECURITY.md](./SECURITY.md) for vulnerability reporting.
+
+---
+
+## 🧪 Testing
+
+```bash
+# Install dependencies
+pip install -e ".[dev]"
+
+# Run test suite
+make test
+
+# Run with coverage
+make test-coverage
+
+# Performance benchmarks
+make test-performance
+
+# Security tests
+make test-security
+```
 
 ---
 
@@ -277,20 +340,35 @@ Cryptex follows security-first principles:
 
 We welcome contributions! Cryptex follows a **zero-config philosophy** - keep it simple.
 
-- **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute
-- **[Code of Conduct](./CODE_OF_CONDUCT.md)**: Community standards  
-- **[Security Policy](./SECURITY.md)**: Report security issues
-- **[Architecture Docs](./docs/)**: Technical deep-dives
-
 ### Quick Development Setup
 
 ```bash
-git clone https://github.com/anthemflynn/cryptex.git
+git clone https://github.com/AnthemFlynn/cryptex.git
 cd cryptex
 make dev-setup  # Sets up environment
 make test       # Run test suite
 make lint       # Code quality checks
+make format     # Code formatting
 ```
+
+### Development Guidelines
+
+- **Zero-Config First**: No configuration files in middleware libraries
+- **Security First**: Every change requires security review
+- **Performance Matters**: <5ms sanitization, <10ms resolution
+- **Test Everything**: Every bug gets a test, every feature gets tests
+- **SOLID Principles**: Clean architecture and abstractions
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+---
+
+## 📈 Roadmap
+
+- **v0.3.0**: Enhanced pattern validation and error reporting
+- **v0.4.0**: Advanced caching and performance optimizations  
+- **v0.5.0**: Plugin system for custom secret sources
+- **v1.0.0**: Production hardening and stability guarantees
 
 ---
 
@@ -302,9 +380,9 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **FastMCP**: For excellent MCP server framework
-- **FastAPI**: For inspiring API design patterns  
-- **Python Community**: For async/await and type hints
+- **FastMCP Community**: For excellent MCP server patterns
+- **FastAPI**: For inspiring clean API design  
+- **Python Community**: For async/await and type system excellence
 - **Security Researchers**: For temporal isolation concepts
 
 ---
@@ -313,6 +391,6 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 **Made with ❤️ for the AI/LLM community**
 
-[⭐ Star us on GitHub](https://github.com/anthemflynn/cryptex) | [📖 Read the Docs](https://cryptex.readthedocs.io) | [💬 Join Discussions](https://github.com/anthemflynn/cryptex/discussions)
+[⭐ Star us on GitHub](https://github.com/AnthemFlynn/cryptex) | [📖 Read the Docs](https://docs.cryptex-ai.com) | [💬 Join Discussions](https://github.com/AnthemFlynn/cryptex/discussions)
 
 </div>

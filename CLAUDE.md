@@ -11,19 +11,21 @@ Cryptex is a **zero-config** temporal isolation engine for AI/LLM applications. 
 ## Key Directories
 
 - `src/cryptex/`: Main library source code
+  - `decorators/`: Universal decorator implementation
+  - `patterns/`: Pattern system with base classes and registry
+  - `core/`: Temporal isolation engine and security components
 - `tests/`: Comprehensive test suite (unit, integration, security, performance)
-- `.claude/`: Claude Code commands and configuration
+- `examples/`: Working examples demonstrating zero-config usage
 - `Makefile`: Development workflow automation
 - `.github/`: CI/CD workflows
 
 ## Development Workflow
 
 ### Available Command-Line Tools
-uv - A single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. See: https://github.com/ajeetdsouza/uv
-zoxide - A fast alternative to cd that learns your habits See: https://github.com/ajeetdsouza/zoxide
-eza - A replacement for 'ls' See: https://github.com/eza-community/eza
-fd - A simple, fast and user-friendly alternative to find. See: https://github.com/sharkdp/fd
-
+- **uv**: A single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. See: https://github.com/astral-sh/uv
+- **zoxide**: A fast alternative to cd that learns your habits. See: https://github.com/ajeetdsouza/zoxide
+- **eza**: A replacement for 'ls'. See: https://github.com/eza-community/eza
+- **fd**: A simple, fast and user-friendly alternative to find. See: https://github.com/sharkdp/fd
 
 ### Essential Make Commands
 
@@ -61,37 +63,55 @@ make pre-commit             # All quality gates
 
 ## Core API Patterns
 
-### Zero-Config Protection (95% of users)
+### Universal Decorator (95% of users)
 ```python
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 
 # Works immediately - no setup required!
-@protect_tool(secrets=["openai_key"])
+@protect_secrets(["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
     # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
-    # Tool gets: real API key for execution
+    # Function gets: real API key for execution
     return await openai_call(prompt, api_key)
 
-@protect_tool(secrets=["file_path", "github_token"])
+@protect_secrets(["file_path", "github_token"])
 async def file_tool(file_path: str, token: str) -> str:
-    # AI sees: file_tool("/{USER_HOME}/doc.txt", "{{GITHUB_TOKEN}}")
-    # Tool gets: real path and token
+    # AI sees: file_tool("/{USER_HOME}/.../{filename}", "{{GITHUB_TOKEN}}")
+    # Function gets: real path and token
     return await process_file(file_path, token)
+```
+
+### Convenience Decorators
+```python
+from cryptex import protect_api_keys, protect_files, protect_all
+
+@protect_api_keys()  # Protects OpenAI + Anthropic keys
+async def ai_function(openai_key: str, anthropic_key: str) -> str:
+    return await dual_ai_call(openai_key, anthropic_key)
+
+@protect_files()  # Protects file system paths
+async def file_function(file_path: str) -> str:
+    return await process_file(file_path)
+
+@protect_all()  # Protects all built-in patterns
+async def comprehensive_function(api_key: str, file_path: str, db_url: str) -> str:
+    return await complex_processing(api_key, file_path, db_url)
 ```
 
 ### Custom Patterns (5% of users)
 ```python
-from cryptex.patterns import register_pattern
+from cryptex import register_pattern, protect_secrets
 
 # Register custom pattern once
 register_pattern(
     name="slack_token",
     regex=r"xoxb-[0-9-a-zA-Z]{51}",
-    placeholder="{{SLACK_TOKEN}}"
+    placeholder="{{SLACK_TOKEN}}",
+    description="Slack bot token"
 )
 
-# Use in decorators
-@protect_tool(secrets=["slack_token"])
+# Use immediately in decorators
+@protect_secrets(["slack_token"])
 async def slack_tool(token: str) -> str:
     return await slack_api_call(token)
 ```
@@ -130,12 +150,21 @@ make test-performance        # Performance benchmarks
 
 **NO CONFIGURATION REQUIRED!** The library works perfectly without any config files.
 
+### Current Architecture (Post-Refactor)
+- **Universal Decorator**: Single `@protect_secrets` decorator works with any Python function
+- **Pattern Registry**: Thread-safe registry with Protocol-based design
+- **Zero Dependencies**: Pure Python 3.11+ standard library
+- **SOLID Principles**: Clean abstractions and single responsibility
+
 ### Pattern Registration API (Advanced)
 ```python
-from cryptex.patterns import register_pattern, list_patterns
+from cryptex import register_pattern, list_patterns, get_all_patterns
 
 # List available patterns
 patterns = list_patterns()  # ['openai_key', 'anthropic_key', ...]
+
+# Get all pattern objects
+all_patterns = get_all_patterns()
 
 # Register custom pattern (rare use case)
 register_pattern("my_token", r"myapp-[a-f0-9]{32}", "{{MY_TOKEN}}")
@@ -146,71 +175,106 @@ register_pattern("my_token", r"myapp-[a-f0-9]{32}", "{{MY_TOKEN}}")
 - **Sanitization Latency**: <5ms for 1KB payloads
 - **Resolution Latency**: <10ms for 10 placeholders
 - **Memory Overhead**: <5% of application memory
+- **Zero Startup Time**: No dependencies, no config loading
 
 ## Development Notes
 
 - **Zero-Config Philosophy**: No config files belong in middleware libraries
 - **95/5 Rule**: 95% of users need zero config, 5% use registration API
-- **Async-First Design**: All core operations are async/await compatible
-- **Type Safety**: Full type hints using Python 3.13+ features
+- **Universal Approach**: Works with any Python function (async/sync)
+- **Type Safety**: Full type hints using Python 3.11+ features
 - **Zero Dependencies**: Core functionality uses standard library only
 - **Security First**: Every change requires security review and validation
 
 ## Architecture Principles
 
-1. **Config files eliminated**: Pure code-based configuration only
-2. **Built-in defaults**: Excellent patterns for common secrets (OpenAI, GitHub, etc.)
-3. **Minimal API surface**: Simple registration for custom patterns
-4. **No external dependencies**: No TOML parsing, file I/O, or config loading
-5. **Middleware library**: Lightweight, fast startup, predictable behavior
+1. **Universal Decorator**: Single decorator pattern replaces framework-specific middleware
+2. **Built-in Defaults**: Excellent patterns for common secrets (OpenAI, GitHub, etc.)
+3. **Minimal API Surface**: Simple registration for custom patterns
+4. **Zero Dependencies**: No external packages, no supply chain attacks
+5. **SOLID Design**: Protocol-based extensibility with clean abstractions
 
-# The Developer's Pact: Our Rules of Engagement
-_This document outlines the core principles and conventions we will follow in this project. As my AI partner, your adherence to these rules is critical for building high-quality, maintainable software._
+## Key Files and Components
 
-### 🏛️ Principle 1: Architecture & Structure
-- **Modularity is Key:** No single file should exceed 500 lines. If it grows too large, your first step is to propose a refactoring plan to break it into smaller, logical modules.
+### Core Implementation
+- `src/cryptex/__init__.py`: Main public API exports
+- `src/cryptex/decorators/protect_secrets.py`: Universal decorator implementation
+- `src/cryptex/patterns/`: Complete pattern system
+  - `__init__.py`: Public pattern API
+  - `base.py`: Protocol and base classes
+  - `registry.py`: Thread-safe pattern registry
 
-- **Consistent Organization:** We group files by feature. For example, a new `user` feature would have its logic in `src/users/`, its API routes in `src/api/routes/users.py`, and its tests in `tests/users/`.
+### Security Architecture
+- **Temporal Isolation**: Three-phase sanitization → AI processing → resolution
+- **Pattern Validation**: Runtime regex validation and error handling
+- **Thread Safety**: Concurrent access protection with proper locking
+- **Zero Attack Surface**: No config files, no parsing, no external dependencies
 
-- **Clean Imports:** Use absolute imports for clarity (e.g., `from src.utils import helpers`). Avoid circular dependencies.
+## Common Development Tasks
 
-- **Environment First:** All sensitive keys, API endpoints, or configuration variables must be managed through a `.env` file and loaded using `python-dotenv`. Never hardcode them.
+### Adding New Built-in Patterns
+1. Add pattern to `DEFAULT_PATTERNS` in `src/cryptex/patterns/base.py`
+2. Test pattern matching in `tests/unit/test_pattern_registration.py`
+3. Update documentation in README.md
 
-### ✅ Principle 2: Quality & Reliability
-- **Test Everything That Matters:** Every new function, class, or API endpoint must be accompanied by unit tests in the tests/ directory.
+### Extending Core Functionality
+1. Maintain SOLID principles and Protocol-based design
+2. Ensure thread safety for concurrent access
+3. Add comprehensive tests for new functionality
+4. Validate security implications
 
-- **The Test Triad:** For each feature, provide at least three tests:
+### Performance Optimization
+1. Maintain <5ms sanitization for 1KB payloads
+2. Keep memory overhead <5% of application memory
+3. Benchmark changes with `tests/performance/`
+4. Document performance impact
 
-  1. A "happy path" test for expected behavior.
+## Framework Integration Examples
 
-  2. An "edge case" test for unusual but valid inputs.
+### FastMCP
+```python
+from fastmcp import FastMCPServer
+from cryptex import protect_secrets
 
-  3. A "failure case" test for expected errors or invalid inputs.
+server = FastMCPServer("my-server")
 
-- **Docstrings are Non-Negotiable:** Every function must have a Google-style docstring explaining its purpose, arguments (`Args:`), and return value (`Returns:`).
+@server.tool()
+@protect_secrets(["openai_key"])
+async def ai_tool(prompt: str, api_key: str) -> str:
+    return await openai_call(prompt, api_key)
+```
 
-### ✍️ Principle 3: Code & Style
-- **Follow the Standards:** All Python code must be formatted with `black` and adhere to `PEP8` guidelines.
+### FastAPI
+```python
+from fastapi import FastAPI
+from cryptex import protect_secrets
 
-- **Type Safety:** Use type hints for all function signatures and variables. We use `mypy` to enforce this.
+app = FastAPI()
 
-- **Data Certainty:** Use `pydantic` for all data validation, especially for API request and response models. This is our single source of truth for data shapes.
+@app.post("/secure")
+@protect_secrets(["database_url", "openai_key"])
+async def secure_endpoint(data: dict, db_url: str, api_key: str):
+    return await process_data(data, db_url, api_key)
+```
 
-### 🧠 Principle 4: Your Behavior as an AI
-- **Clarify, Don't Assume:** If a requirement is ambiguous or context is missing, your first action is to ask for clarification.
+### Any Python Function
+```python
+from cryptex import protect_secrets
 
-- **No Hallucinations:** Do not invent libraries, functions, or file paths. If you need a tool you don't have, state what you need and why.
+@protect_secrets(["github_token"])
+def sync_function(token: str) -> str:
+    return github_api_call(token)
 
-- **Plan Before You Code:** For any non-trivial task, first outline your implementation plan in a list or with pseudocode. We will approve it before you write the final code.
+@protect_secrets(["openai_key"])
+async def async_function(api_key: str) -> str:
+    return await openai_call(api_key)
+```
 
-- **Explain the "Why":** For complex or non-obvious blocks of code, add a `# WHY:` comment explaining the reasoning behind the implementation choice.
+## Important Notes for Claude
 
-### External File Loading
-
-CRITICAL: When you encounter a file reference (e.g., @rules/general.md), use your Read tool to load it on a need-to-know basis. They're relevant to the SPECIFIC task at hand.
-
-Instructions:
-
-- Do NOT preemptively load all references - use lazy loading based on actual need
-- When loaded, treat content as mandatory instructions that override defaults
-- Follow references recursively when needed
+- **Architecture Changed**: No more middleware - everything uses universal decorator
+- **Import Pattern**: Always use `from cryptex import protect_secrets`
+- **Zero Dependencies**: Never suggest adding external dependencies
+- **Security Focus**: Every change requires security consideration
+- **Test Coverage**: All new functionality must have comprehensive tests
+- **Performance Awareness**: Maintain strict performance requirements

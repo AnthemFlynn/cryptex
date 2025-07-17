@@ -11,16 +11,16 @@ or setup. Built-in patterns handle 95% of real-world usage.
 
 ### Quick Start - Zero Config
 ```python
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 
 # Works immediately - no config needed!
-@protect_tool(secrets=["openai_key"])
+@protect_secrets(secrets=["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
     # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
     # Tool gets: real API key for execution
     return await openai_call(prompt, api_key)
 
-@protect_tool(secrets=["file_path", "github_token"])
+@protect_secrets(secrets=["file_path", "github_token"])
 async def file_tool(file_path: str, token: str) -> str:
     # AI sees: file_tool("/{USER_HOME}/doc.txt", "{{GITHUB_TOKEN}}")
     # Tool gets: real path and token
@@ -31,14 +31,13 @@ async def file_tool(file_path: str, token: str) -> str:
 ### Built-in Patterns (Work Out of the Box)
 - `openai_key`: OpenAI API keys (sk-...)
 - `anthropic_key`: Anthropic API keys (sk-ant-...)
-- `github_token`: GitHub tokens (ghp_...)
+- `github_token`: GitHub tokens (ghp-...)
 - `file_path`: User file system paths (/Users/..., /home/...)
 - `database_url`: Database connection URLs (postgres://, mysql://, etc.)
 
 ### Advanced: Custom Patterns (5% of users)
 ```python
-from cryptex.patterns import register_pattern
-from cryptex.decorators.mcp import protect_tool
+from cryptex import register_pattern, protect_secrets
 
 # Register custom pattern once
 register_pattern(
@@ -48,7 +47,7 @@ register_pattern(
 )
 
 # Use in decorators
-@protect_tool(secrets=["slack_token"])
+@protect_secrets(secrets=["slack_token"])
 async def slack_tool(token: str) -> str:
     return await slack_api_call(token)
 ```
@@ -79,7 +78,7 @@ async def slack_tool(token: str) -> str:
 - **Response sanitization**: Tool outputs cleaned before AI access
 
 For comprehensive documentation and examples:
-https://github.com/yourusername/cryptex
+https://github.com/AnthemFlynn/cryptex
 """
 
 __version__ = "0.2.0"
@@ -87,7 +86,7 @@ __author__ = "Cryptex Team"
 __email__ = "team@cryptex-ai.com"
 
 # Core components
-from .core.api import protect_secrets, secure_session
+from .core.api import secure_session
 from .core.engine import (
     ResolvedData,
     SanitizedData,
@@ -96,10 +95,16 @@ from .core.engine import (
 )
 from .core.exceptions import CryptexError, SecurityError
 from .core.manager import SecretManager
-from .decorators.fastapi import protect_endpoint
 
-# Decorators
-from .decorators.mcp import protect_tool
+# Main decorator - the primary API
+from .decorators import (
+    protect_all,
+    protect_api_keys,
+    protect_database,
+    protect_files,
+    protect_secrets,
+    protect_tokens,
+)
 
 # Pattern registration API
 from .patterns import (
@@ -112,66 +117,18 @@ from .patterns import (
     unregister_pattern,
 )
 
-# Middleware integrations
-try:
-    from .fastmcp import setup_cryptex_protection as setup_fastmcp_protection
-
-    _FASTMCP_AVAILABLE = True
-except ImportError:
-    _FASTMCP_AVAILABLE = False
-
-try:
-    from .fastapi import setup_cryptex_protection as setup_fastapi_protection
-
-    _FASTAPI_AVAILABLE = True
-except ImportError:
-    _FASTAPI_AVAILABLE = False
-
-
-# Convenience functions
-async def setup_protection(framework, **kwargs):
-    """
-    Universal setup function for any supported framework.
-
-    Args:
-        framework: FastMCP server, FastAPI app, or other supported framework
-        **kwargs: Configuration arguments
-
-    Returns:
-        Protection instance for monitoring
-    """
-    # Detect framework type and delegate to appropriate setup function
-    framework_name = type(framework).__name__.lower()
-
-    if "fastmcp" in framework_name or "mcp" in framework_name:
-        if not _FASTMCP_AVAILABLE:
-            raise ImportError("FastMCP integration not available. Install FastMCP.")
-        return await setup_fastmcp_protection(framework, **kwargs)
-
-    elif "fastapi" in framework_name or hasattr(framework, "add_middleware"):
-        if not _FASTAPI_AVAILABLE:
-            raise ImportError("FastAPI integration not available. Install FastAPI.")
-        return setup_fastapi_protection(framework, **kwargs)
-
-    else:
-        raise ValueError(
-            f"Unsupported framework: {type(framework)}. "
-            "Supported: FastMCP servers, FastAPI applications"
-        )
-
-
 __all__ = [
-    # Core components
-    "TemporalIsolationEngine",
-    "SecretPattern",
-    "SanitizedData",
-    "ResolvedData",
-    "SecretManager",
-    "CryptexError",
-    "SecurityError",
-    # Core API
+    # Main API - what 95% of users need
     "protect_secrets",
     "secure_session",
+
+    # Convenience decorators
+    "protect_files",
+    "protect_api_keys",
+    "protect_tokens",
+    "protect_database",
+    "protect_all",
+
     # Pattern registration API
     "register_pattern",
     "unregister_pattern",
@@ -180,16 +137,13 @@ __all__ = [
     "get_all_patterns",
     "clear_custom_patterns",
     "register_patterns",
-    # Decorators
-    "protect_tool",
-    "protect_endpoint",
-    # Universal setup
-    "setup_protection",
+
+    # Core components (advanced usage)
+    "TemporalIsolationEngine",
+    "SecretPattern",
+    "SanitizedData",
+    "ResolvedData",
+    "SecretManager",
+    "CryptexError",
+    "SecurityError",
 ]
-
-# Add framework-specific exports if available
-if _FASTMCP_AVAILABLE:
-    __all__.extend(["setup_fastmcp_protection", "FastMCPCryptexMiddleware"])
-
-if _FASTAPI_AVAILABLE:
-    __all__.extend(["setup_fastapi_protection", "FastAPICryptexMiddleware"])

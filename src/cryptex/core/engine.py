@@ -1113,7 +1113,7 @@ class TemporalIsolationEngine:
             sanitized_message = error_data.data
         else:
             sanitized_message = str(error)
-            
+
         sanitized_error = type(error)(sanitized_message)
 
         # Don't preserve the original traceback - create a clean one

@@ -22,7 +22,7 @@ class TestPerformanceBenchmarks:
         start_time = time.time()
         result = process_large_data(large_payload)
         duration = time.time() - start_time
-        
+
         assert "processed: " in result
         assert duration < 0.005  # 5ms target
 
@@ -39,7 +39,7 @@ class TestPerformanceBenchmarks:
         start_time = time.time()
         result = resolve_multiple_secrets("test data")
         duration = time.time() - start_time
-        
+
         assert "resolved: " in result
         assert duration < 0.01  # 10ms target
 
@@ -58,11 +58,11 @@ class TestPerformanceBenchmarks:
         start_time = time.time()
         decorated_result = simple_function("test")
         decorated_time = time.time() - start_time
-        
+
         start_time = time.time()
         baseline_result = baseline_function("test")
         baseline_time = time.time() - start_time
-        
+
         assert decorated_result == "processed: test"
         assert baseline_result == "processed: test"
         # Allow reasonable overhead

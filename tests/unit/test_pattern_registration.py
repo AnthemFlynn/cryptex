@@ -9,7 +9,7 @@ import re
 
 import pytest
 
-from cryptex.decorators.mcp import protect_tool
+from cryptex import protect_secrets
 from cryptex.patterns import (
     clear_custom_patterns,
     get_all_patterns,
@@ -147,7 +147,7 @@ class TestPatternRegistration:
         )
 
         # Use in decorator
-        @protect_tool(secrets=["test_api_key"])
+        @protect_secrets(["test_api_key"])
         async def test_tool(api_key: str) -> str:
             return f"API call with: {api_key}"
 
@@ -168,7 +168,7 @@ class TestPatternRegistration:
         )
 
         # Use both built-in and custom in decorator
-        @protect_tool(secrets=["openai_key", "custom_token"])
+        @protect_secrets(["openai_key", "custom_token"])
         async def mixed_tool(openai_key: str, custom_token: str) -> str:
             return f"OpenAI: {openai_key}, Custom: {custom_token}"
 

@@ -7,8 +7,8 @@ authors:
   - name: "Cryptex Team"
 version: "1.0.0"
 date-released: "2024-07-16"
-url: "https://github.com/cryptex-ai/cryptex"
-repository-code: "https://github.com/cryptex-ai/cryptex"
+url: "https://github.com/AnthemFlynn/cryptex"
+repository-code: "https://github.com/AnthemFlynn/cryptex"
 license: MIT
 keywords:
   - ai
@@ -27,5 +27,5 @@ preferred-citation:
   authors:
     - name: "Cryptex Team"
   version: "1.0.0"
-  url: "https://github.com/cryptex-ai/cryptex"
+  url: "https://github.com/AnthemFlynn/cryptex"
   year: 2024
