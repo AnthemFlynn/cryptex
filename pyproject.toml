@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Zero-config temporal isolation for AI/LLM applications - Bulletproof secrets isolation with zero cognitive overhead"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 authors = [{ name = "Cryptex Team" }]
 keywords = ["ai", "llm", "security", "secrets", "isolation", "mcp"]
 classifiers = [
@@ -149,3 +149,8 @@ strict_equality = true
 [tool.bandit]
 exclude_dirs = ["tests"]
 skips = ["B101", "B601"]
+
+[dependency-groups]
+dev = [
+    "pytest-benchmark>=5.1.0",
+]

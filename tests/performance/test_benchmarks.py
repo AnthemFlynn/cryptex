@@ -11,20 +11,23 @@ class TestPerformanceBenchmarks:
     """Performance benchmarks for core functionality."""
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="sanitization")
-    def test_sanitization_latency(self, benchmark, large_payload):
+    def test_sanitization_latency(self, large_payload):
         """Test sanitization latency for 1KB payload (target: <5ms)."""
 
         @protect_secrets(["api_key"])
         def process_large_data(data: str) -> str:
             return f"processed: {len(data)} bytes"
 
-        result = benchmark(process_large_data, large_payload)
+        # Simple timing test
+        start_time = time.time()
+        result = process_large_data(large_payload)
+        duration = time.time() - start_time
+        
         assert "processed: " in result
+        assert duration < 0.005  # 5ms target
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="resolution")
-    def test_resolution_latency(self, benchmark, multiple_secrets, mock_env_vars):
+    def test_resolution_latency(self, multiple_secrets, mock_env_vars):
         """Test resolution latency for 10 placeholders (target: <10ms)."""
         secret_names = list(multiple_secrets.keys())
 
@@ -32,12 +35,16 @@ class TestPerformanceBenchmarks:
         def resolve_multiple_secrets(data: str) -> str:
             return f"resolved: {data}"
 
-        result = benchmark(resolve_multiple_secrets, "test data")
+        # Simple timing test
+        start_time = time.time()
+        result = resolve_multiple_secrets("test data")
+        duration = time.time() - start_time
+        
         assert "resolved: " in result
+        assert duration < 0.01  # 10ms target
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="decorator")
-    def test_decorator_overhead(self, benchmark):
+    def test_decorator_overhead(self):
         """Test overhead of protect_secrets decorator."""
 
         @protect_secrets(["api_key"])
@@ -47,13 +54,22 @@ class TestPerformanceBenchmarks:
         def baseline_function(data: str) -> str:
             return f"processed: {data}"
 
-        # Benchmark decorated function
-        decorated_result = benchmark(simple_function, "test")
+        # Simple timing comparison
+        start_time = time.time()
+        decorated_result = simple_function("test")
+        decorated_time = time.time() - start_time
+        
+        start_time = time.time()
+        baseline_result = baseline_function("test")
+        baseline_time = time.time() - start_time
+        
         assert decorated_result == "processed: test"
+        assert baseline_result == "processed: test"
+        # Allow reasonable overhead
+        assert decorated_time < baseline_time + 0.01
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="memory")
-    def test_memory_usage(self, benchmark, large_payload):
+    def test_memory_usage(self, large_payload):
         """Test memory usage during processing."""
         import os
 
@@ -78,15 +94,12 @@ class TestPerformanceBenchmarks:
             # This is a basic test - real implementation would be more sophisticated
             return result, memory_increase
 
-        result, memory_delta = benchmark(measure_memory_usage)
-        assert "processed: " in result[0]
+        result, memory_delta = measure_memory_usage()
+        assert "processed: " in result
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="concurrent")
     @pytest.mark.asyncio
-    async def test_concurrent_performance(
-        self, benchmark, multiple_secrets, mock_env_vars
-    ):
+    async def test_concurrent_performance(self, multiple_secrets, mock_env_vars):
         """Test performance under concurrent load."""
         import asyncio
 
@@ -100,7 +113,7 @@ class TestPerformanceBenchmarks:
             results = await asyncio.gather(*tasks)
             return results
 
-        # Note: benchmark.pedantic can be used for async functions in pytest-benchmark
+        # Simple timing test
         start_time = time.time()
         results = await run_concurrent_tasks()
         duration = time.time() - start_time
@@ -112,16 +125,15 @@ class TestPerformanceBenchmarks:
         assert duration < 1.0  # 1 second for 50 concurrent tasks
 
     @pytest.mark.performance
-    @pytest.mark.benchmark(group="session")
     @pytest.mark.asyncio
-    async def test_session_creation_performance(self, benchmark):
+    async def test_session_creation_performance(self):
         """Test secure_session creation performance."""
 
         async def create_session():
             async with secure_session() as session:
                 return session
 
-        # For async benchmarking, we'll use a simple timing approach
+        # Simple timing test
         start_time = time.time()
         session = await create_session()
         duration = time.time() - start_time

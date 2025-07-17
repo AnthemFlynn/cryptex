@@ -278,18 +278,19 @@ class TestSecurityFeatureIntegration:
         )
 
         # Test normal operation
-        data = {"api_key": "sk-test123", "message": "Hello world"}
+        valid_openai_key = "sk-" + "a" * 48  # Valid OpenAI key format: sk-[a-zA-Z0-9]{48}
+        data = {"api_key": valid_openai_key, "message": "Hello world"}
         result = await engine.sanitize_for_ai(data)
 
         assert result.data != data  # Should be sanitized
-        assert "sk-test123" not in str(result.data)
+        assert valid_openai_key not in str(result.data)
 
         # Test traceback sanitization
         try:
-            raise ValueError("Error with sk-test123 in message")
+            raise ValueError(f"Error with {valid_openai_key} in message")
         except ValueError as e:
             sanitized_error = await engine.sanitize_traceback(e)
-            assert "sk-test123" not in str(sanitized_error)
+            assert valid_openai_key not in str(sanitized_error)
 
     @pytest.mark.asyncio
     async def test_performance_under_security_constraints(self):

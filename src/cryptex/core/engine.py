@@ -1102,10 +1102,19 @@ class TemporalIsolationEngine:
             sanitized_lines.append(sanitized_line)
 
         # Create new exception with sanitized message
-        sanitized_message = "".join(
-            sanitized_lines[-1:]
-        )  # Only keep the exception message
-        sanitized_error = type(error)(sanitized_message.strip())
+        if sanitized_lines:
+            sanitized_message = sanitized_lines[-1].strip()  # Only keep the exception message
+            # Additional sanitization for error message content
+            import re
+            # Remove specific line numbers from error messages
+            sanitized_message = re.sub(r"line \d+", "line <redacted>", sanitized_message)
+            # Apply general sanitization to the error message
+            error_data = await self.sanitize_for_ai(sanitized_message)
+            sanitized_message = error_data.data
+        else:
+            sanitized_message = str(error)
+            
+        sanitized_error = type(error)(sanitized_message)
 
         # Don't preserve the original traceback - create a clean one
         # This prevents any potential information leakage through frame objects
