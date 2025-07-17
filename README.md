@@ -6,14 +6,14 @@
 
 *Bulletproof secrets isolation with zero cognitive overhead*
 
-[![PyPI version](https://badge.fury.io/py/cryptex-ai.svg)](https://badge.fury.io/py/cryptex-ai)
-[![Python Support](https://img.shields.io/pypi/pyversions/cryptex-ai.svg)](https://pypi.org/project/cryptex-ai/)
-[![Downloads](https://static.pepy.tech/badge/cryptex-ai)](https://pepy.tech/project/cryptex-ai)
+[![Python Support](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
+[![Package](https://img.shields.io/badge/package-cryptex--ai-blue)](https://github.com/AnthemFlynn/cryptex-ai)
+[![Status](https://img.shields.io/badge/status-pre--release-red)](https://github.com/AnthemFlynn/cryptex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/AnthemFlynn/cryptex/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex/actions)
-[![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex)
+[![Tests](https://github.com/AnthemFlynn/cryptex-ai/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
+[![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex-ai)
 
-[**Documentation**](https://anthemflynn.github.io/cryptex/) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex-ai/) | [**Changelog**](./CHANGELOG.md)
+[**Documentation**](https://anthemflynn.github.io/cryptex-ai/) | [**Examples**](./examples/) | [**PyPI** (Coming Soon)](#) | [**Changelog**](./CHANGELOG.md)
 
 </div>
 
@@ -30,7 +30,7 @@ AI/LLM applications face an impossible choice:
 Cryptex provides **temporal isolation** - AI sees safe placeholders while your code gets real secrets.
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # Works immediately - no config files required!
 @protect_secrets(["openai_key"])
@@ -78,7 +78,7 @@ uv add cryptex-ai
 Cryptex works immediately with built-in patterns for common secrets:
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # Protect OpenAI API calls
 @protect_secrets(["openai_key"])
@@ -186,7 +186,7 @@ register_patterns([
 
 ```python
 from fastmcp import FastMCPServer
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 server = FastMCPServer("my-server")
 
@@ -202,7 +202,7 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 
 ```python
 from fastapi import FastAPI
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 app = FastAPI()
 
@@ -218,7 +218,7 @@ async def process_endpoint(data: dict, db_url: str, api_key: str):
 
 ```python
 from django.http import JsonResponse
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(["database_url"])
 async def django_view(request, db_url: str):
@@ -230,7 +230,7 @@ async def django_view(request, db_url: str):
 ### Any Python Function
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(["github_token"])
 def sync_function(token: str) -> str:
@@ -299,8 +299,8 @@ Explore comprehensive examples in the [`examples/`](./examples/) directory:
 Run examples locally:
 
 ```bash
-git clone https://github.com/AnthemFlynn/cryptex.git
-cd cryptex
+git clone https://github.com/AnthemFlynn/cryptex-ai.git
+cd cryptex-ai
 python examples/basic_usage.py
 ```
 
@@ -368,8 +368,8 @@ We welcome contributions! Cryptex follows a **zero-config philosophy** - keep it
 ### Quick Development Setup
 
 ```bash
-git clone https://github.com/AnthemFlynn/cryptex.git
-cd cryptex
+git clone https://github.com/AnthemFlynn/cryptex-ai.git
+cd cryptex-ai
 make dev-setup  # Sets up environment
 make test       # Run test suite
 make lint       # Code quality checks

@@ -5,7 +5,7 @@ Tests the requirements from GitHub Issue #6.
 
 import json
 
-from cryptex.core.exceptions import (
+from cryptex_ai.core.exceptions import (
     CryptexError,
     PatternError,
     ResolutionError,

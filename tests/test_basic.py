@@ -7,7 +7,7 @@ These tests verify basic functionality and imports work correctly.
 
 import pytest
 
-from cryptex import SecretManager, protect_secrets, secure_session
+from cryptex_ai import SecretManager, protect_secrets, secure_session
 
 
 class TestBasicIntegration:
@@ -21,10 +21,10 @@ class TestBasicIntegration:
 
     def test_version(self):
         """Test that version is accessible."""
-        import cryptex
+        import cryptex_ai
 
-        assert hasattr(cryptex, "__version__")
-        assert cryptex.__version__ == "0.2.0"
+        assert hasattr(cryptex_ai, "__version__")
+        assert cryptex_ai.__version__ == "0.2.0"
 
     @pytest.mark.asyncio
     async def test_secret_manager_init(self):

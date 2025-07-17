@@ -35,8 +35,8 @@ For contributors and developers:
 
 ```bash
 # Clone the repository
-git clone https://github.com/anthemflynn/cryptex.git
-cd cryptex
+git clone https://github.com/AnthemFlynn/cryptex-ai.git
+cd cryptex-ai
 
 # Install in development mode with all dependencies
 uv sync --dev
@@ -54,7 +54,7 @@ import cryptex
 print(cryptex.__version__)
 
 # Test core functionality
-from cryptex import protect_secrets, list_patterns
+from cryptex_ai import protect_secrets, list_patterns
 print("Available patterns:", list_patterns())
 ```
 
@@ -152,7 +152,7 @@ pip install cryptex-ai
 ```python
 # Import like this
 import cryptex
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 ```
 
 ## Next Steps

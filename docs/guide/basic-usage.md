@@ -7,7 +7,7 @@ Learn the core features of Cryptex for temporal isolation of secrets in AI/LLM a
 Cryptex provides **temporal isolation** - AI systems see placeholder values while tools receive real secrets:
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
@@ -135,7 +135,7 @@ except PatternNotFoundError as e:
 ### Invalid Usage
 
 ```python
-from cryptex.core.exceptions import CryptexError
+from cryptex_ai.core.exceptions import CryptexError
 
 try:
     result = await protected_function("invalid-input")

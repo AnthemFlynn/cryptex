@@ -23,7 +23,7 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Simple imports - no middleware needed!
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # FastAPI imports
 try:
@@ -190,7 +190,7 @@ async def process_data_endpoint(
 # Convenience Endpoint (Multiple Secrets at Once)
 # =============================================================================
 
-from cryptex import protect_all
+from cryptex_ai import protect_all
 
 
 @app.post("/api/kitchen-sink")

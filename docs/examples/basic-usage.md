@@ -19,8 +19,8 @@ Demonstrates:
 import asyncio
 import time
 import logging
-from cryptex import protect_secrets
-from cryptex.patterns import list_patterns
+from cryptex_ai import protect_secrets
+from cryptex_ai.patterns import list_patterns
 
 # Configure logging to see the temporal isolation in action
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -378,7 +378,7 @@ Cryptex automatically recognizes common secret formats:
 ### Add Your Own Secret Types
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Register custom pattern
 register_pattern("company_token", r"ct_[a-f0-9]{32}", "{{COMPANY_TOKEN}}")
@@ -410,7 +410,7 @@ async def real_openai_call(prompt: str, api_key: str) -> str:
 ### Add Error Recovery
 
 ```python
-from cryptex.core.exceptions import CryptexError
+from cryptex_ai.core.exceptions import CryptexError
 
 @protect_secrets(secrets=["openai_key"])
 async def robust_function(api_key: str) -> str:
@@ -429,4 +429,4 @@ async def robust_function(api_key: str) -> str:
 
 - **[User Guide](../guide/basic-usage.md)** - Learn all the features
 - **[Custom Patterns Guide](../guide/custom-patterns.md)** - Create your own patterns
-- **[GitHub Repository](https://github.com/anthemflynn/cryptex)** - Full source code and examples
+- **[GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai)** - Full source code and examples

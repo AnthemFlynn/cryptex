@@ -19,7 +19,7 @@ Consider custom patterns only when:
 ### Simple Registration
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Register a custom pattern
 register_pattern(
@@ -29,7 +29,7 @@ register_pattern(
 )
 
 # Use immediately
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["slack_token"])
 async def send_slack_message(token: str, message: str) -> bool:
@@ -167,7 +167,7 @@ Register all patterns when your application starts:
 
 ```python
 # patterns.py
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 def register_app_patterns():
     """Register all custom patterns for this application"""
@@ -200,8 +200,8 @@ Register patterns in relevant modules:
 
 ```python
 # payment_service.py
-from cryptex.patterns import register_pattern
-from cryptex import protect_secrets
+from cryptex_ai.patterns import register_pattern
+from cryptex_ai import protect_secrets
 
 # Register payment-related patterns
 register_pattern("stripe_secret", r"sk_live_[a-zA-Z0-9]{24}", "{{STRIPE_SECRET}}")
@@ -222,7 +222,7 @@ async def paypal_payment(amount: int, secret: str) -> dict:
 
 ```python
 import re
-from cryptex.patterns import register_pattern, get_pattern
+from cryptex_ai.patterns import register_pattern, get_pattern
 
 def test_custom_pattern():
     # Register test pattern
@@ -269,7 +269,7 @@ async def test_pattern_integration():
 ### List Available Patterns
 
 ```python
-from cryptex.patterns import list_patterns
+from cryptex_ai.patterns import list_patterns
 
 # See all patterns (built-in + custom)
 all_patterns = list_patterns()
@@ -283,7 +283,7 @@ print("Custom patterns:", custom_patterns)
 ### Pattern Information
 
 ```python
-from cryptex.patterns import get_pattern, pattern_exists
+from cryptex_ai.patterns import get_pattern, pattern_exists
 
 # Check if pattern exists
 if pattern_exists("slack_token"):
@@ -401,7 +401,7 @@ Register these patterns by calling register_app_patterns() at startup.
 ### Pattern Registration Errors
 
 ```python
-from cryptex.core.exceptions import PatternRegistrationError
+from cryptex_ai.core.exceptions import PatternRegistrationError
 
 try:
     register_pattern("invalid_pattern", "[invalid regex", "{{INVALID}}")
@@ -413,7 +413,7 @@ except PatternRegistrationError as e:
 ### Runtime Pattern Errors
 
 ```python
-from cryptex.core.exceptions import PatternNotFoundError
+from cryptex_ai.core.exceptions import PatternNotFoundError
 
 try:
     @protect_secrets(secrets=["nonexistent_pattern"])
@@ -439,7 +439,7 @@ def sanitize_for_ai(text: str) -> str:
 
 After:
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key", "github_token"])
 async def ai_function(openai_key: str, github_token: str) -> str:
@@ -463,8 +463,8 @@ def protect_custom_secret(text: str) -> str:
 
 After:
 ```python
-from cryptex.patterns import register_pattern
-from cryptex import protect_secrets
+from cryptex_ai.patterns import register_pattern
+from cryptex_ai import protect_secrets
 
 # Register pattern in code (no environment variables needed)
 register_pattern("custom_token", r"ct_[a-f0-9]{32}", "{{CUSTOM_TOKEN}}")

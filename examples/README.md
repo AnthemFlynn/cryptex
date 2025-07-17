@@ -69,7 +69,7 @@ python examples/real_world_usage/real_world_usage.py
 ### Universal Protection
 All examples show the same core pattern:
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(["openai_key", "database_url"])
 async def my_function(api_key: str, db_url: str):
@@ -124,7 +124,7 @@ python examples/basic_usage/basic_usage.py
 2. **Try `fastapi_example.py`** - See web integration
 3. **Study `real_world_usage.py`** - Production patterns
 4. **Read the main README.md** - Full documentation
-5. **Check the source code** - `src/cryptex/` for internals
+5. **Check the source code** - `src/cryptex_ai/` for internals
 
 ---
 

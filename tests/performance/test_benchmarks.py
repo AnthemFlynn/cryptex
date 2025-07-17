@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from cryptex import protect_secrets, secure_session
+from cryptex_ai import protect_secrets, secure_session
 
 
 class TestPerformanceBenchmarks:

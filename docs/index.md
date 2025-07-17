@@ -27,7 +27,7 @@ Cryptex provides bulletproof secrets isolation with **zero cognitive overhead** 
 ### Basic Usage
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # Works immediately - no setup required!
 @protect_secrets(secrets=["openai_key"])

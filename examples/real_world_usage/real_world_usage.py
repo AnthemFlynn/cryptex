@@ -25,9 +25,9 @@ from typing import Any
 if __name__ == "__main__":
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from cryptex import protect_secrets, register_pattern
+from cryptex_ai import protect_secrets, register_pattern
 try:
-    from cryptex import secure_session
+    from cryptex_ai import secure_session
 except ImportError:
     # For compatibility - secure_session might not be in all versions
     secure_session = None

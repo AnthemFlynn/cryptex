@@ -66,8 +66,8 @@ uv add cryptex-ai
 
 ```bash
 # Clone the repository
-git clone https://github.com/anthemflynn/cryptex.git
-cd cryptex
+git clone https://github.com/AnthemFlynn/cryptex-ai.git
+cd cryptex-ai
 
 # Run basic example
 python examples/basic_usage.py
@@ -109,7 +109,7 @@ python examples/real_world_usage.py
 Each example follows these patterns:
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # 1. Import and decorate
 @protect_secrets(secrets=["openai_key", "github_token"])
@@ -182,7 +182,7 @@ async def timed_example(api_key: str) -> str:
 Most examples show how to extend with custom patterns:
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Add your organization's patterns
 register_pattern("company_token", r"ct_[a-f0-9]{32}", "{{COMPANY_TOKEN}}")
@@ -225,7 +225,7 @@ async def test_protection():
 ### 1. Application Startup
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 def setup_patterns():
     """Register any custom patterns at startup"""
@@ -239,7 +239,7 @@ def main():
 ### 2. Error Handling
 
 ```python
-from cryptex.core.exceptions import CryptexError
+from cryptex_ai.core.exceptions import CryptexError
 
 @protect_secrets(secrets=["openai_key"])
 async def robust_function(api_key: str) -> str:
@@ -278,8 +278,8 @@ After exploring the examples:
 1. **[Installation Guide](../guide/installation.md)** - Set up Cryptex in your project
 2. **[Basic Usage Guide](../guide/basic-usage.md)** - Learn all the features
 3. **[Custom Patterns](../guide/custom-patterns.md)** - Create organization-specific patterns
-4. **[GitHub Repository](https://github.com/anthemflynn/cryptex)** - Complete source code and API reference
+4. **[GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai)** - Complete source code and API reference
 
 ## Contributing Examples
 
-Have a great Cryptex example? We'd love to include it! See our [GitHub Repository](https://github.com/anthemflynn/cryptex) for how to contribute.
+Have a great Cryptex example? We'd love to include it! See our [GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai) for how to contribute.

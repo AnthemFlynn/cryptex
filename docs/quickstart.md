@@ -23,7 +23,7 @@ Choose your preferred installation method:
 Let's protect an OpenAI API call:
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 import openai
 
 @protect_secrets(secrets=["openai_key"])
@@ -87,7 +87,7 @@ async def process_repo(token: str, config_path: str) -> dict:
 For the 5% of users who need custom patterns:
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Register once in your application
 register_pattern(
@@ -122,7 +122,7 @@ Check if your application meets performance requirements:
 
 ```python
 import time
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key"])
 async def timed_function(api_key: str) -> str:

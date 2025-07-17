@@ -9,8 +9,8 @@ import re
 
 import pytest
 
-from cryptex import protect_secrets
-from cryptex.patterns import (
+from cryptex_ai import protect_secrets
+from cryptex_ai.patterns import (
     clear_custom_patterns,
     get_all_patterns,
     get_pattern,

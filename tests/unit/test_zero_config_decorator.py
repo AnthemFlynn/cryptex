@@ -7,7 +7,7 @@ or explicit configuration, using sensible defaults from the engine.
 
 import pytest
 
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 
 class TestZeroConfigDecorator:

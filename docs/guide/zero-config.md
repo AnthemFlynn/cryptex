@@ -19,7 +19,7 @@ This creates **cognitive overhead** and **deployment complexity**.
 Cryptex works **immediately** with zero setup:
 
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # This works instantly - no config needed!
 @protect_secrets(secrets=["openai_key"])
@@ -54,7 +54,7 @@ These work out of the box:
 For specialized needs, registration is simple:
 
 ```python
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Register once, use everywhere
 register_pattern("slack_token", r"xoxb-[0-9-a-zA-Z]{51}", "{{SLACK_TOKEN}}")
@@ -75,7 +75,7 @@ New users can start immediately:
 pip install cryptex-ai
 
 # This is the complete usage:
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key"])
 async def my_function(api_key: str) -> str:
@@ -236,14 +236,14 @@ register_pattern("my_pattern", r"...", "{{MY_PATTERN}}")
 
 ```python
 # DON'T DO THIS:
-from cryptex import CryptexConfig
+from cryptex_ai import CryptexConfig
 config = CryptexConfig()
 config.load_from_file("settings.toml")
 config.register_patterns()
 config.initialize()
 
 # Just import and use:
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 ```
 
 ## Migration from Config-Heavy Libraries
@@ -276,7 +276,7 @@ def my_function(openai_key: str, github_token: str):
 ```python
 # No config files needed!
 
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key", "github_token"])
 def my_function(openai_key: str, github_token: str):
@@ -305,7 +305,7 @@ Always try built-in patterns first:
 
 ```python
 # Check what's available
-from cryptex.patterns import list_patterns
+from cryptex_ai.patterns import list_patterns
 print(list_patterns())
 
 # Use built-ins when possible
@@ -318,7 +318,7 @@ If you need custom patterns, register them at application startup:
 
 ```python
 # main.py or __init__.py
-from cryptex.patterns import register_pattern
+from cryptex_ai.patterns import register_pattern
 
 # Register once at startup
 register_pattern("company_token", r"ct_[a-f0-9]{32}", "{{COMPANY_TOKEN}}")

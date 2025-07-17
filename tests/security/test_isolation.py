@@ -2,7 +2,7 @@
 
 import pytest
 
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 
 class TestSecretsIsolation:

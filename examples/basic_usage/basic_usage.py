@@ -22,9 +22,9 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Simple import - works immediately after: pip install cryptex-ai
-from cryptex import protect_secrets, register_pattern
+from cryptex_ai import protect_secrets, register_pattern
 try:
-    from cryptex import protect_all, protect_api_keys, protect_files
+    from cryptex_ai import protect_all, protect_api_keys, protect_files
 except ImportError:
     # For compatibility - convenience decorators might not be in all versions
     protect_all = protect_api_keys = protect_files = None

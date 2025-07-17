@@ -11,7 +11,7 @@ or setup. Built-in patterns handle 95% of real-world usage.
 
 ### Quick Start - Zero Config
 ```python
-from cryptex import protect_secrets
+from cryptex_ai import protect_secrets
 
 # Works immediately - no config needed!
 @protect_secrets(secrets=["openai_key"])
@@ -37,7 +37,7 @@ async def file_tool(file_path: str, token: str) -> str:
 
 ### Advanced: Custom Patterns (5% of users)
 ```python
-from cryptex import register_pattern, protect_secrets
+from cryptex_ai import register_pattern, protect_secrets
 
 # Register custom pattern once
 register_pattern(
@@ -78,12 +78,12 @@ async def slack_tool(token: str) -> str:
 - **Response sanitization**: Tool outputs cleaned before AI access
 
 For comprehensive documentation and examples:
-https://github.com/AnthemFlynn/cryptex
+https://github.com/AnthemFlynn/cryptex-ai
 """
 
 __version__ = "0.2.0"
-__author__ = "Cryptex Team"
-__email__ = "team@cryptex-ai.com"
+__author__ = "AnthemFlynn"
+__email__ = "noreply@github.com"
 
 # Core components
 from .core.api import secure_session

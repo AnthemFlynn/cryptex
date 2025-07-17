@@ -2,8 +2,8 @@
 
 import pytest
 
-from cryptex.core.engine import TemporalIsolationEngine
-from cryptex.core.exceptions import SanitizationError
+from cryptex_ai.core.engine import TemporalIsolationEngine
+from cryptex_ai.core.exceptions import SanitizationError
 
 # Middleware removed in universal architecture refactoring
 
@@ -124,7 +124,7 @@ class TestPatternCompilation:
         """Test that adding a pattern compiles it immediately."""
         import re
 
-        from cryptex.core.engine import SecretPattern
+        from cryptex_ai.core.engine import SecretPattern
 
         engine = TemporalIsolationEngine()
         initial_count = len(engine._compiled_patterns)
@@ -146,7 +146,7 @@ class TestPatternCompilation:
         """Test that removing a pattern removes its compilation."""
         import re
 
-        from cryptex.core.engine import SecretPattern
+        from cryptex_ai.core.engine import SecretPattern
 
         engine = TemporalIsolationEngine()
 

@@ -5,8 +5,8 @@ import re
 
 import pytest
 
-from cryptex.core.engine import SecretPattern, TemporalIsolationEngine
-from cryptex.core.exceptions import SanitizationError
+from cryptex_ai.core.engine import SecretPattern, TemporalIsolationEngine
+from cryptex_ai.core.exceptions import SanitizationError
 
 
 class TestCoreSecurityFeatures:
