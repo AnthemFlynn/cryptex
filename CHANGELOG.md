@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced caching and performance optimizations
 - Plugin system for custom secret sources
 
-## [0.2.0] - 2024-01-XX
+## [0.2.0] - 2025-07-17
 
 ### Added
 - **Universal Decorator Architecture**: Complete transformation from middleware to universal `@protect_secrets` decorator
@@ -58,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **<5% Memory Overhead**: Minimal memory footprint impact
 - **Zero Startup Time**: No dependencies or config loading overhead
 
-## [0.1.0] - 2024-01-01
+## [0.1.0] - 2025-07-15
 
 ### Added
 - Initial release of Cryptex
