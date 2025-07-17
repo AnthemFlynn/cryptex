@@ -1,6 +1,5 @@
 """Unit tests for core API functionality."""
 
-
 import pytest
 
 from cryptex.core.api import protect_secrets, secure_session
@@ -71,9 +70,9 @@ class TestSecureSession:
             assert isinstance(session, SecretManager)
 
     @pytest.mark.asyncio
-    async def test_secure_session_with_config(self, sample_config):
-        """Test secure_session with custom configuration."""
-        async with secure_session(config=sample_config) as session:
+    async def test_secure_session_zero_config(self):
+        """Test secure_session with zero configuration (built-in patterns)."""
+        async with secure_session() as session:
             assert isinstance(session, SecretManager)
 
     @pytest.mark.asyncio

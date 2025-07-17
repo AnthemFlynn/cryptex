@@ -250,9 +250,7 @@ def _analyze_call_stack_safely(frame: FrameType, max_depth: int = 5) -> str:
 
 
 # Alias decorators for specific use cases
-def cryptex_tool(
-    secrets: list[str] | None = None, **kwargs
-) -> Callable[[F], F]:
+def cryptex_tool(secrets: list[str] | None = None, **kwargs) -> Callable[[F], F]:
     """
     Explicit Cryptex decorator for FastMCP tools.
 
@@ -262,9 +260,7 @@ def cryptex_tool(
     return protect_tool(secrets=secrets, **kwargs)
 
 
-def cryptex_endpoint(
-    secrets: list[str] | None = None, **kwargs
-) -> Callable[[F], F]:
+def cryptex_endpoint(secrets: list[str] | None = None, **kwargs) -> Callable[[F], F]:
     """
     Explicit Cryptex decorator for FastAPI endpoints.
 

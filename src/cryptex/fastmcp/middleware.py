@@ -12,9 +12,9 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from ..config.loader import ConfigurationLoader, CryptexConfig
 from ..core.engine import TemporalIsolationEngine
 from ..decorators.mcp import MCPToolProtection
+from ..patterns import get_all_patterns
 
 logger = logging.getLogger(__name__)
 
@@ -67,8 +67,6 @@ class FastMCPCryptexMiddleware:
 
     def __init__(
         self,
-        config: CryptexConfig | None = None,
-        config_path: str | None = None,
         engine: TemporalIsolationEngine | None = None,
         auto_protect: bool = True,
         max_request_size: int = 10 * 1024 * 1024,  # 10MB default
@@ -78,15 +76,11 @@ class FastMCPCryptexMiddleware:
         Initialize FastMCP middleware.
 
         Args:
-            config: Pre-loaded CryptexConfig instance
-            config_path: Path to TOML configuration file
             engine: Pre-configured TemporalIsolationEngine instance
             auto_protect: Whether to automatically protect all tools
             max_request_size: Maximum request size in bytes (DoS protection)
             max_response_size: Maximum response size in bytes (DoS protection)
         """
-        self.config = config
-        self.config_path = config_path
         self.engine = engine
         self.auto_protect = auto_protect
         self.max_request_size = max_request_size
@@ -105,18 +99,10 @@ class FastMCPCryptexMiddleware:
         if self._initialized:
             return
 
-        # Load configuration
-        if self.config is None:
-            if self.config_path:
-                self.config = await CryptexConfig.from_toml(self.config_path)
-            else:
-                self.config = await ConfigurationLoader.load_with_fallbacks(
-                    ["cryptex.toml", "config/cryptex.toml", ".cryptex.toml"]
-                )
-
-        # Create engine
+        # Create engine with built-in patterns
         if self.engine is None:
-            self.engine = TemporalIsolationEngine(self.config.secret_patterns)
+            all_patterns = get_all_patterns()
+            self.engine = TemporalIsolationEngine(patterns=all_patterns)
 
         self._initialized = True
         logger.info("FastMCP Cryptex middleware initialized")
@@ -172,9 +158,12 @@ class FastMCPCryptexMiddleware:
 
         # Check request size limit
         import sys
+
         request_size = sys.getsizeof(request.params)
         if request_size > self.max_request_size:
-            raise ValueError(f"Request size {request_size} exceeds limit of {self.max_request_size} bytes")
+            raise ValueError(
+                f"Request size {request_size} exceeds limit of {self.max_request_size} bytes"
+            )
 
         # Sanitize the request parameters
         sanitized_data = await self.engine.sanitize_for_ai(request.params)
@@ -207,15 +196,18 @@ class FastMCPCryptexMiddleware:
 
         # Check response size limit
         import sys
+
         response_size = sys.getsizeof(response.result)
         if response_size > self.max_response_size:
-            logger.warning(f"Response size {response_size} exceeds limit of {self.max_response_size} bytes")
+            logger.warning(
+                f"Response size {response_size} exceeds limit of {self.max_response_size} bytes"
+            )
             # Return truncated response
             return MCPResponse(
                 result=f"Response truncated - size {response_size} exceeds limit of {self.max_response_size} bytes",
                 error=response.error,
                 id=response.id,
-                context={"truncated": True, "original_size": response_size}
+                context={"truncated": True, "original_size": response_size},
             )
 
         # Get context from request
@@ -354,8 +346,6 @@ class MCPServerProtection:
 
 async def setup_cryptex_protection(
     server,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_protect: bool = True,
     engine: TemporalIsolationEngine | None = None,
 ) -> MCPServerProtection:
@@ -364,8 +354,6 @@ async def setup_cryptex_protection(
 
     Args:
         server: FastMCP server instance
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
         auto_protect: Whether to automatically protect all tools
         engine: Pre-configured TemporalIsolationEngine instance
 
@@ -382,16 +370,14 @@ async def setup_cryptex_protection(
         # One-line setup
         protection = await setup_cryptex_protection(
             server,
-            config_path="cryptex.toml"
+            # Zero configuration required!
         )
 
         # All tools are now automatically protected
         ```
     """
     # Create middleware
-    middleware = FastMCPCryptexMiddleware(
-        config=config, config_path=config_path, engine=engine, auto_protect=auto_protect
-    )
+    middleware = FastMCPCryptexMiddleware(engine=engine, auto_protect=auto_protect)
 
     # Create server protection
     protection = MCPServerProtection(server, middleware)
@@ -404,8 +390,6 @@ async def setup_cryptex_protection(
 
 def create_protected_server(
     server_class,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_protect: bool = True,
     **server_kwargs,
 ):
@@ -414,8 +398,6 @@ def create_protected_server(
 
     Args:
         server_class: FastMCP server class to instantiate
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
         auto_protect: Whether to automatically protect all tools
         **server_kwargs: Additional arguments for server initialization
 
@@ -430,7 +412,6 @@ def create_protected_server(
         # Create server with protection pre-installed
         server = await create_protected_server(
             FastMCPServer,
-            config_path="cryptex.toml",
             host="localhost",
             port=8000
         )
@@ -442,12 +423,8 @@ def create_protected_server(
         server = server_class(**server_kwargs)
 
         # Install protection
-        await setup_cryptex_protection(
-            server, config_path=config_path, config=config, auto_protect=auto_protect
-        )
+        await setup_cryptex_protection(server, auto_protect=auto_protect)
 
         return server
 
     return asyncio.run(_create_and_protect())
-
-

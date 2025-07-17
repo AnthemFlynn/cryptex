@@ -24,7 +24,7 @@ class TestBasicIntegration:
         import cryptex
 
         assert hasattr(cryptex, "__version__")
-        assert cryptex.__version__ == "0.1.0"
+        assert cryptex.__version__ == "0.2.0"
 
     @pytest.mark.asyncio
     async def test_secret_manager_init(self):

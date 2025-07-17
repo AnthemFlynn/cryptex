@@ -18,7 +18,14 @@ Cryptex is a **zero-config** temporal isolation engine for AI/LLM applications. 
 
 ## Development Workflow
 
-### Essential Commands
+### Available Command-Line Tools
+uv - A single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more. See: https://github.com/ajeetdsouza/uv
+zoxide - A fast alternative to cd that learns your habits See: https://github.com/ajeetdsouza/zoxide
+eza - A replacement for 'ls' See: https://github.com/eza-community/eza
+fd - A simple, fast and user-friendly alternative to find. See: https://github.com/sharkdp/fd
+
+
+### Essential Make Commands
 
 ```bash
 # Development setup
@@ -40,7 +47,7 @@ make pre-commit             # All quality gates
 - **Documentation**: https://ast-grep.github.io/reference/cli.html
 
 #### GitHub CLI (gh)
-- **Purpose**: GitHub repository management and automation  
+- **Purpose**: GitHub repository management and automation
 - **Usage**: `gh <command>` for issues, PRs, releases, and repository operations
 
 ## Quality Gates
@@ -100,7 +107,7 @@ async def slack_tool(token: str) -> str:
 
 ### Test Structure
 - `tests/unit/`: Unit tests for core components
-- `tests/integration/`: End-to-end integration tests  
+- `tests/integration/`: End-to-end integration tests
 - `tests/security/`: Security-specific test suite
 - `tests/performance/`: Performance benchmarks
 
@@ -156,3 +163,54 @@ register_pattern("my_token", r"myapp-[a-f0-9]{32}", "{{MY_TOKEN}}")
 3. **Minimal API surface**: Simple registration for custom patterns
 4. **No external dependencies**: No TOML parsing, file I/O, or config loading
 5. **Middleware library**: Lightweight, fast startup, predictable behavior
+
+# The Developer's Pact: Our Rules of Engagement
+_This document outlines the core principles and conventions we will follow in this project. As my AI partner, your adherence to these rules is critical for building high-quality, maintainable software._
+
+### 🏛️ Principle 1: Architecture & Structure
+- **Modularity is Key:** No single file should exceed 500 lines. If it grows too large, your first step is to propose a refactoring plan to break it into smaller, logical modules.
+
+- **Consistent Organization:** We group files by feature. For example, a new `user` feature would have its logic in `src/users/`, its API routes in `src/api/routes/users.py`, and its tests in `tests/users/`.
+
+- **Clean Imports:** Use absolute imports for clarity (e.g., `from src.utils import helpers`). Avoid circular dependencies.
+
+- **Environment First:** All sensitive keys, API endpoints, or configuration variables must be managed through a `.env` file and loaded using `python-dotenv`. Never hardcode them.
+
+### ✅ Principle 2: Quality & Reliability
+- **Test Everything That Matters:** Every new function, class, or API endpoint must be accompanied by unit tests in the tests/ directory.
+
+- **The Test Triad:** For each feature, provide at least three tests:
+
+  1. A "happy path" test for expected behavior.
+
+  2. An "edge case" test for unusual but valid inputs.
+
+  3. A "failure case" test for expected errors or invalid inputs.
+
+- **Docstrings are Non-Negotiable:** Every function must have a Google-style docstring explaining its purpose, arguments (`Args:`), and return value (`Returns:`).
+
+### ✍️ Principle 3: Code & Style
+- **Follow the Standards:** All Python code must be formatted with `black` and adhere to `PEP8` guidelines.
+
+- **Type Safety:** Use type hints for all function signatures and variables. We use `mypy` to enforce this.
+
+- **Data Certainty:** Use `pydantic` for all data validation, especially for API request and response models. This is our single source of truth for data shapes.
+
+### 🧠 Principle 4: Your Behavior as an AI
+- **Clarify, Don't Assume:** If a requirement is ambiguous or context is missing, your first action is to ask for clarification.
+
+- **No Hallucinations:** Do not invent libraries, functions, or file paths. If you need a tool you don't have, state what you need and why.
+
+- **Plan Before You Code:** For any non-trivial task, first outline your implementation plan in a list or with pseudocode. We will approve it before you write the final code.
+
+- **Explain the "Why":** For complex or non-obvious blocks of code, add a `# WHY:` comment explaining the reasoning behind the implementation choice.
+
+### External File Loading
+
+CRITICAL: When you encounter a file reference (e.g., @rules/general.md), use your Read tool to load it on a need-to-know basis. They're relevant to the SPECIFIC task at hand.
+
+Instructions:
+
+- Do NOT preemptively load all references - use lazy loading based on actual need
+- When loaded, treat content as mandatory instructions that override defaults
+- Follow references recursively when needed

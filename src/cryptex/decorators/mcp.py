@@ -9,8 +9,8 @@ import functools
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from ..patterns import get_all_patterns
 from ..core.engine import TemporalIsolationEngine
+from ..patterns import get_all_patterns
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -153,11 +153,11 @@ def protect_tool(
             # AI sees: ai_completion_tool("Hello", "{{OPENAI_API_KEY}}")
             # Tool executes: with real API key "sk-real-key..."
             return await openai_api_call(prompt, api_key)
-            
+
         # For custom patterns (5% of users):
         from cryptex.patterns import register_pattern
         register_pattern("slack_token", r"xoxb-[0-9-a-zA-Z]{51}", "{{SLACK_TOKEN}}")
-        
+
         @protect_tool(secrets=["slack_token"])
         async def slack_tool(token: str) -> str:
             return await slack_api_call(token)
@@ -199,7 +199,7 @@ async def _get_or_create_protection(
     if engine is None:
         all_patterns = get_all_patterns()
         engine = TemporalIsolationEngine(patterns=all_patterns)
-    
+
     return MCPToolProtection(engine, secrets, auto_detect)
 
 

@@ -30,7 +30,7 @@ async def file_tool(file_path: str, token: str) -> str:
 
 ### Built-in Patterns (Work Out of the Box)
 - `openai_key`: OpenAI API keys (sk-...)
-- `anthropic_key`: Anthropic API keys (sk-ant-...)  
+- `anthropic_key`: Anthropic API keys (sk-ant-...)
 - `github_token`: GitHub tokens (ghp_...)
 - `file_path`: User file system paths (/Users/..., /home/...)
 - `database_url`: Database connection URLs (postgres://, mysql://, etc.)
@@ -62,7 +62,7 @@ async def slack_tool(token: str) -> str:
 
 ### Temporal Isolation Guarantees
 - **AI Context**: Sees safe placeholders like `{{OPENAI_API_KEY}}` or `/{USER_HOME}/...`
-- **Tool Execution**: Gets real values for actual operations  
+- **Tool Execution**: Gets real values for actual operations
 - **Response Sanitization**: Tool outputs cleaned before returning to AI
 - **Context Expiration**: Automatic cleanup prevents secret accumulation
 
@@ -96,21 +96,21 @@ from .core.engine import (
 )
 from .core.exceptions import CryptexError, SecurityError
 from .core.manager import SecretManager
-
-# Pattern registration API
-from .patterns import (
-    register_pattern,
-    unregister_pattern,
-    list_patterns,
-    get_pattern,
-    get_all_patterns,
-    clear_custom_patterns,
-    register_patterns,
-)
+from .decorators.fastapi import protect_endpoint
 
 # Decorators
 from .decorators.mcp import protect_tool
-from .decorators.fastapi import protect_endpoint
+
+# Pattern registration API
+from .patterns import (
+    clear_custom_patterns,
+    get_all_patterns,
+    get_pattern,
+    list_patterns,
+    register_pattern,
+    register_patterns,
+    unregister_pattern,
+)
 
 # Middleware integrations
 try:

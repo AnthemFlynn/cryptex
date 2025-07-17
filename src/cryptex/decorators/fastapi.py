@@ -9,8 +9,8 @@ import functools
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from ..patterns import get_all_patterns
 from ..core.engine import TemporalIsolationEngine
+from ..patterns import get_all_patterns
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -195,7 +195,7 @@ async def _get_or_create_endpoint_protection(
     if engine is None:
         all_patterns = get_all_patterns()
         engine = TemporalIsolationEngine(patterns=all_patterns)
-    
+
     return FastAPIEndpointProtection(engine, secrets, auto_detect)
 
 
@@ -272,7 +272,9 @@ def protect_database_endpoint() -> Callable[[F], F]:
     )
 
 
-def protect_external_api_endpoint(api_secrets: list[str] | None = None) -> Callable[[F], F]:
+def protect_external_api_endpoint(
+    api_secrets: list[str] | None = None,
+) -> Callable[[F], F]:
     """Convenience decorator for endpoints that call external APIs."""
     default_secrets = ["openai_key", "anthropic_key", "github_token"]
     secrets = (api_secrets or []) + default_secrets

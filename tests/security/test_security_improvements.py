@@ -18,7 +18,9 @@ class TestTracebackSanitization:
 
         # Create an exception with sensitive file path
         try:
-            raise ValueError("Test error from /Users/sensitive/api_key_sk-abc123/script.py")
+            raise ValueError(
+                "Test error from /Users/sensitive/api_key_sk-abc123/script.py"
+            )
         except ValueError as e:
             sanitized_error = await engine.sanitize_traceback(e)
 
@@ -96,11 +98,7 @@ class TestInputValidation:
         """Test validation of strings in nested data structures."""
         engine = TemporalIsolationEngine(max_string_length=50)
 
-        nested_data = {
-            "level1": {
-                "level2": ["short", "x" * 100, "also_short"]
-            }
-        }
+        nested_data = {"level1": {"level2": ["short", "x" * 100, "also_short"]}}
 
         with pytest.raises(SanitizationError) as exc_info:
             await engine.sanitize_for_ai(nested_data)
@@ -135,7 +133,7 @@ class TestPatternCompilation:
             name="test_pattern",
             pattern=re.compile(r"test_\d+"),
             placeholder_template="{{TEST_SECRET}}",
-            description="Test pattern"
+            description="Test pattern",
         )
 
         engine.add_pattern(new_pattern)
@@ -157,7 +155,7 @@ class TestPatternCompilation:
             name="temp_pattern",
             pattern=re.compile(r"temp_\d+"),
             placeholder_template="{{TEMP_SECRET}}",
-            description="Temporary pattern"
+            description="Temporary pattern",
         )
         engine.add_pattern(new_pattern)
 
@@ -229,7 +227,7 @@ class TestMiddlewareRequestLimits:
         middleware = CryptexMiddleware(
             app=app,
             max_request_size=100,  # Very small limit for testing
-            max_response_size=100
+            max_response_size=100,
         )
 
         # Middleware should have the configured limits
@@ -239,8 +237,7 @@ class TestMiddlewareRequestLimits:
     def test_fastmcp_middleware_request_size_limit(self):
         """Test FastMCP middleware request size limit."""
         middleware = FastMCPCryptexMiddleware(
-            max_request_size=100,
-            max_response_size=100
+            max_request_size=100, max_response_size=100
         )
 
         # Should have the configured limits
@@ -258,7 +255,7 @@ class TestMiddlewareRequestLimits:
         # Create a request with large parameters
         large_request = MCPRequest(
             method="test_method",
-            params={"data": "x" * 1000}  # Large data
+            params={"data": "x" * 1000},  # Large data
         )
 
         with pytest.raises(Exception) as exc_info:
@@ -277,7 +274,7 @@ class TestSecurityFeatureIntegration:
             max_data_size=1024,
             max_string_length=512,
             max_cache_size=100,
-            enable_background_cleanup=True
+            enable_background_cleanup=True,
         )
 
         # Test normal operation
@@ -301,7 +298,7 @@ class TestSecurityFeatureIntegration:
 
         engine = TemporalIsolationEngine(
             max_data_size=10 * 1024,  # 10KB limit
-            max_string_length=1024,   # 1KB string limit
+            max_string_length=1024,  # 1KB string limit
         )
 
         # Test data within limits

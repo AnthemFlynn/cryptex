@@ -16,8 +16,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
-from ..config.loader import ConfigurationLoader, CryptexConfig
 from ..core.engine import TemporalIsolationEngine
+from ..patterns import get_all_patterns
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +33,6 @@ class CryptexMiddleware(BaseHTTPMiddleware):
     def __init__(
         self,
         app: ASGIApp,
-        config: CryptexConfig | None = None,
-        config_path: str | None = None,
         engine: TemporalIsolationEngine | None = None,
         auto_protect: bool = True,
         sanitize_headers: bool = True,
@@ -49,8 +47,6 @@ class CryptexMiddleware(BaseHTTPMiddleware):
 
         Args:
             app: FastAPI application instance
-            config: Pre-loaded CryptexConfig instance
-            config_path: Path to TOML configuration file
             engine: Pre-configured TemporalIsolationEngine instance
             auto_protect: Whether to automatically protect all endpoints
             sanitize_headers: Whether to sanitize request/response headers
@@ -61,8 +57,6 @@ class CryptexMiddleware(BaseHTTPMiddleware):
             max_response_size: Maximum response size in bytes (DoS protection)
         """
         super().__init__(app)
-        self.config = config
-        self.config_path = config_path
         self.engine = engine
         self.auto_protect = auto_protect
         self.sanitize_headers = sanitize_headers
@@ -85,18 +79,10 @@ class CryptexMiddleware(BaseHTTPMiddleware):
         if self._initialized:
             return
 
-        # Load configuration
-        if self.config is None:
-            if self.config_path:
-                self.config = await CryptexConfig.from_toml(self.config_path)
-            else:
-                self.config = await ConfigurationLoader.load_with_fallbacks(
-                    ["cryptex.toml", "config/cryptex.toml", ".cryptex.toml"]
-                )
-
-        # Create engine
+        # Create engine with built-in patterns
         if self.engine is None:
-            self.engine = TemporalIsolationEngine(self.config.secret_patterns)
+            all_patterns = get_all_patterns()
+            self.engine = TemporalIsolationEngine(patterns=all_patterns)
 
         self._initialized = True
         logger.info("FastAPI Cryptex middleware initialized")
@@ -168,7 +154,9 @@ class CryptexMiddleware(BaseHTTPMiddleware):
                 if body:
                     # Check request size limit
                     if len(body) > self.max_request_size:
-                        raise ValueError(f"Request body size {len(body)} exceeds limit of {self.max_request_size} bytes")
+                        raise ValueError(
+                            f"Request body size {len(body)} exceeds limit of {self.max_request_size} bytes"
+                        )
 
                     try:
                         # Try to parse as JSON
@@ -207,7 +195,9 @@ class CryptexMiddleware(BaseHTTPMiddleware):
                     if body:
                         # Check response size limit
                         if len(body) > self.max_response_size:
-                            logger.warning(f"Response body size {len(body)} exceeds limit of {self.max_response_size} bytes")
+                            logger.warning(
+                                f"Response body size {len(body)} exceeds limit of {self.max_response_size} bytes"
+                            )
                             # Return truncated response
                             return Response(
                                 content=f"Response truncated - size {len(body)} exceeds limit of {self.max_response_size} bytes",
@@ -316,8 +306,6 @@ class FastAPIAppProtection:
     def _get_middleware_kwargs(self) -> dict[str, Any]:
         """Get middleware initialization kwargs."""
         return {
-            "config": self.middleware.config,
-            "config_path": self.middleware.config_path,
             "engine": self.middleware.engine,
             "auto_protect": self.middleware.auto_protect,
             "sanitize_headers": self.middleware.sanitize_headers,
@@ -340,8 +328,6 @@ class FastAPIAppProtection:
 
 def setup_cryptex_protection(
     app,
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_protect: bool = True,
     engine: TemporalIsolationEngine | None = None,
     sanitize_headers: bool = True,
@@ -354,8 +340,6 @@ def setup_cryptex_protection(
 
     Args:
         app: FastAPI application instance
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
         auto_protect: Whether to automatically protect all endpoints
         engine: Pre-configured TemporalIsolationEngine instance
         sanitize_headers: Whether to sanitize request/response headers
@@ -376,7 +360,7 @@ def setup_cryptex_protection(
         # One-line setup
         protection = setup_cryptex_protection(
             app,
-            config_path="cryptex.toml"
+            # Zero configuration required!
         )
 
         # All endpoints are now automatically protected
@@ -385,8 +369,6 @@ def setup_cryptex_protection(
     # Create middleware
     middleware = CryptexMiddleware(
         app=app,
-        config=config,
-        config_path=config_path,
         engine=engine,
         auto_protect=auto_protect,
         sanitize_headers=sanitize_headers,
@@ -412,8 +394,6 @@ def setup_cryptex_protection(
 
 
 def create_protected_app(
-    config_path: str | None = None,
-    config: CryptexConfig | None = None,
     auto_protect: bool = True,
     **app_kwargs,
 ):
@@ -421,8 +401,6 @@ def create_protected_app(
     Create a FastAPI application with Cryptex protection pre-installed.
 
     Args:
-        config_path: Path to TOML configuration file
-        config: Pre-loaded CryptexConfig instance
         auto_protect: Whether to automatically protect all endpoints
         **app_kwargs: Additional arguments for FastAPI initialization
 
@@ -435,7 +413,6 @@ def create_protected_app(
 
         # Create app with protection pre-installed
         app = create_protected_app(
-            config_path="cryptex.toml",
             title="My Protected API"
         )
         ```
@@ -451,10 +428,6 @@ def create_protected_app(
     app = FastAPI(**app_kwargs)
 
     # Install protection
-    setup_cryptex_protection(
-        app, config_path=config_path, config=config, auto_protect=auto_protect
-    )
+    setup_cryptex_protection(app, auto_protect=auto_protect)
 
     return app
-
-

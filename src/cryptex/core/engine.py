@@ -96,8 +96,6 @@ class ReadLockContext:
         self.lock.release_read()
 
 
-
-
 @dataclass
 class SecretPattern:
     """Definition of a secret pattern for detection and replacement."""

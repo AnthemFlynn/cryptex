@@ -21,7 +21,9 @@ class TestCoreSecurityFeatures:
         result = await engine.sanitize_for_ai(data)
 
         assert result.data != data
-        assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(result.data)
+        assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(
+            result.data
+        )
         assert "{{OPENAI_API_KEY}}" in str(result.data)
 
     @pytest.mark.asyncio
@@ -52,12 +54,16 @@ class TestCoreSecurityFeatures:
         engine = TemporalIsolationEngine()
 
         try:
-            raise ValueError("Error with sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234")
+            raise ValueError(
+                "Error with sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234"
+            )
         except ValueError as e:
             sanitized = await engine.sanitize_traceback(e)
 
             # Should not contain the API key
-            assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(sanitized)
+            assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(
+                sanitized
+            )
 
     def test_pattern_compilation(self):
         """Test pattern compilation."""
@@ -78,7 +84,7 @@ class TestCoreSecurityFeatures:
             name="test_pattern",
             pattern=re.compile(r"test_\d+"),
             placeholder_template="{{TEST_SECRET}}",
-            description="Test pattern"
+            description="Test pattern",
         )
         engine.add_pattern(pattern)
 
@@ -130,7 +136,7 @@ class TestCoreSecurityFeatures:
         # Test data with secrets
         test_data = {
             "api_key": "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234",
-            "message": "Process this data"
+            "message": "Process this data",
         }
 
         start_time = time.time()
@@ -140,7 +146,9 @@ class TestCoreSecurityFeatures:
         # Should complete quickly (under 100ms)
         assert duration < 0.1
         assert result.data is not None
-        assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(result.data)
+        assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in str(
+            result.data
+        )
 
 
 class TestSecurityIntegration:
@@ -150,9 +158,7 @@ class TestSecurityIntegration:
     async def test_full_security_pipeline(self):
         """Test complete security pipeline."""
         engine = TemporalIsolationEngine(
-            max_data_size=1024,
-            max_string_length=512,
-            max_cache_size=100
+            max_data_size=1024, max_string_length=512, max_cache_size=100
         )
 
         # Test with various secret types
@@ -162,7 +168,7 @@ class TestSecurityIntegration:
             "github_token": "ghp_abc123def456ghi789jkl012mno345pqr678stu",
             "file_path": "/Users/sensitive/project/secrets.txt",
             "database_url": "postgres://user:pass@localhost/db",
-            "message": "Process this data"
+            "message": "Process this data",
         }
 
         # Sanitize
@@ -171,7 +177,10 @@ class TestSecurityIntegration:
         # Verify all secrets are replaced
         result_str = str(result.data)
         assert "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234" not in result_str
-        assert "sk-ant-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz567abc890def123ghi456jkl789mno012pqr345stu678vwx901" not in result_str
+        assert (
+            "sk-ant-abc123def456ghi789jkl012mno345pqr678stu901vwx234yz567abc890def123ghi456jkl789mno012pqr345stu678vwx901"
+            not in result_str
+        )
         assert "ghp_abc123def456ghi789jkl012mno345pqr678stu" not in result_str
         assert "/Users/sensitive/project/secrets.txt" not in result_str
         assert "postgres://user:pass@localhost/db" not in result_str
@@ -188,7 +197,10 @@ class TestSecurityIntegration:
 
         # Test resolution
         resolved = await engine.resolve_for_execution(result.data, result.context_id)
-        assert resolved.data["openai_key"] == "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234"
+        assert (
+            resolved.data["openai_key"]
+            == "sk-abc123def456ghi789jkl012mno345pqr678stu901vwx234"
+        )
         assert resolved.resolved_count >= 4  # Should have resolved multiple secrets
 
     @pytest.mark.asyncio
@@ -199,7 +211,7 @@ class TestSecurityIntegration:
         async def sanitize_data(data_id: int):
             data = {
                 "id": data_id,
-                "secret": f"sk-{data_id:048d}"  # Different secret per task
+                "secret": f"sk-{data_id:048d}",  # Different secret per task
             }
             result = await engine.sanitize_for_ai(data)
             return result

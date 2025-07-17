@@ -15,14 +15,12 @@ class SecretManager:
     3. Secret Resolution Phase: Placeholders resolved during execution
     """
 
-    def __init__(self, config_path: str | None = None):
+    def __init__(self):
         """
-        Initialize SecretManager.
+        Initialize SecretManager with zero configuration required.
 
-        Args:
-            config_path: Optional path to configuration file
+        Uses built-in patterns for 95% of use cases.
         """
-        self.config_path = config_path
         self._initialized = False
 
     async def initialize(self) -> None:
@@ -30,10 +28,8 @@ class SecretManager:
         if self._initialized:
             return
 
-        # TODO: Load configuration from TOML file
-        # TODO: Initialize sanitization engine
-        # TODO: Initialize resolution engine
-        # TODO: Initialize security validator
+        # Zero configuration - uses built-in patterns
+        # Implementation uses TemporalIsolationEngine
 
         self._initialized = True
 
@@ -84,16 +80,3 @@ class SecretManager:
         # TODO: Implement actual resolution logic
         # This will be implemented in resolution-1 task
         return data
-
-    @classmethod
-    def from_config(cls, config_path: str) -> "SecretManager":
-        """
-        Create SecretManager from configuration file.
-
-        Args:
-            config_path: Path to configuration file
-
-        Returns:
-            Configured SecretManager instance
-        """
-        return cls(config_path=config_path)

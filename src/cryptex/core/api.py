@@ -14,7 +14,6 @@ F = TypeVar("F", bound=Callable[..., Any])
 def protect_secrets(
     secrets: list[str],
     paths: list[str] | None = None,
-    config_path: str | None = None,
 ) -> Callable[[F], F]:
     """
     Decorator to protect secrets in function arguments and return values.
@@ -25,7 +24,6 @@ def protect_secrets(
     Args:
         secrets: List of secret keys to protect
         paths: Optional list of file paths to protect
-        config_path: Optional path to configuration file
 
     Returns:
         Decorated function with automatic secret protection
@@ -61,7 +59,7 @@ def protect_secrets(
 
 
 @asynccontextmanager
-async def secure_session(config_path: str | None = None):
+async def secure_session():
     """
     Context manager for fine-grained secret isolation control.
 
@@ -69,7 +67,7 @@ async def secure_session(config_path: str | None = None):
     for cases where decorator-based protection is insufficient.
 
     Args:
-        config_path: Optional path to configuration file
+        None - uses built-in patterns for zero configuration
 
     Yields:
         SecretManager instance for manual secret operations
@@ -80,7 +78,7 @@ async def secure_session(config_path: str | None = None):
             ai_result = await ai_function(sanitized_data)
             resolved_result = await session.resolve_secrets(ai_result)
     """
-    manager = SecretManager(config_path=config_path)
+    manager = SecretManager()
     try:
         await manager.initialize()
         yield manager

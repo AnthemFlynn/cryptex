@@ -41,15 +41,7 @@ def sample_config() -> dict[str, Any]:
     }
 
 
-@pytest.fixture
-def config_file(temp_dir: Path, sample_config: dict[str, Any]) -> Path:
-    """Create a temporary config file."""
-    import tomli_w
-
-    config_path = temp_dir / "codename.toml"
-    with open(config_path, "wb") as f:
-        tomli_w.dump(sample_config, f)
-    return config_path
+# Config fixtures removed - zero-config architecture
 
 
 @pytest.fixture
