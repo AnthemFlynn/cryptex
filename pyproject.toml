@@ -69,6 +69,7 @@ markers = [
     "security: marks tests as security-focused",
     "performance: marks tests as performance benchmarks",
     "integration: marks tests as integration tests",
+    "benchmark: marks tests as benchmark tests",
 ]
 
 [tool.coverage.run]
