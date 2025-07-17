@@ -99,10 +99,10 @@ python examples/real_world_usage.py
 - [Basic Usage](basic-usage.md) - Core functionality demonstration
 
 ### 🌐 Web Frameworks  
-- [FastAPI Integration](fastapi.md) - RESTful API with secret protection
+- FastAPI Integration - RESTful API with secret protection (see GitHub examples)
 
 ### 🏢 Production Ready
-- [Real World Usage](real-world.md) - Multi-service production patterns
+- Real World Usage - Multi-service production patterns (see GitHub examples)
 
 ### 📋 Common Patterns
 
@@ -277,9 +277,9 @@ After exploring the examples:
 
 1. **[Installation Guide](../guide/installation.md)** - Set up Cryptex in your project
 2. **[Basic Usage Guide](../guide/basic-usage.md)** - Learn all the features
-3. **[API Reference](../api/)** - Complete API documentation
-4. **[Custom Patterns](../guide/custom-patterns.md)** - Create organization-specific patterns
+3. **[Custom Patterns](../guide/custom-patterns.md)** - Create organization-specific patterns
+4. **[GitHub Repository](https://github.com/anthemflynn/cryptex)** - Complete source code and API reference
 
 ## Contributing Examples
 
-Have a great Cryptex example? We'd love to include it! See our [Contributing Guide](../development/contributing.md) for how to submit examples.
+Have a great Cryptex example? We'd love to include it! See our [GitHub Repository](https://github.com/anthemflynn/cryptex) for how to contribute.
