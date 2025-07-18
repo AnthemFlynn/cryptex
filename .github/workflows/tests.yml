@@ -44,7 +44,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        uv run pytest tests/ -v --cov=src/cryptex --cov-report=xml --cov-report=term-missing
+        uv run pytest tests/ -v --cov=src/cryptex_ai --cov-report=xml --cov-report=term-missing
 
     - name: Security check with bandit
       run: |
@@ -80,13 +80,13 @@ jobs:
 
     - name: Test package installation
       run: |
-        python -c "import cryptex; print('✅ Package imports successfully')"
-        python -c "from cryptex import protect_secrets, list_patterns; print('✅ Core API works')"
+        python -c "import cryptex_ai; print('✅ Package imports successfully')"
+        python -c "from cryptex_ai import protect_secrets; print('✅ Core API works')"
 
     - name: Run examples
       run: |
-        python examples/basic_usage.py
-        python examples/real_world_usage.py
+        python examples/basic_usage/basic_usage.py
+        python examples/real_world_usage/real_world_usage.py
 
   security-scan:
     runs-on: ubuntu-latest

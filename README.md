@@ -10,7 +10,7 @@
 [![Package](https://img.shields.io/badge/package-cryptex--ai-blue)](https://github.com/AnthemFlynn/cryptex-ai)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/AnthemFlynn/cryptex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/AnthemFlynn/cryptex-ai/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
+[![CI](https://github.com/AnthemFlynn/cryptex-ai/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
 [![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex-ai)
 
 [**Documentation**](https://anthemflynn.github.io/cryptex-ai/) | [**Examples**](./examples/) | [**PyPI** (Coming Soon)](#) | [**Changelog**](./CHANGELOG.md)
@@ -114,7 +114,7 @@ async def process_data(repo_path: str, token: str, db_url: str) -> dict:
 For common patterns, use convenience decorators:
 
 ```python
-from cryptex import protect_api_keys, protect_files, protect_all
+from cryptex_ai import protect_api_keys, protect_files, protect_all
 
 @protect_api_keys()  # Protects OpenAI + Anthropic keys
 async def ai_function(openai_key: str, anthropic_key: str) -> str:
@@ -155,7 +155,7 @@ Cryptex includes battle-tested patterns that handle **95% of real-world usage**:
 For edge cases, register custom patterns programmatically:
 
 ```python
-from cryptex import register_pattern, protect_secrets
+from cryptex_ai import register_pattern, protect_secrets
 
 # Register custom pattern once
 register_pattern(
@@ -171,7 +171,7 @@ async def slack_integration(token: str) -> str:
     return await slack_api_call(token)
 
 # Bulk registration
-from cryptex import register_patterns
+from cryptex_ai import register_patterns
 register_patterns([
     ("discord_token", r"[MNO][A-Za-z\d]{23}\.[\w-]{6}\.[\w-]{27}", "{{DISCORD_TOKEN}}"),
     ("custom_key", r"myapp-[a-f0-9]{32}", "{{CUSTOM_KEY}}")
@@ -416,6 +416,6 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 **Made with ❤️ for the AI/LLM community**
 
-[⭐ Star us on GitHub](https://github.com/AnthemFlynn/cryptex) | [📖 Read the Docs](https://docs.cryptex-ai.com) | [💬 Join Discussions](https://github.com/AnthemFlynn/cryptex/discussions)
+[⭐ Star us on GitHub](https://github.com/AnthemFlynn/cryptex-ai) | [📖 Read the Docs](https://anthemflynn.github.io/cryptex-ai/) | [💬 Join Discussions](https://github.com/AnthemFlynn/cryptex-ai/discussions)
 
 </div>
