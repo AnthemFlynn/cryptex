@@ -12,7 +12,7 @@ Cryptex-AI provides bulletproof secrets isolation with **zero cognitive overhead
 
 ### Installation
 
-=== "pip (recommended)"
+=== "pip (default)"
 
     ```bash
     pip install cryptex-ai
@@ -55,7 +55,7 @@ graph LR
     C --> D[AI Processing]
     D --> E[Resolution]
     E --> F[Tool Execution]
-    
+
     C -.->|"sk-123 → {{OPENAI_KEY}}"| D
     E -.->|"{{OPENAI_KEY}} → sk-123"| F
 ```
@@ -63,7 +63,7 @@ graph LR
 ## Performance Requirements
 
 - **Sanitization Latency**: <5ms for 1KB payloads
-- **Resolution Latency**: <10ms for 10 placeholders  
+- **Resolution Latency**: <10ms for 10 placeholders
 - **Memory Overhead**: <5% of application memory
 
 ## Zero-Config Philosophy

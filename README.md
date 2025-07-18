@@ -368,9 +368,13 @@ We welcome contributions! Cryptex follows a **zero-config philosophy** - keep it
 ### Quick Development Setup
 
 ```bash
+# Install uv first (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone and set up the project
 git clone https://github.com/AnthemFlynn/cryptex-ai.git
 cd cryptex-ai
-make dev-setup  # Sets up environment
+make dev-setup  # Creates venv and installs dependencies with uv
 make test       # Run test suite
 make lint       # Code quality checks
 make format     # Code formatting

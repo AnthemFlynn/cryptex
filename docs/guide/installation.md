@@ -9,7 +9,7 @@ Cryptex-AI supports multiple installation methods to fit your workflow.
 
 ## Installation Methods
 
-### pip (Recommended)
+### pip (Default)
 
 The traditional and most widely supported method:
 

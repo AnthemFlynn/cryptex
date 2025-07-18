@@ -6,7 +6,7 @@ Get up and running with Cryptex-AI in minutes - no configuration required!
 
 Choose your preferred installation method:
 
-=== "pip (recommended)"
+=== "pip (default)"
 
     ```bash
     pip install cryptex-ai
@@ -30,17 +30,17 @@ import openai
 async def chat_with_ai(prompt: str, api_key: str) -> str:
     """AI sees placeholder, tool gets real key"""
     client = openai.AsyncOpenAI(api_key=api_key)
-    
+
     response = await client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}]
     )
-    
+
     return response.choices[0].message.content
 
 # Usage
 result = await chat_with_ai(
-    "Hello!", 
+    "Hello!",
     "sk-your-actual-openai-key-here"
 )
 ```
@@ -73,10 +73,10 @@ async def process_repo(token: str, config_path: str) -> dict:
     """Protect both GitHub token and file paths"""
     # AI sees: process_repo("{{GITHUB_TOKEN}}", "/{USER_HOME}/config.json")
     # Tool gets: real token and actual file path
-    
+
     with open(config_path) as f:
         config = json.load(f)
-    
+
     # Use real GitHub token for API calls
     headers = {"Authorization": f"token {token}"}
     # ... rest of implementation
@@ -129,17 +129,17 @@ async def timed_function(api_key: str) -> str:
     start = time.perf_counter()
     # Your function implementation
     duration = time.perf_counter() - start
-    
+
     # Should be < 5ms for sanitization + resolution
     assert duration < 0.015, f"Too slow: {duration:.3f}s"
-    
+
     return "result"
 ```
 
 ## Next Steps
 
 - **[Basic Usage Guide](guide/basic-usage.md)**: Learn all the features
-- **[Examples](examples/index.md)**: See real-world implementations  
+- **[Examples](examples/index.md)**: See real-world implementations
 - **[Custom Patterns](guide/custom-patterns.md)**: Create organization-specific patterns
 
 ## Zero Configuration Promise
