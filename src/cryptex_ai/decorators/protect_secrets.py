@@ -35,6 +35,12 @@ def protect_secrets(
     Returns:
         Decorated function with automatic secret protection
 
+    Raises:
+        ValueError: If secret pattern names are invalid or empty
+        PatternNotFoundError: If specified patterns are not registered
+        EngineInitializationError: If custom engine fails to initialize
+        TypeError: If decorated object is not a callable function
+
     Examples:
         ```python
         # Basic usage - works with any framework
@@ -92,7 +98,18 @@ def protect_secrets(
 
 
 class UniversalProtection:
-    """Protection handler for any function."""
+    """Protection handler for any function.
+
+    Manages the three-phase isolation process for protecting secrets
+    in function calls across any Python framework. Handles both sync
+    and async functions transparently.
+
+    Attributes:
+        secrets: List of secret pattern names to protect
+        auto_detect: Whether to automatically detect additional secrets
+        _engine: Internal temporal isolation engine instance
+        _initialized: Whether the protection has been initialized
+    """
 
     def __init__(
         self,
@@ -107,6 +124,9 @@ class UniversalProtection:
             engine: Temporal isolation engine (created if None)
             secrets: List of secret names to protect
             auto_detect: Whether to auto-detect additional secrets
+
+        Raises:
+            ValueError: If secrets list contains invalid pattern names
         """
         self.secrets = secrets
         self.auto_detect = auto_detect
@@ -136,6 +156,12 @@ class UniversalProtection:
 
         Returns:
             Function result with secrets properly isolated
+
+        Raises:
+            SanitizationError: If input sanitization fails
+            ResolutionError: If placeholder resolution fails
+            SecurityError: If secret isolation is compromised
+            PerformanceError: If operation exceeds performance thresholds
         """
         await self._ensure_initialized()
 
@@ -168,27 +194,77 @@ class UniversalProtection:
 
 # Convenience decorators for common patterns
 def protect_files(auto_detect: bool = True) -> Callable[[F], F]:
-    """Protect file path secrets."""
+    """Protect file path secrets.
+
+    Args:
+        auto_detect: Whether to auto-detect additional secrets
+
+    Returns:
+        Decorated function with file path protection
+
+    Raises:
+        PatternNotFoundError: If file_path pattern is not registered
+    """
     return protect_secrets(["file_path"], auto_detect=auto_detect)
 
 
 def protect_api_keys(auto_detect: bool = True) -> Callable[[F], F]:
-    """Protect API key secrets."""
+    """Protect API key secrets.
+
+    Args:
+        auto_detect: Whether to auto-detect additional secrets
+
+    Returns:
+        Decorated function with API key protection
+
+    Raises:
+        PatternNotFoundError: If API key patterns are not registered
+    """
     return protect_secrets(["openai_key", "anthropic_key"], auto_detect=auto_detect)
 
 
 def protect_tokens(auto_detect: bool = True) -> Callable[[F], F]:
-    """Protect token secrets."""
+    """Protect token secrets.
+
+    Args:
+        auto_detect: Whether to auto-detect additional secrets
+
+    Returns:
+        Decorated function with token protection
+
+    Raises:
+        PatternNotFoundError: If token patterns are not registered
+    """
     return protect_secrets(["github_token"], auto_detect=auto_detect)
 
 
 def protect_database(auto_detect: bool = True) -> Callable[[F], F]:
-    """Protect database URL secrets."""
+    """Protect database URL secrets.
+
+    Args:
+        auto_detect: Whether to auto-detect additional secrets
+
+    Returns:
+        Decorated function with database URL protection
+
+    Raises:
+        PatternNotFoundError: If database_url pattern is not registered
+    """
     return protect_secrets(["database_url"], auto_detect=auto_detect)
 
 
 def protect_all(auto_detect: bool = True) -> Callable[[F], F]:
-    """Protect all built-in secret types."""
+    """Protect all built-in secret types.
+
+    Args:
+        auto_detect: Whether to auto-detect additional secrets
+
+    Returns:
+        Decorated function with comprehensive secret protection
+
+    Raises:
+        PatternNotFoundError: If any built-in patterns are not registered
+    """
     return protect_secrets(
         ["openai_key", "anthropic_key", "github_token", "file_path", "database_url"],
         auto_detect=auto_detect,

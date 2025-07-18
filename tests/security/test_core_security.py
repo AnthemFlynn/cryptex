@@ -116,9 +116,7 @@ class TestCoreSecurityFeatures:
         engine = TemporalIsolationEngine(max_string_length=20)
 
         nested_data = {
-            "level1": {
-                "level2": ["short", "x" * 30]  # Second string exceeds limit
-            }
+            "level1": {"level2": ["short", "x" * 30]}  # Second string exceeds limit
         }
 
         with pytest.raises(SanitizationError) as exc_info:

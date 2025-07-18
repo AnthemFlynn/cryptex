@@ -116,9 +116,9 @@ class CryptexError(Exception):
         return {
             "error_type": self.__class__.__name__,
             "message": str(self),
-            "context_id": self._sanitize_message(self.context_id)
-            if self.context_id
-            else None,
+            "context_id": (
+                self._sanitize_message(self.context_id) if self.context_id else None
+            ),
             "error_code": self.error_code,
             "details": self._sanitize_details(self.details),
             "timestamp": self.timestamp,

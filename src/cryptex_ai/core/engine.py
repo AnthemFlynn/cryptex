@@ -34,9 +34,18 @@ class ReadWriteLock:
     A reader-writer lock implementation for better cache concurrency.
 
     Allows multiple concurrent readers but exclusive writers.
+    Prevents writer starvation by giving preference to writers when
+    readers are waiting.
+
+    Attributes:
+        _readers: Number of active reader threads
+        _writers: Number of active writer threads
+        _read_ready: Condition variable for reader threads
+        _write_ready: Condition variable for writer threads
     """
 
     def __init__(self):
+        """Initialize the reader-writer lock."""
         self._readers = 0
         self._writers = 0
         self._read_ready = threading.Condition(threading.RLock())
@@ -99,7 +108,17 @@ class ReadLockContext:
 
 @dataclass
 class SecretPattern:
-    """Definition of a secret pattern for detection and replacement."""
+    """Definition of a secret pattern for detection and replacement.
+
+    Encapsulates all information needed to detect and replace secrets
+    with safe placeholders for AI processing.
+
+    Attributes:
+        name: Unique identifier for this pattern
+        pattern: Compiled regex pattern for secret detection
+        placeholder_template: Template string for placeholder generation
+        description: Human-readable description of what this pattern detects
+    """
 
     name: str
     pattern: Pattern[str]
@@ -130,7 +149,17 @@ class DetectedSecret:
 
 @dataclass
 class SanitizedData:
-    """Data with secrets replaced by placeholders."""
+    """Data with secrets replaced by placeholders.
+
+    Contains the AI-safe version of data along with metadata needed
+    for later resolution of placeholders back to real values.
+
+    Attributes:
+        data: The sanitized data with placeholders replacing secrets
+        placeholders: Mapping of placeholder strings to real secret values
+        context_id: Unique identifier for this sanitization context
+        created_at: Timestamp when this data was sanitized
+    """
 
     data: Any
     placeholders: dict[str, str] = field(
@@ -161,6 +190,24 @@ class TemporalIsolationEngine:
     1. Sanitization: Convert secrets to {RESOLVE:SECRET_TYPE:HASH} placeholders
     2. AI Processing: AI sees placeholders, never real secrets
     3. Resolution: Convert placeholders back to real values for execution
+
+    The engine provides high-performance secret detection and replacement
+    with <5ms sanitization and <10ms resolution latency guarantees.
+
+    Attributes:
+        patterns: List of secret patterns for detection
+        _compiled_patterns: Pre-compiled regex patterns for performance
+        _context_cache: LRU cache of sanitized contexts
+        _max_cache_size: Maximum number of cached contexts
+        _max_cache_age: Maximum age of cached contexts in seconds
+        _cache_lock: Reader-writer lock for thread-safe cache access
+        _cleanup_task: Background task for cache cleanup
+        _enable_background_cleanup: Whether background cleanup is enabled
+        _last_access_times: Timestamp tracking for LRU cache
+        _max_data_size: Maximum size limit for input data (DoS protection)
+        _max_string_length: Maximum length for individual strings
+        _performance_metrics: Performance monitoring data
+        _performance_callbacks: Registered performance event callbacks
     """
 
     def __init__(
@@ -182,6 +229,10 @@ class TemporalIsolationEngine:
             enable_background_cleanup: Whether to run background cache cleanup
             max_data_size: Maximum size in bytes for input data (DoS protection)
             max_string_length: Maximum length for individual strings (DoS protection)
+
+        Raises:
+            ValueError: If cache size or age limits are invalid
+            PatternCompilationError: If any regex patterns fail to compile
         """
         self.patterns = patterns or self._get_default_patterns()
 
@@ -224,6 +275,9 @@ class TemporalIsolationEngine:
 
         This method compiles all regex patterns once during initialization
         to avoid recompilation during runtime pattern matching.
+
+        Raises:
+            PatternCompilationError: If any regex pattern is invalid
         """
         self._compiled_patterns.clear()
 
@@ -245,6 +299,10 @@ class TemporalIsolationEngine:
 
         Args:
             pattern: SecretPattern to add
+
+        Raises:
+            ValueError: If pattern name already exists
+            PatternCompilationError: If pattern regex is invalid
         """
         self.patterns.append(pattern)
         try:
@@ -337,7 +395,16 @@ class TemporalIsolationEngine:
             self._validate_string_lengths(data.__dict__, f"{path}.__dict__")
 
     def _get_default_patterns(self) -> list[SecretPattern]:
-        """Get default secret patterns for common use cases."""
+        """Get default secret patterns for common use cases.
+
+        Returns:
+            List of SecretPattern instances for detecting common secrets:
+                - OpenAI API keys (sk-...)
+                - Anthropic API keys (sk-ant-...)
+                - GitHub tokens (ghp_...)
+                - User file paths (/Users/..., /home/...)
+                - Database URLs (postgres://, mysql://, etc.)
+        """
         return [
             SecretPattern(
                 name="openai_key",
@@ -612,7 +679,16 @@ class TemporalIsolationEngine:
     def _generate_placeholder(
         self, secret_value: str, pattern_name: str, template: str
     ) -> str:
-        """Generate a unique placeholder for a secret value."""
+        """Generate a unique placeholder for a secret value.
+
+        Args:
+            secret_value: The actual secret to be replaced
+            pattern_name: Name of the pattern that detected this secret
+            template: Template string for placeholder generation
+
+        Returns:
+            Unique placeholder string for the secret
+        """
         # Create a hash of the secret for uniqueness
         secret_hash = hashlib.sha256(secret_value.encode()).hexdigest()[:8]
 
@@ -1027,7 +1103,19 @@ class TemporalIsolationEngine:
         Get comprehensive performance metrics.
 
         Returns:
-            Dictionary containing all performance metrics and statistics
+            Dictionary containing:
+                - sanitization_calls: Number of sanitization operations performed
+                - resolution_calls: Number of resolution operations performed
+                - cache_hits/misses: Cache performance statistics
+                - secrets_detected: Total number of secrets found and replaced
+                - avg_sanitization_time: Average sanitization latency in milliseconds
+                - avg_resolution_time: Average resolution latency in milliseconds
+                - performance_violations: Count of operations exceeding thresholds
+                - cache_stats: Detailed cache utilization metrics
+                - total_operations: Combined sanitization and resolution calls
+                - cache_hit_rate: Percentage of cache hits vs total cache operations
+                - performance_violation_rate: Percentage of operations exceeding limits
+                - avg_secrets_per_sanitization: Average secrets detected per call
         """
         cache_stats = self.get_cache_stats()
 

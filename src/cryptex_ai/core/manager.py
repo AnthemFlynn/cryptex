@@ -13,6 +13,12 @@ class SecretManager:
     1. Sanitization Phase: Convert secrets to AI-safe placeholders
     2. AI Processing Phase: AI sees placeholders, never real secrets
     3. Secret Resolution Phase: Placeholders resolved during execution
+
+    Provides a high-level interface for managing secret isolation
+    with automatic pattern management and context handling.
+
+    Attributes:
+        _initialized: Whether the manager has been initialized
     """
 
     def __init__(self):
@@ -20,6 +26,9 @@ class SecretManager:
         Initialize SecretManager with zero configuration required.
 
         Uses built-in patterns for 95% of use cases.
+
+        Raises:
+            SecurityError: If initialization fails
         """
         self._initialized = False
 

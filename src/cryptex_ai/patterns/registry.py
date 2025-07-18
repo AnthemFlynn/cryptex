@@ -17,10 +17,20 @@ class PatternRegistry:
     Thread-safe repository for secret patterns.
 
     Manages all patterns uniformly - no distinction between "built-in" and "custom".
+    Provides concurrent access protection using reentrant locks and follows
+    the Repository pattern for clean separation of concerns.
+
+    Attributes:
+        _patterns: Dictionary mapping pattern names to SecretPattern instances
+        _lock: Reentrant lock for thread-safe operations
     """
 
     def __init__(self):
-        """Initialize the pattern registry with default patterns."""
+        """Initialize the pattern registry with default patterns.
+
+        Raises:
+            PatternRegistrationError: If default patterns fail to load
+        """
         self._patterns: dict[str, SecretPattern] = {}
         self._lock = threading.RLock()
 

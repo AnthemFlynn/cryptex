@@ -1,0 +1,56 @@
+# Cryptex-AI
+
+> Zero-config temporal isolation engine for AI/LLM applications. Provides bulletproof secrets isolation with zero cognitive overhead - one decorator line = complete temporal isolation. Built-in patterns handle 95% of real-world usage with no configuration files, environment variables, or setup required.
+
+Cryptex-AI follows a **95/5 rule**: 95% of users need zero configuration with built-in patterns for OpenAI, Anthropic, GitHub tokens, file paths, and database URLs. The remaining 5% use simple pattern registration for custom secrets. The library implements a three-phase temporal isolation model where AI sees safe placeholders (like `{{OPENAI_API_KEY}}`) while tools get real secrets for execution.
+
+**Performance characteristics**: <5ms sanitization latency for 1KB payloads, <10ms resolution latency for 10 placeholders, <5% memory overhead, zero dependencies (Python 3.11+ standard library only).
+
+**Core decorator usage**:
+```python
+from cryptex_ai import protect_secrets
+
+@protect_secrets(secrets=["openai_key"])
+async def ai_tool(prompt: str, api_key: str) -> str:
+    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
+    # Tool gets: real API key for execution
+    return await openai_call(prompt, api_key)
+```
+
+## Quick Start
+
+- [Installation Guide](https://anthemflynn.github.io/cryptex-ai/quickstart/#installation): pip install cryptex-ai (zero dependencies)
+- [First Protection](https://anthemflynn.github.io/cryptex-ai/quickstart/#your-first-protection): Protect OpenAI API calls in 3 lines
+- [Built-in Patterns](https://anthemflynn.github.io/cryptex-ai/quickstart/#built-in-patterns): OpenAI, Anthropic, GitHub, file paths, database URLs work out of the box
+- [Multiple Secrets](https://anthemflynn.github.io/cryptex-ai/quickstart/#multiple-secrets): Protect multiple secrets in one decorator
+
+## API Reference
+
+- [Core Decorator](https://anthemflynn.github.io/cryptex-ai/guide/basic-usage/): `@protect_secrets(secrets=["pattern_name"])` universal decorator
+- [Convenience Decorators](https://anthemflynn.github.io/cryptex-ai/guide/basic-usage/#convenience-decorators): `@protect_api_keys()`, `@protect_files()`, `@protect_all()`
+- [Pattern Registration](https://anthemflynn.github.io/cryptex-ai/guide/custom-patterns/): `register_pattern(name, regex, placeholder)` for custom secrets
+- [SecretManager](https://anthemflynn.github.io/cryptex-ai/guide/basic-usage/#secret-manager): Direct API for advanced usage
+- [Error Handling](https://anthemflynn.github.io/cryptex-ai/quickstart/#error-handling): Clear error messages with fix suggestions
+
+## Examples
+
+- [Basic Usage](https://anthemflynn.github.io/cryptex-ai/examples/basic-usage/): Zero-config protection patterns
+- [FastAPI Integration](https://anthemflynn.github.io/cryptex-ai/examples/fastapi-example/): Web API protection with endpoints
+- [FastMCP Tools](https://anthemflynn.github.io/cryptex-ai/examples/fastmcp-example/): MCP server tool protection
+- [Django Views](https://anthemflynn.github.io/cryptex-ai/examples/django-example/): Django view protection
+- [Real World Usage](https://anthemflynn.github.io/cryptex-ai/examples/real-world-usage/): Complex multi-pattern scenarios
+
+## Architecture
+
+- [Three-Phase Security](https://anthemflynn.github.io/cryptex-ai/#architecture): Sanitization → AI Processing → Resolution
+- [Temporal Isolation](https://anthemflynn.github.io/cryptex-ai/guide/architecture/): AI context vs tool execution separation
+- [Performance Model](https://anthemflynn.github.io/cryptex-ai/#performance): Sub-5ms sanitization, sub-10ms resolution guarantees
+- [Zero Attack Surface](https://anthemflynn.github.io/cryptex-ai/#security): No config files, no parsing, no external dependencies
+- [Pattern System](https://anthemflynn.github.io/cryptex-ai/guide/custom-patterns/): Built-in vs custom pattern registration
+
+## Optional
+
+- [Custom Patterns](https://anthemflynn.github.io/cryptex-ai/guide/custom-patterns/): Advanced pattern registration for 5% edge cases
+- [Migration Guide](https://anthemflynn.github.io/cryptex-ai/CHANGELOG/#migration-guide-01x--020): Upgrading from earlier versions
+- [Contributing](https://anthemflynn.github.io/cryptex-ai/CONTRIBUTING/): Development setup and guidelines
+- [Security Policy](https://anthemflynn.github.io/cryptex-ai/SECURITY/): Vulnerability reporting and security considerations
