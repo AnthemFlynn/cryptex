@@ -427,7 +427,9 @@ class TemporalIsolationEngine:
             self._update_sanitization_metrics(duration_ms, len(detected_secrets))
 
             # Check performance threshold (skip in CI environments)
-            if duration_ms > 5.0 and os.environ.get("CRYPTEX_SKIP_PERF_CHECKS") != "1":  # 5ms threshold
+            if (
+                duration_ms > 5.0 and os.environ.get("CRYPTEX_SKIP_PERF_CHECKS") != "1"
+            ):  # 5ms threshold
                 self._performance_metrics["performance_violations"] += 1
                 await self._trigger_performance_callbacks(
                     "sanitization_timeout",
