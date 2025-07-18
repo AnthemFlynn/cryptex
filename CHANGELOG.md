@@ -9,8 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned for v0.4.0
 - Enhanced pattern validation and error reporting
+
+### Planned for v0.5.0
 - Advanced caching and performance optimizations
+
+### Planned for v0.6.0
 - Plugin system for custom secret sources
+
+## [0.3.1] - 2025-07-18
+
+### Changed
+- **PyPI Links**: Updated README badges to show live PyPI package links
+- **Documentation Links**: Fixed all PyPI references to point to published package
+- **Roadmap**: Updated version numbering to reflect completed milestones
+
+### Fixed
+- **Package Badges**: Replaced static badges with dynamic PyPI version badges
+- **Link Consistency**: Ensured all documentation points to correct PyPI package
 
 ## [0.3.0] - 2025-07-18
 

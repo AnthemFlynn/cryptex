@@ -6,14 +6,13 @@
 
 *Bulletproof secrets isolation with zero cognitive overhead*
 
-[![Python Support](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
-[![Package](https://img.shields.io/badge/package-cryptex--ai-blue)](https://github.com/AnthemFlynn/cryptex-ai)
-[![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/AnthemFlynn/cryptex-ai)
+[![Package](https://img.shields.io/pypi/v/cryptex-ai?label=PyPI)](https://pypi.org/project/cryptex-ai/)
+[![Python Support](https://img.shields.io/pypi/pyversions/cryptex-ai)](https://pypi.org/project/cryptex-ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![CI](https://github.com/AnthemFlynn/cryptex-ai/workflows/Main%20CI%2FCD%20Pipeline/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
 [![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex-ai)
 
-[**Documentation**](https://anthemflynn.github.io/cryptex-ai/) | [**Examples**](./examples/) | [**PyPI** (Coming Soon)](#) | [**Changelog**](./CHANGELOG.md)
+[**Documentation**](https://anthemflynn.github.io/cryptex-ai/) | [**Examples**](./examples/) | [**PyPI**](https://pypi.org/project/cryptex-ai/) | [**Changelog**](./CHANGELOG.md)
 
 </div>
 
@@ -394,9 +393,10 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 📈 Roadmap
 
-- **v0.3.0**: Enhanced pattern validation and error reporting
-- **v0.4.0**: Advanced caching and performance optimizations
-- **v0.5.0**: Plugin system for custom secret sources
+- **v0.3.1** ✅: Repository migration, documentation site, CI/CD improvements
+- **v0.4.0**: Enhanced pattern validation and error reporting
+- **v0.5.0**: Advanced caching and performance optimizations
+- **v0.6.0**: Plugin system for custom secret sources
 - **v1.0.0**: Production hardening and stability guarantees
 
 ---
