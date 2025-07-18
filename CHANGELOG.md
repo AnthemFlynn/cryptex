@@ -7,10 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Planned for v0.4.0
 - Enhanced pattern validation and error reporting
 - Advanced caching and performance optimizations
 - Plugin system for custom secret sources
+
+## [0.3.0] - 2025-07-18
+
+### Added
+- **GitHub Issue Templates**: Comprehensive bug report, feature request, and security issue templates
+- **Release Automation**: Pre-release and release workflows with automated PyPI publishing
+- **Documentation Site**: Full MkDocs-based documentation deployed to GitHub Pages
+- **CI/CD Improvements**: Consolidated main workflow with parallel job execution
+- **Codecov Integration**: Code coverage reporting with proper configuration
+
+### Changed
+- **Repository Rename**: Complete migration from `cryptex` to `cryptex-ai` across all files
+- **Documentation Updates**: Consistent naming and improved installation guides
+- **Development Workflow**: Clarified `uv` requirement in README development setup
+- **CI Environment**: Added `CRYPTEX_SKIP_PERF_CHECKS` for stable CI test runs
+
+### Fixed
+- **CI/CD Pipeline**: Fixed all workflow issues including dependency installation and test execution
+- **Documentation Naming**: Corrected all references to use `cryptex-ai` consistently
+- **Build Configuration**: Updated Makefile project name from `codename` to `cryptex_ai`
+
+### Documentation
+- **Installation Guides**: Changed "pip (recommended)" to "pip (default)" to reflect standard practice
+- **Complete Rebranding**: All documentation now uses consistent `cryptex-ai` naming
+- **Enhanced Examples**: Updated all example code to use correct import statements
 
 ## [0.2.0] - 2025-07-17
 
