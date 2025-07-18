@@ -10,7 +10,7 @@
 [![Package](https://img.shields.io/badge/package-cryptex--ai-blue)](https://github.com/AnthemFlynn/cryptex-ai)
 [![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/AnthemFlynn/cryptex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/AnthemFlynn/cryptex-ai/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
+[![CI](https://github.com/AnthemFlynn/cryptex-ai/workflows/Main%20CI%2FCD%20Pipeline/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
 [![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex-ai)
 
 [**Documentation**](https://anthemflynn.github.io/cryptex-ai/) | [**Examples**](./examples/) | [**PyPI** (Coming Soon)](#) | [**Changelog**](./CHANGELOG.md)
