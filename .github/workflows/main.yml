@@ -20,10 +20,8 @@ jobs:
     - name: Set up Python 3.11
       run: uv python install 3.11
       
-    - name: Create virtual environment and install dependencies
-      run: |
-        uv venv
-        uv sync --dev
+    - name: Install dependencies
+      run: uv sync --dev
       
     - name: Run ruff check
       run: uv run ruff check src/ tests/
@@ -54,10 +52,8 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
       
-    - name: Create virtual environment and install dependencies
-      run: |
-        uv venv
-        uv sync --dev
+    - name: Install dependencies
+      run: uv sync --dev
       
     - name: Run tests with coverage
       run: uv run pytest tests/ -v --cov=src/cryptex_ai --cov-report=xml --cov-report=term-missing
@@ -82,10 +78,8 @@ jobs:
     - name: Set up Python 3.11
       run: uv python install 3.11
       
-    - name: Create virtual environment and install dependencies
-      run: |
-        uv venv
-        uv sync --dev
+    - name: Install dependencies
+      run: uv sync --dev
       
     - name: Run security tests
       run: uv run pytest tests/security/ -v
@@ -121,6 +115,9 @@ jobs:
     - name: Set up Python 3.11
       run: uv python install 3.11
       
+    - name: Install dependencies
+      run: uv sync --dev
+      
     - name: Build package
       run: uv build
       
@@ -151,8 +148,8 @@ jobs:
     - name: Set up Python 3.11
       run: uv python install 3.11
       
-    - name: Install build dependencies
-      run: uv pip install build
+    - name: Install dependencies
+      run: uv sync --dev
       
     - name: Build package
       run: uv run python -m build
