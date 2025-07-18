@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
 # Simple import - works immediately after: pip install cryptex-ai
 from cryptex_ai import protect_secrets, register_pattern
+
 try:
     from cryptex_ai import protect_all, protect_api_keys, protect_files
 except ImportError:

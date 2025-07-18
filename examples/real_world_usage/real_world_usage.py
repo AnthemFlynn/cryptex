@@ -26,6 +26,7 @@ if __name__ == "__main__":
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from cryptex_ai import protect_secrets, register_pattern
+
 try:
     from cryptex_ai import secure_session
 except ImportError:
@@ -454,7 +455,7 @@ async def context_manager_demo():
         return
 
     # Using secure_session for fine-grained control
-    async with secure_session() as session:
+    async with secure_session():
         # Original data with secrets
         sensitive_request = {
             "user_id": "user_123",
@@ -475,7 +476,7 @@ async def context_manager_demo():
                 sanitized_request[key] = "{{DATABASE_URL}}"
             elif key == "file_path" and value.startswith("/"):
                 sanitized_request[key] = value.replace("/Users/developer", "/{USER_HOME}")
-        
+
         print(f"🤖 AI sees sanitized data: {sanitized_request}")
 
         # AI processing happens here with safe data
