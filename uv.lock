@@ -326,10 +326,11 @@ ml = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "psutil" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-benchmark" },
-    { name = "pytest-cov" },
+    { name = "bandit" },
+    { name = "black" },
+    { name = "mypy" },
+    { name = "ruff" },
+    { name = "safety" },
 ]
 
 [package.metadata]
@@ -340,11 +341,11 @@ requires-dist = [
     { name = "bump2version", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.5.0" },
     { name = "numpy", marker = "extra == 'ml'", specifier = ">=1.24.0" },
-    { name = "psutil", marker = "extra == 'dev'", specifier = ">=5.9.0" },
+    { name = "psutil", marker = "extra == 'dev'", specifier = ">=6.1.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.21.0" },
-    { name = "pytest-benchmark", marker = "extra == 'dev'", specifier = ">=4.0.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=1.1.0" },
+    { name = "pytest-benchmark", marker = "extra == 'dev'", specifier = ">=5.1.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=6.2.1" },
     { name = "pytest-watch", marker = "extra == 'dev'", specifier = ">=4.2.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.0.287" },
     { name = "safety", marker = "extra == 'dev'", specifier = ">=2.3.5" },
@@ -355,10 +356,11 @@ provides-extras = ["dev", "ml"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "psutil", specifier = ">=6.1.1" },
-    { name = "pytest-asyncio", specifier = ">=1.1.0" },
-    { name = "pytest-benchmark", specifier = ">=5.1.0" },
-    { name = "pytest-cov", specifier = ">=6.2.1" },
+    { name = "bandit", specifier = ">=1.8.6" },
+    { name = "black", specifier = ">=25.1.0" },
+    { name = "mypy", specifier = ">=1.17.0" },
+    { name = "ruff", specifier = ">=0.12.3" },
+    { name = "safety", specifier = ">=3.6.0" },
 ]
 
 [[package]]
