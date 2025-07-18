@@ -126,13 +126,13 @@ jobs:
       
     - name: Test package installation
       run: |
-        python -c "import cryptex_ai; print('✅ Package imports successfully')"
-        python -c "from cryptex_ai import protect_secrets; print('✅ Core API works')"
+        uv run python -c "import cryptex_ai; print('✅ Package imports successfully')"
+        uv run python -c "from cryptex_ai import protect_secrets; print('✅ Core API works')"
         
     - name: Run examples
       run: |
-        python examples/basic_usage/basic_usage.py
-        python examples/real_world_usage/real_world_usage.py
+        uv run python examples/basic_usage/basic_usage.py
+        uv run python examples/real_world_usage/real_world_usage.py
 
   build:
     runs-on: ubuntu-latest
