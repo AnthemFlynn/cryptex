@@ -151,13 +151,5 @@ ignore_errors = true
 exclude_dirs = ["tests"]
 skips = ["B101", "B601"]
 
-[dependency-groups]
-dev = [
-    "bandit>=1.8.6",
-    "black>=25.1.0",
-    "mypy>=1.17.0",
-    "ruff>=0.12.3",
-    "safety>=3.6.0",
-]
 
 

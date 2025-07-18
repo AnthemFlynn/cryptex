@@ -324,15 +324,6 @@ ml = [
     { name = "scikit-learn" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "bandit" },
-    { name = "black" },
-    { name = "mypy" },
-    { name = "ruff" },
-    { name = "safety" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.7.5" },
@@ -353,15 +344,6 @@ requires-dist = [
     { name = "twine", marker = "extra == 'dev'", specifier = ">=4.0.0" },
 ]
 provides-extras = ["dev", "ml"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "bandit", specifier = ">=1.8.6" },
-    { name = "black", specifier = ">=25.1.0" },
-    { name = "mypy", specifier = ">=1.17.0" },
-    { name = "ruff", specifier = ">=0.12.3" },
-    { name = "safety", specifier = ">=3.6.0" },
-]
 
 [[package]]
 name = "cryptography"
