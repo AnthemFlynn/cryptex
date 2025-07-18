@@ -8,7 +8,7 @@
 
 [![Python Support](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
 [![Package](https://img.shields.io/badge/package-cryptex--ai-blue)](https://github.com/AnthemFlynn/cryptex-ai)
-[![Status](https://img.shields.io/badge/status-pre--release-red)](https://github.com/AnthemFlynn/cryptex-ai)
+[![Status](https://img.shields.io/badge/status-beta-orange)](https://github.com/AnthemFlynn/cryptex-ai)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/AnthemFlynn/cryptex-ai/workflows/Tests/badge.svg)](https://github.com/AnthemFlynn/cryptex-ai/actions)
 [![Coverage](https://codecov.io/gh/AnthemFlynn/cryptex-ai/branch/main/graph/badge.svg)](https://codecov.io/gh/AnthemFlynn/cryptex-ai)

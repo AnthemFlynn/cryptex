@@ -81,7 +81,7 @@ For comprehensive documentation and examples:
 https://github.com/AnthemFlynn/cryptex-ai
 """
 
-__version__ = "1.0.0"
+__version__ = "0.3.0"
 __author__ = "AnthemFlynn"
 __email__ = "noreply@github.com"
 
