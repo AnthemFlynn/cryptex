@@ -299,7 +299,7 @@ toml = [
 ]
 
 [[package]]
-name = "cryptex"
+name = "cryptex-ai"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -309,6 +309,7 @@ dev = [
     { name = "build" },
     { name = "bump2version" },
     { name = "mypy" },
+    { name = "psutil" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-benchmark" },
@@ -325,7 +326,10 @@ ml = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "psutil" },
+    { name = "pytest-asyncio" },
     { name = "pytest-benchmark" },
+    { name = "pytest-cov" },
 ]
 
 [package.metadata]
@@ -336,6 +340,7 @@ requires-dist = [
     { name = "bump2version", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.5.0" },
     { name = "numpy", marker = "extra == 'ml'", specifier = ">=1.24.0" },
+    { name = "psutil", marker = "extra == 'dev'", specifier = ">=5.9.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.21.0" },
     { name = "pytest-benchmark", marker = "extra == 'dev'", specifier = ">=4.0.0" },
@@ -349,7 +354,12 @@ requires-dist = [
 provides-extras = ["dev", "ml"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest-benchmark", specifier = ">=5.1.0" }]
+dev = [
+    { name = "psutil", specifier = ">=6.1.1" },
+    { name = "pytest-asyncio", specifier = ">=1.1.0" },
+    { name = "pytest-benchmark", specifier = ">=5.1.0" },
+    { name = "pytest-cov", specifier = ">=6.2.1" },
+]
 
 [[package]]
 name = "cryptography"
