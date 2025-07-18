@@ -1,6 +1,6 @@
 # Zero-Config Philosophy
 
-Cryptex is built on the principle that **middleware libraries should require zero configuration**. This guide explains our approach and why it matters.
+Cryptex-AI is built on the principle that **middleware libraries should require zero configuration**. This guide explains our approach and why it matters.
 
 ## The Problem with Configuration
 
@@ -14,9 +14,9 @@ Traditional secret management libraries often require:
 
 This creates **cognitive overhead** and **deployment complexity**.
 
-## The Cryptex Solution
+## The Cryptex-AI Solution
 
-Cryptex works **immediately** with zero setup:
+Cryptex-AI works **immediately** with zero setup:
 
 ```python
 from cryptex_ai import protect_secrets
@@ -31,7 +31,7 @@ async def ai_function(api_key: str) -> str:
 
 ## The 95/5 Rule
 
-Cryptex follows the **95/5 principle**:
+Cryptex-AI follows the **95/5 principle**:
 
 - **95% of users** get perfect functionality with built-in patterns
 - **5% of users** use the simple registration API for custom needs

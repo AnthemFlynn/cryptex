@@ -1,10 +1,10 @@
 # Basic Usage
 
-Learn the core features of Cryptex for temporal isolation of secrets in AI/LLM applications.
+Learn the core features of Cryptex-AI for temporal isolation of secrets in AI/LLM applications.
 
 ## The Core Concept
 
-Cryptex provides **temporal isolation** - AI systems see placeholder values while tools receive real secrets:
+Cryptex-AI provides **temporal isolation** - AI systems see placeholder values while tools receive real secrets:
 
 ```python
 from cryptex_ai import protect_secrets

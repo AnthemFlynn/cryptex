@@ -1,12 +1,12 @@
 # Basic Usage Example
 
-This example demonstrates the core functionality of Cryptex with simple, clear examples.
+This example demonstrates the core functionality of Cryptex-AI with simple, clear examples.
 
 ## Complete Example Code
 
 ```python
 """
-Basic Cryptex Usage Example
+Basic Cryptex-AI Usage Example
 
 Demonstrates:
 - Single secret protection
@@ -118,7 +118,7 @@ async def database_operation(query: str, db_url: str) -> dict:
 
 
 async def performance_test():
-    """Demonstrate Cryptex performance characteristics"""
+    """Demonstrate Cryptex-AI performance characteristics"""
     print("\n" + "="*50)
     print("PERFORMANCE TESTING")
     print("="*50)
@@ -139,7 +139,7 @@ async def performance_test():
     print(f"Average time per protected call: {avg_time:.2f}ms")
     print(f"Total overhead for {iterations} calls: {total_time:.3f}s")
     
-    # Cryptex should add <5ms overhead per call
+    # Cryptex-AI should add <5ms overhead per call
     if avg_time < 5.0:
         print("✅ Performance requirement met (<5ms per call)")
     else:
@@ -147,7 +147,7 @@ async def performance_test():
 
 
 async def error_handling_demo():
-    """Demonstrate error handling with Cryptex"""
+    """Demonstrate error handling with Cryptex-AI"""
     print("\n" + "="*50)
     print("ERROR HANDLING DEMONSTRATION")
     print("="*50)
@@ -172,7 +172,7 @@ async def error_handling_demo():
 
 async def main():
     """Main demonstration function"""
-    print("CRYPTEX BASIC USAGE DEMONSTRATION")
+    print("CRYPTEX-AI BASIC USAGE DEMONSTRATION")
     print("="*50)
     
     # Show available patterns
@@ -256,7 +256,7 @@ if __name__ == "__main__":
 ### Prerequisites
 
 ```bash
-# Install Cryptex
+# Install Cryptex-AI
 pip install cryptex-ai
 
 # Or with uv
@@ -273,7 +273,7 @@ python basic_usage.py
 ## Expected Output
 
 ```
-CRYPTEX BASIC USAGE DEMONSTRATION
+CRYPTEX-AI BASIC USAGE DEMONSTRATION
 ==================================================
 Available built-in patterns: ['openai_key', 'anthropic_key', 'github_token', 'file_path', 'database_url']
 
@@ -358,7 +358,7 @@ async def function(token: str, api_key: str) -> dict:
 
 ### Built-in Pattern Recognition
 
-Cryptex automatically recognizes common secret formats:
+Cryptex-AI automatically recognizes common secret formats:
 
 | Input | AI Sees | Pattern |
 |-------|---------|---------|

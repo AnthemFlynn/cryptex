@@ -1,0 +1,121 @@
+name: Security Issue
+description: Report a security vulnerability in Cryptex-AI
+title: "[Security]: "
+labels: ["security", "critical"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **⚠️ SECURITY NOTICE ⚠️**
+        
+        If this is a security vulnerability that could expose secrets or compromise temporal isolation,
+        please **DO NOT** file a public issue. Instead, please report it privately via:
+        
+        - GitHub Security Advisories: https://github.com/AnthemFlynn/cryptex-ai/security/advisories
+        - Email: [security contact if available]
+        
+        Only use this public form for security-related **improvements** or **hardening** suggestions
+        that do not disclose vulnerabilities.
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      description: Please confirm this is not a vulnerability disclosure
+      options:
+        - label: This is NOT a vulnerability that could expose secrets or compromise security
+          required: true
+        - label: This is a suggestion for security improvement or hardening
+          required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Security Issue Type
+      description: What type of security issue is this?
+      options:
+        - "Security Hardening Suggestion"
+        - "Security Best Practice Recommendation"
+        - "Documentation Security Improvement"
+        - "Security Test Enhancement"
+        - "Threat Model Improvement"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the security improvement or concern
+      placeholder: What security aspect could be improved?
+    validations:
+      required: true
+
+  - type: textarea
+    id: threat_model
+    attributes:
+      label: Threat Model Context
+      description: What threat or attack vector does this address?
+      placeholder: |
+        - Threat: What could an attacker do?
+        - Impact: What would be the consequences?
+        - Likelihood: How likely is this threat?
+
+  - type: textarea
+    id: current_state
+    attributes:
+      label: Current State
+      description: How does Cryptex-AI currently handle this security aspect?
+      placeholder: Describe the current security implementation...
+
+  - type: textarea
+    id: proposed_improvement
+    attributes:
+      label: Proposed Improvement
+      description: What specific improvements do you suggest?
+      placeholder: |
+        1. Change/add this...
+        2. Implement that...
+        3. Document the other...
+
+  - type: textarea
+    id: impact_assessment
+    attributes:
+      label: Impact Assessment
+      description: What would be the impact of implementing this improvement?
+      placeholder: |
+        - Security benefit: ...
+        - Performance impact: ...
+        - Breaking changes: ...
+        - Implementation complexity: ...
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Any relevant security standards, best practices, or documentation
+      placeholder: |
+        - OWASP guidelines: ...
+        - Security standards: ...
+        - Research papers: ...
+        - Similar implementations: ...
+
+  - type: checkboxes
+    id: security_principles
+    attributes:
+      label: Security Principles
+      description: Which security principles does this improvement address?
+      options:
+        - label: Temporal isolation guarantees
+        - label: Zero attack surface (no config files)
+        - label: Defense in depth
+        - label: Least privilege
+        - label: Fail secure
+        - label: Security by design
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Testing approaches, implementation notes, etc.

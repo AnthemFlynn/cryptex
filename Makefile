@@ -1,4 +1,4 @@
-# Codename - AI/LLM Secrets Isolation Library
+# Cryptex-AI - AI/LLM Secrets Isolation Library
 # Comprehensive Makefile for development workflows
 
 .PHONY: help install install-dev test lint format security build clean release docs all
@@ -17,13 +17,13 @@ VENV_DIR = .venv
 VENV_ACTIVATE = . $(VENV_DIR)/bin/activate
 
 # Project info
-PROJECT_NAME = codename
+PROJECT_NAME = cryptex_ai
 SRC_DIR = src
 TESTS_DIR = tests
 DOCS_DIR = docs
 
 help: ## Show this help message
-	@echo "$(GREEN)Codename - AI/LLM Secrets Isolation Library$(NC)"
+	@echo "$(GREEN)Cryptex-AI - AI/LLM Secrets Isolation Library$(NC)"
 	@echo "$(YELLOW)Available targets:$(NC)"
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  $(GREEN)%-15s$(NC) %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -351,7 +351,7 @@ open-coverage: ## Open coverage report in browser
 
 # Project-specific targets
 demo: ## Run demonstration of core functionality
-	$(VENV_ACTIVATE) && $(PYTHON) -c "from $(PROJECT_NAME) import protect_secrets; print('Codename is working!')"
+	$(VENV_ACTIVATE) && $(PYTHON) -c "from $(PROJECT_NAME) import protect_secrets; print('Cryptex-AI is working!')"
 
 validate-config: ## Validate project configuration
 	$(VENV_ACTIVATE) && $(PYTHON) -c "import tomli; tomli.load(open('pyproject.toml', 'rb'))"

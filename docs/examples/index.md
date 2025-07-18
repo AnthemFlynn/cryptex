@@ -1,11 +1,11 @@
 # Examples
 
-Real-world examples showing how to use Cryptex in different scenarios and frameworks.
+Real-world examples showing how to use Cryptex-AI in different scenarios and frameworks.
 
 ## Available Examples
 
 ### [Basic Usage](basic-usage.md)
-Simple examples demonstrating core Cryptex functionality with common secret types.
+Simple examples demonstrating core Cryptex-AI functionality with common secret types.
 
 **What you'll learn:**
 - Single secret protection
@@ -13,12 +13,12 @@ Simple examples demonstrating core Cryptex functionality with common secret type
 - Built-in pattern usage
 - Error handling
 
-**Use this when:** You're getting started with Cryptex
+**Use this when:** You're getting started with Cryptex-AI
 
 ---
 
 ### FastAPI Integration
-Complete FastAPI application with Cryptex protecting API endpoints that use secrets.
+Complete FastAPI application with Cryptex-AI protecting API endpoints that use secrets.
 
 **What you'll learn:**
 - Web framework integration
@@ -55,7 +55,7 @@ Each example includes:
 ### Prerequisites
 
 ```bash
-# Install Cryptex
+# Install Cryptex-AI
 pip install cryptex-ai
 
 # Or with uv
@@ -170,7 +170,7 @@ async def timed_example(api_key: str) -> str:
     result = await process_with_api_key(api_key)
     
     duration = time.perf_counter() - start
-    print(f"Total time: {duration:.3f}s (includes <5ms Cryptex overhead)")
+    print(f"Total time: {duration:.3f}s (includes <5ms Cryptex-AI overhead)")
     
     return result
 ```
@@ -275,11 +275,11 @@ async def logged_function(token: str) -> str:
 
 After exploring the examples:
 
-1. **[Installation Guide](../guide/installation.md)** - Set up Cryptex in your project
+1. **[Installation Guide](../guide/installation.md)** - Set up Cryptex-AI in your project
 2. **[Basic Usage Guide](../guide/basic-usage.md)** - Learn all the features
 3. **[Custom Patterns](../guide/custom-patterns.md)** - Create organization-specific patterns
 4. **[GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai)** - Complete source code and API reference
 
 ## Contributing Examples
 
-Have a great Cryptex example? We'd love to include it! See our [GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai) for how to contribute.
+Have a great Cryptex-AI example? We'd love to include it! See our [GitHub Repository](https://github.com/AnthemFlynn/cryptex-ai) for how to contribute.

@@ -1,8 +1,8 @@
-site_name: Cryptex Documentation
+site_name: Cryptex-AI Documentation
 site_description: Zero-config temporal isolation engine for AI/LLM applications
-site_url: https://anthemflynn.github.io/cryptex/
-repo_url: https://github.com/anthemflynn/cryptex
-repo_name: anthemflynn/cryptex
+site_url: https://anthemflynn.github.io/cryptex-ai/
+repo_url: https://github.com/AnthemFlynn/cryptex-ai
+repo_name: AnthemFlynn/cryptex-ai
 
 theme:
   name: material
@@ -77,6 +77,6 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/anthemflynn/cryptex
+      link: https://github.com/AnthemFlynn/cryptex-ai
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/cryptex-ai/

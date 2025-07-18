@@ -1,6 +1,6 @@
 # Custom Patterns
 
-While Cryptex's built-in patterns handle 95% of use cases, some applications need custom secret patterns. This guide shows you how to create and use them effectively.
+While Cryptex-AI's built-in patterns handle 95% of use cases, some applications need custom secret patterns. This guide shows you how to create and use them effectively.
 
 ## When to Use Custom Patterns
 

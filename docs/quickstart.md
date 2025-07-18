@@ -1,6 +1,6 @@
 # Quick Start
 
-Get up and running with Cryptex in minutes - no configuration required!
+Get up and running with Cryptex-AI in minutes - no configuration required!
 
 ## Installation
 
@@ -53,7 +53,7 @@ result = await chat_with_ai(
 
 ## Built-in Patterns
 
-Cryptex recognizes these patterns automatically:
+Cryptex-AI recognizes these patterns automatically:
 
 | Pattern | Example | Placeholder |
 |---------|---------|-------------|
@@ -106,7 +106,7 @@ async def send_slack_message(token: str, message: str) -> bool:
 
 ## Error Handling
 
-Cryptex provides clear error messages:
+Cryptex-AI provides clear error messages:
 
 ```python
 @protect_secrets(secrets=["nonexistent_pattern"])
@@ -144,4 +144,4 @@ async def timed_function(api_key: str) -> str:
 
 ## Zero Configuration Promise
 
-**Remember**: Cryptex requires ZERO configuration files, environment variables, or setup steps. If you find yourself creating config files, you're overcomplicating it!
+**Remember**: Cryptex-AI requires ZERO configuration files, environment variables, or setup steps. If you find yourself creating config files, you're overcomplicating it!

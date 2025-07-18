@@ -2,7 +2,7 @@ name: Pre-release
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       version_type:
@@ -38,14 +38,13 @@ jobs:
       with:
         version: "latest"
       
-    - name: Create virtual environment
-      run: uv venv
-      
     - name: Install dependencies
-      run: uv pip install -e ".[dev]" bump2version
+      run: |
+        uv sync --extra dev
+        uv pip install bump2version
       
     - name: Run full test suite
-      run: uv run pytest tests/ -v --cov=codename
+      run: uv run pytest tests/ -v --cov=src/cryptex_ai
       
     - name: Run security checks
       run: |
@@ -75,7 +74,7 @@ jobs:
     - name: Get new version
       id: new_version
       run: |
-        VERSION=$(uv run python -c "import codename; print(codename.__version__)")
+        VERSION=$(uv run python -c "import cryptex_ai; print(cryptex_ai.__version__)")
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         
     - name: Create Pull Request
@@ -106,7 +105,7 @@ jobs:
           - [ ] Version bumped correctly
           - [ ] All tests passing
         branch: release/${{ steps.new_version.outputs.version }}
-        base: master
+        base: main
         labels: |
           release
           automated

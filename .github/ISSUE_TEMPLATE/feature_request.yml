@@ -1,7 +1,7 @@
 name: Feature Request
-description: Suggest a new feature for Codename
+description: Suggest a new feature for Cryptex-AI
 title: "[Feature]: "
-labels: ["enhancement", "needs-triage"]
+labels: ["enhancement", "triage"]
 assignees: []
 
 body:
@@ -20,7 +20,7 @@ body:
           required: true
         - label: I have read the documentation and this feature is not already available
           required: true
-        - label: This feature aligns with Codename's purpose (AI/LLM secrets isolation)
+        - label: This feature aligns with Cryptex-AI's zero-config philosophy
           required: true
 
   - type: textarea
@@ -80,8 +80,8 @@ body:
         - "Security Enhancement"
         - "Performance Improvement"
         - "Developer Experience"
-        - "Integration (FastMCP, FastAPI, etc.)"
-        - "Configuration"
+        - "Framework Integration"
+        - "Built-in Pattern"
         - "Documentation"
         - "Other"
     validations:
@@ -107,9 +107,12 @@ body:
       render: python
       placeholder: |
         # Example of how this feature might work
-        import codename
+        from cryptex_ai import protect_secrets
         
-        # Your proposed API here
+        @protect_secrets
+        def my_function():
+            # Your proposed usage here
+            pass
 
   - type: checkboxes
     id: implementation

@@ -1,10 +1,10 @@
-# Cryptex Examples
+# Cryptex-AI Examples
 
-Simple, practical examples showing how to use cryptex for universal secret protection.
+Simple, practical examples showing how to use cryptex-ai for universal secret protection.
 
 ## Quick Start
 
-After installing cryptex:
+After installing cryptex-ai:
 ```bash
 pip install cryptex-ai
 # or
@@ -134,6 +134,6 @@ python examples/basic_usage/basic_usage.py
 - **Built-in patterns** handle 95% of real-world usage  
 - **Same decorator everywhere** - Learn once, use anywhere
 - **Production ready** - These patterns scale to real applications
-- **Zero dependencies** - Core cryptex has no external requirements
+- **Zero dependencies** - Core cryptex-ai has no external requirements
 
 Happy coding with secure temporal isolation! 🔒

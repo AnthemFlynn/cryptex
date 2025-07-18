@@ -1,8 +1,8 @@
-# Cryptex
+# Cryptex-AI
 
 **Zero-config temporal isolation engine for AI/LLM applications**
 
-Cryptex provides bulletproof secrets isolation with **zero cognitive overhead** - one decorator line = complete temporal isolation.
+Cryptex-AI provides bulletproof secrets isolation with **zero cognitive overhead** - one decorator line = complete temporal isolation.
 
 ## Key Philosophy
 
@@ -68,7 +68,7 @@ graph LR
 
 ## Zero-Config Philosophy
 
-Cryptex follows the **95/5 rule**:
+Cryptex-AI follows the **95/5 rule**:
 
 - **95% of users** need zero configuration - built-in patterns handle common secrets
 - **5% of users** use the registration API for custom patterns

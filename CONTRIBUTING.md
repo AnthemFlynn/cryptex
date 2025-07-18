@@ -1,6 +1,6 @@
-# Contributing to Cryptex
+# Contributing to Cryptex-AI
 
-Thank you for your interest in contributing to Cryptex! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Cryptex-AI! This document provides guidelines and information for contributors.
 
 ## Development Setup
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to Cryptex! This document provides g
 
 1. **Fork and clone the repository:**
    ```bash
-   git clone https://github.com/AnthemFlynn/cryptex.git
-   cd cryptex
+   git clone https://github.com/AnthemFlynn/cryptex-ai.git
+   cd cryptex-ai
    ```
 
 2. **Set up development environment:**
@@ -30,7 +30,7 @@ Thank you for your interest in contributing to Cryptex! This document provides g
 
 ## Development Philosophy
 
-Cryptex follows a **zero-config philosophy**:
+Cryptex-AI follows a **zero-config philosophy**:
 
 - **No Configuration Files**: Middleware libraries should never require config files
 - **95/5 Rule**: 95% of users need zero config, 5% use registration API
@@ -103,7 +103,7 @@ Cryptex follows a **zero-config philosophy**:
 ### File Organization
 
 ```
-src/cryptex/
+src/cryptex_ai/
 ├── __init__.py                 # Public API exports
 ├── decorators/
 │   ├── __init__.py            # Decorator exports
@@ -252,7 +252,7 @@ make test-performance
 
 ### Adding Built-in Patterns
 
-1. Add pattern to `DEFAULT_PATTERNS` in `src/cryptex/patterns/base.py`
+1. Add pattern to `DEFAULT_PATTERNS` in `src/cryptex_ai/patterns/base.py`
 2. Test pattern matching in `tests/unit/test_pattern_registration.py`
 3. Update pattern table in `README.md`
 4. Add usage examples
@@ -297,8 +297,8 @@ make test-performance
 
 ## License
 
-By contributing to Cryptex, you agree that your contributions will be licensed under the MIT License.
+By contributing to Cryptex-AI, you agree that your contributions will be licensed under the MIT License.
 
 ---
 
-Thank you for contributing to Cryptex! Your efforts help make AI applications more secure for everyone.
+Thank you for contributing to Cryptex-AI! Your efforts help make AI applications more secure for everyone.

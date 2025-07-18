@@ -1,6 +1,6 @@
 # Installation
 
-Cryptex supports multiple installation methods to fit your workflow.
+Cryptex-AI supports multiple installation methods to fit your workflow.
 
 ## Requirements
 
@@ -50,8 +50,8 @@ pip install -e ".[dev,test,docs]"
 Verify your installation:
 
 ```python
-import cryptex
-print(cryptex.__version__)
+import cryptex_ai
+print(cryptex_ai.__version__)
 
 # Test core functionality
 from cryptex_ai import protect_secrets, list_patterns
@@ -102,7 +102,7 @@ CMD ["uv", "run", "python", "main.py"]
 
 ### Python Version Issues
 
-Cryptex requires Python 3.11+. Check your version:
+Cryptex-AI requires Python 3.11+. Check your version:
 
 ```bash
 python --version
@@ -128,8 +128,8 @@ If you see import errors:
 3. **Python path**: Verify Cryptex is installed in the active Python environment
 
 ```bash
-# Check where cryptex is installed
-python -c "import cryptex; print(cryptex.__file__)"
+# Check where cryptex_ai is installed
+python -c "import cryptex_ai; print(cryptex_ai.__file__)"
 ```
 
 ### Performance Issues
@@ -142,7 +142,7 @@ If you experience slow performance:
 
 ### PyPI Package Name
 
-**Important**: The PyPI package is named `cryptex-ai`, but you import it as `cryptex`:
+**Important**: The PyPI package is named `cryptex-ai`, and you import it as `cryptex_ai`:
 
 ```bash
 # Install this package
@@ -151,10 +151,10 @@ pip install cryptex-ai
 
 ```python
 # Import like this
-import cryptex
+import cryptex_ai
 from cryptex_ai import protect_secrets
 ```
 
 ## Next Steps
 
-Once installed, head to the [Quick Start Guide](../quickstart.md) to begin using Cryptex!
+Once installed, head to the [Quick Start Guide](../quickstart.md) to begin using Cryptex-AI!
