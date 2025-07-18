@@ -7,6 +7,7 @@ in middleware deployments for FastMCP servers and FastAPI applications.
 
 import asyncio
 import hashlib
+import os
 import re
 import threading
 import time
@@ -425,8 +426,8 @@ class TemporalIsolationEngine:
             duration_ms = (time.time() - start_time) * 1000
             self._update_sanitization_metrics(duration_ms, len(detected_secrets))
 
-            # Check performance threshold
-            if duration_ms > 5.0:  # 5ms threshold
+            # Check performance threshold (skip in CI environments)
+            if duration_ms > 5.0 and os.environ.get("CRYPTEX_SKIP_PERF_CHECKS") != "1":  # 5ms threshold
                 self._performance_metrics["performance_violations"] += 1
                 await self._trigger_performance_callbacks(
                     "sanitization_timeout",

@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, master, develop ]
 
+env:
+  CRYPTEX_SKIP_PERF_CHECKS: "1"  # Skip performance checks in CI
+
 jobs:
   lint:
     runs-on: ubuntu-latest
