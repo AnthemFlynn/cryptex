@@ -16,6 +16,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned for v0.6.0
 - Plugin system for custom secret sources
 
+## [0.3.2] - 2025-07-18
+
+### Documentation
+- **Google Python Style Guide Compliance**: Enhanced all docstrings to meet Google standards
+- **Comprehensive Raises Sections**: Added exception documentation to all public functions
+- **Class Attribute Documentation**: Enhanced class docstrings with detailed Attributes sections
+- **Method Documentation**: Added comprehensive Args/Returns/Raises to missing public methods
+- **LLM Integration**: Added `llms.txt` file for LLM-based coding assistant compatibility
+- **Formatting Consistency**: Standardized docstring formatting across all modules
+
+### Enhanced API Documentation
+- `protect_secrets()` decorator now documents ValueError, PatternNotFoundError, EngineInitializationError
+- `TemporalIsolationEngine` class includes comprehensive attribute and method documentation
+- All convenience decorators (`protect_files`, `protect_api_keys`, etc.) document exceptions
+- Performance-critical methods include detailed return value specifications
+- Complex private methods enhanced with purpose and parameter documentation
+
+### Quality Improvements
+- All 75 tests continue to pass
+- Linting and type checking remain clean
+- Maintains full API compatibility
+- Enhanced examples and usage documentation throughout
+
 ## [0.3.1] - 2025-07-18
 
 ### Changed
