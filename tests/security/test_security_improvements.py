@@ -233,7 +233,9 @@ class TestSecurityFeatureIntegration:
         )
 
         # Test normal operation
-        valid_openai_key = "sk-" + "a" * 48  # Valid OpenAI key format: sk-[a-zA-Z0-9]{48}
+        valid_openai_key = (
+            "sk-" + "a" * 48
+        )  # Valid OpenAI key format: sk-[a-zA-Z0-9]{48}
         data = {"api_key": valid_openai_key, "message": "Hello world"}
         result = await engine.sanitize_for_ai(data)
 

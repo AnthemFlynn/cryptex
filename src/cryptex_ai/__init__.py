@@ -121,14 +121,12 @@ __all__ = [
     # Main API - what 95% of users need
     "protect_secrets",
     "secure_session",
-
     # Convenience decorators
     "protect_files",
     "protect_api_keys",
     "protect_tokens",
     "protect_database",
     "protect_all",
-
     # Pattern registration API
     "register_pattern",
     "unregister_pattern",
@@ -137,7 +135,6 @@ __all__ = [
     "get_all_patterns",
     "clear_custom_patterns",
     "register_patterns",
-
     # Core components (advanced usage)
     "TemporalIsolationEngine",
     "SecretPattern",

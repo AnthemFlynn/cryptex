@@ -27,7 +27,7 @@ AI/LLM applications face an impossible choice:
 
 ## The Solution
 
-Cryptex provides **temporal isolation** - AI sees safe placeholders while your code gets real secrets.
+Cryptex-ai provides **temporal isolation** - AI sees safe placeholders while your code gets real secrets.
 
 ```python
 from cryptex_ai import protect_secrets
@@ -35,7 +35,7 @@ from cryptex_ai import protect_secrets
 # Works immediately - no config files required!
 @protect_secrets(["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
-    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")  
+    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
     # Function gets: real API key for execution
     return await openai_call(prompt, api_key)
 ```
@@ -47,7 +47,7 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 ## 🚀 Key Features
 
 - **🔧 Zero Configuration**: Works immediately, no setup required
-- **⚡ Built-in Patterns**: OpenAI, Anthropic, GitHub, file paths, databases  
+- **⚡ Built-in Patterns**: OpenAI, Anthropic, GitHub, file paths, databases
 - **🛡️ Security First**: Zero dependencies, no config files, no parsing vulnerabilities
 - **🚄 High Performance**: <5ms sanitization, <10ms resolution
 - **🔗 Universal**: Works with any Python function - FastMCP, FastAPI, Django, Flask, etc.
@@ -91,7 +91,7 @@ async def ai_completion(prompt: str, api_key: str) -> str:
         api_key=api_key
     )
 
-# Protect file operations  
+# Protect file operations
 @protect_secrets(["file_path"])
 async def read_file(file_path: str) -> str:
     # AI context: "/{USER_HOME}/.../{filename}"
@@ -273,7 +273,7 @@ Cryptex is designed for production workloads:
 │ /Users/alice/   │    │ /{USER_HOME}/    │    │ /Users/alice/   │
 │ ghp_xyz789...   │    │ {{GITHUB_TOKEN}} │    │ ghp_xyz789...   │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
-     Phase 1:              Phase 2:              Phase 3: 
+     Phase 1:              Phase 2:              Phase 3:
   Sanitization          AI sees safe          Resolution for
   for AI context       placeholders          tool execution
 ```
@@ -281,7 +281,7 @@ Cryptex is designed for production workloads:
 ### Zero-Config Philosophy
 
 - **🚫 No Attack Surface**: No config files to inject, no parsing to exploit
-- **⚡ Lightning Fast**: Zero file I/O, zero parsing overhead  
+- **⚡ Lightning Fast**: Zero file I/O, zero parsing overhead
 - **🎯 Middleware Focused**: Lightweight, predictable, zero dependencies
 - **👨‍💻 Developer Friendly**: Works immediately, no setup friction
 - **🔒 Security First**: Configuration in version-controlled code only
@@ -293,7 +293,7 @@ Cryptex is designed for production workloads:
 Explore comprehensive examples in the [`examples/`](./examples/) directory:
 
 - **[Basic Usage](./examples/basic_usage.py)**: Zero-config protection patterns
-- **[FastAPI Integration](./examples/fastapi_example.py)**: Web API protection  
+- **[FastAPI Integration](./examples/fastapi_example.py)**: Web API protection
 - **[Real World Usage](./examples/real_world_usage.py)**: Complex multi-pattern scenarios
 
 Run examples locally:
@@ -312,7 +312,7 @@ Cryptex follows security-first principles:
 
 - **Zero Dependencies**: No external packages, no supply chain attacks
 - **Zero Config Files**: No TOML parsing, no injection attacks
-- **Minimal Attack Surface**: No file I/O, pure Python standard library  
+- **Minimal Attack Surface**: No file I/O, pure Python standard library
 - **Secure by Default**: Built-in patterns tested against real-world secrets
 - **Audit Trail**: Full temporal isolation with context tracking
 - **Pattern Validation**: Runtime regex validation and comprehensive error handling
@@ -391,7 +391,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 ## 📈 Roadmap
 
 - **v0.3.0**: Enhanced pattern validation and error reporting
-- **v0.4.0**: Advanced caching and performance optimizations  
+- **v0.4.0**: Advanced caching and performance optimizations
 - **v0.5.0**: Plugin system for custom secret sources
 - **v1.0.0**: Production hardening and stability guarantees
 
@@ -406,7 +406,7 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 ## 🙏 Acknowledgments
 
 - **FastMCP Community**: For excellent MCP server patterns
-- **FastAPI**: For inspiring clean API design  
+- **FastAPI**: For inspiring clean API design
 - **Python Community**: For async/await and type system excellence
 - **Security Researchers**: For temporal isolation concepts
 

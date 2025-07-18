@@ -1103,11 +1103,16 @@ class TemporalIsolationEngine:
 
         # Create new exception with sanitized message
         if sanitized_lines:
-            sanitized_message = sanitized_lines[-1].strip()  # Only keep the exception message
+            sanitized_message = sanitized_lines[
+                -1
+            ].strip()  # Only keep the exception message
             # Additional sanitization for error message content
             import re
+
             # Remove specific line numbers from error messages
-            sanitized_message = re.sub(r"line \d+", "line <redacted>", sanitized_message)
+            sanitized_message = re.sub(
+                r"line \d+", "line <redacted>", sanitized_message
+            )
             # Apply general sanitization to the error message
             error_data = await self.sanitize_for_ai(sanitized_message)
             sanitized_message = error_data.data

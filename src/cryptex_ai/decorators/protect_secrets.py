@@ -74,14 +74,18 @@ def protect_secrets(
         )
 
         if asyncio.iscoroutinefunction(func):
+
             @functools.wraps(func)
             async def async_wrapper(*args, **kwargs) -> Any:
                 return await protection.protect_call(func, *args, **kwargs)
+
             return async_wrapper
         else:
+
             @functools.wraps(func)
             def sync_wrapper(*args, **kwargs) -> Any:
                 return asyncio.run(protection.protect_call(func, *args, **kwargs))
+
             return sync_wrapper
 
     return decorator
@@ -187,5 +191,5 @@ def protect_all(auto_detect: bool = True) -> Callable[[F], F]:
     """Protect all built-in secret types."""
     return protect_secrets(
         ["openai_key", "anthropic_key", "github_token", "file_path", "database_url"],
-        auto_detect=auto_detect
+        auto_detect=auto_detect,
     )

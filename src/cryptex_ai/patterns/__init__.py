@@ -11,6 +11,7 @@ from .registry import PatternRegistry, get_registry
 # Global registry instance
 _registry = get_registry()
 
+
 # Public API functions
 def register_pattern(
     name: str,
@@ -82,11 +83,9 @@ __all__ = [
     "SecretPattern",
     "BaseSecretPattern",
     "DEFAULT_PATTERNS",
-
     # Registry
     "PatternRegistry",
     "get_pattern_registry",
-
     # Public API
     "register_pattern",
     "unregister_pattern",

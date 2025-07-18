@@ -95,30 +95,30 @@ DEFAULT_PATTERNS = [
         name="openai_key",
         pattern=r"sk-[a-zA-Z0-9]{48}",
         placeholder_template="{{OPENAI_API_KEY}}",
-        description="OpenAI API key"
+        description="OpenAI API key",
     ),
     BaseSecretPattern(
         name="anthropic_key",
         pattern=r"sk-ant-[a-zA-Z0-9-]{40,}",
         placeholder_template="{{ANTHROPIC_API_KEY}}",
-        description="Anthropic API key"
+        description="Anthropic API key",
     ),
     BaseSecretPattern(
         name="github_token",
         pattern=r"ghp_[a-zA-Z0-9]{36}",
         placeholder_template="{{GITHUB_TOKEN}}",
-        description="GitHub personal access token"
+        description="GitHub personal access token",
     ),
     BaseSecretPattern(
         name="file_path",
         pattern=r"(/[^/\s]+)+/?",
         placeholder_template="/{USER_HOME}/.../{filename}",
-        description="File system path"
+        description="File system path",
     ),
     BaseSecretPattern(
         name="database_url",
         pattern=r"(?:postgresql|mysql|sqlite|redis)://[^\s]+",
         placeholder_template="{{DATABASE_URL}}",
-        description="Database connection URL"
+        description="Database connection URL",
     ),
 ]

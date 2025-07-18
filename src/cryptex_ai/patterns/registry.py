@@ -127,7 +127,9 @@ class PatternRegistry:
         """
         default_names = {p.name for p in DEFAULT_PATTERNS}
         with self._lock:
-            to_remove = [name for name in self._patterns.keys() if name not in default_names]
+            to_remove = [
+                name for name in self._patterns.keys() if name not in default_names
+            ]
             for name in to_remove:
                 del self._patterns[name]
 
