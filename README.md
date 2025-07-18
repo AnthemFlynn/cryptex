@@ -1,4 +1,4 @@
-# Cryptex
+# Cryptex-AI
 
 <div align="center">
 
