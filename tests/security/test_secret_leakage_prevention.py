@@ -187,7 +187,7 @@ class TestSecurityIntegration:
         assert "{{OPENAI_API_KEY}}" in result_str
         assert "{{ANTHROPIC_API_KEY}}" in result_str
         assert "{{GITHUB_TOKEN}}" in result_str
-        assert "{RESOLVE:FILE_PATH:" in result_str  # Uses hash-based placeholder
+        assert "{{FILE_PATH}}" in result_str
         assert "{{DATABASE_URL}}" in result_str
 
         # Verify non-secret data is unchanged

@@ -6,7 +6,6 @@ in middleware deployments for FastMCP servers and FastAPI applications.
 """
 
 import asyncio
-import hashlib
 import os
 import re
 import threading
@@ -395,48 +394,28 @@ class TemporalIsolationEngine:
             self._validate_string_lengths(data.__dict__, f"{path}.__dict__")
 
     def _get_default_patterns(self) -> list[SecretPattern]:
-        """Get default secret patterns for common use cases.
+        """Get default secret patterns from the pattern registry.
 
         Returns:
-            List of SecretPattern instances for detecting common secrets:
-                - OpenAI API keys (sk-...)
-                - Anthropic API keys (sk-ant-...)
-                - GitHub tokens (ghp_...)
-                - User file paths (/Users/..., /home/...)
-                - Database URLs (postgres://, mysql://, etc.)
+            List of SecretPattern instances from the global pattern registry
         """
-        return [
-            SecretPattern(
-                name="openai_key",
-                pattern=re.compile(r"sk-[a-zA-Z0-9]{48}"),
-                placeholder_template="{{OPENAI_API_KEY}}",
-                description="OpenAI API key",
-            ),
-            SecretPattern(
-                name="anthropic_key",
-                pattern=re.compile(r"sk-ant-[a-zA-Z0-9-]{95}"),
-                placeholder_template="{{ANTHROPIC_API_KEY}}",
-                description="Anthropic API key",
-            ),
-            SecretPattern(
-                name="github_token",
-                pattern=re.compile(r"ghp_[a-zA-Z0-9]{36}"),
-                placeholder_template="{{GITHUB_TOKEN}}",
-                description="GitHub personal access token",
-            ),
-            SecretPattern(
-                name="file_path",
-                pattern=re.compile(r"/(?:Users|home)/[^/\s]+(?:/[^/\s]*)*"),
-                placeholder_template="/{USER_HOME}/...",
-                description="User file system paths",
-            ),
-            SecretPattern(
-                name="database_url",
-                pattern=re.compile(r"(?:postgres|mysql|redis|mongodb)://[^\s]+"),
-                placeholder_template="{{DATABASE_URL}}",
-                description="Database connection URLs",
-            ),
-        ]
+        from ..patterns import get_all_patterns
+
+        # Convert BaseSecretPattern instances to engine SecretPattern format
+        registry_patterns = get_all_patterns()
+        engine_patterns = []
+
+        for base_pattern in registry_patterns:
+            # Create SecretPattern compatible with engine
+            engine_pattern = SecretPattern(
+                name=base_pattern.name,
+                pattern=base_pattern.pattern,
+                placeholder_template=base_pattern.placeholder_template,
+                description=base_pattern.description,
+            )
+            engine_patterns.append(engine_pattern)
+
+        return engine_patterns
 
     async def sanitize_for_ai(
         self, data: Any, context_id: str | None = None
@@ -472,8 +451,26 @@ class TemporalIsolationEngine:
             # Detect secrets in the data
             detected_secrets = await self._detect_secrets(data)
 
+            # Check performance threshold (do this regardless of secrets found)
+            duration_ms = (time.time() - start_time) * 1000
+            if (
+                duration_ms > 5.0 and os.environ.get("CRYPTEX_SKIP_PERF_CHECKS") != "1"
+            ):  # 5ms threshold
+                self._performance_metrics["performance_violations"] += 1
+                await self._trigger_performance_callbacks(
+                    "sanitization_timeout",
+                    {
+                        "duration_ms": duration_ms,
+                        "threshold_ms": 5.0,
+                        "context_id": context_id,
+                    },
+                )
+                raise sanitization_timeout_error(duration_ms, 5.0)
+
             if not detected_secrets:
-                # No secrets found, return data as-is
+                # No secrets found, return data as-is (after performance check)
+                # Still update metrics for the case where no secrets were found
+                self._update_sanitization_metrics(duration_ms, 0)
                 return SanitizedData(data=data, context_id=context_id)
 
             # Replace secrets with placeholders
@@ -492,21 +489,6 @@ class TemporalIsolationEngine:
             # Update performance metrics
             duration_ms = (time.time() - start_time) * 1000
             self._update_sanitization_metrics(duration_ms, len(detected_secrets))
-
-            # Check performance threshold (skip in CI environments)
-            if (
-                duration_ms > 5.0 and os.environ.get("CRYPTEX_SKIP_PERF_CHECKS") != "1"
-            ):  # 5ms threshold
-                self._performance_metrics["performance_violations"] += 1
-                await self._trigger_performance_callbacks(
-                    "sanitization_timeout",
-                    {
-                        "duration_ms": duration_ms,
-                        "threshold_ms": 5.0,
-                        "context_id": context_id,
-                    },
-                )
-                raise sanitization_timeout_error(duration_ms, 5.0)
 
             return result
 
@@ -689,14 +671,9 @@ class TemporalIsolationEngine:
         Returns:
             Unique placeholder string for the secret
         """
-        # Create a hash of the secret for uniqueness
-        secret_hash = hashlib.sha256(secret_value.encode()).hexdigest()[:8]
-
-        # Use template if it contains placeholders, otherwise use default format
-        if "{{" in template and "}}" in template:
-            return template
-        else:
-            return f"{{RESOLVE:{pattern_name.upper()}:{secret_hash}}}"
+        # Always use the template provided by the pattern
+        # This ensures consistent behavior across all secret types
+        return template
 
     async def _replace_with_placeholders(
         self, data: Any, secrets: list[DetectedSecret]

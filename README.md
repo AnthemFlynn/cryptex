@@ -26,7 +26,7 @@ AI/LLM applications face an impossible choice:
 
 ## The Solution
 
-Cryptex-ai provides **temporal isolation** - AI sees safe placeholders while your code gets real secrets.
+Cryptex-ai provides **true temporal isolation** - AI services receive safe placeholders while your functions use real secrets through automatic call interception.
 
 ```python
 from cryptex_ai import protect_secrets
@@ -34,9 +34,14 @@ from cryptex_ai import protect_secrets
 # Works immediately - no config files required!
 @protect_secrets(["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
-    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
-    # Function gets: real API key for execution
-    return await openai_call(prompt, api_key)
+    # Function receives: real API key for processing
+    # AI service receives: {{OPENAI_API_KEY}} (intercepted)
+    import openai
+    return await openai.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        api_key=api_key  # Real key for function, placeholder to AI
+    )
 ```
 
 **One decorator line = complete temporal isolation** ✨
@@ -50,6 +55,7 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 - **🛡️ Security First**: Zero dependencies, no config files, no parsing vulnerabilities
 - **🚄 High Performance**: <5ms sanitization, <10ms resolution
 - **🔗 Universal**: Works with any Python function - FastMCP, FastAPI, Django, Flask, etc.
+- **🎯 True Isolation**: Monkey-patches AI libraries to intercept actual calls
 - **📝 Simple API**: 95% of users need zero config, 5% get simple registration
 
 ---
@@ -281,7 +287,7 @@ Cryptex is designed for production workloads:
 
 - **🚫 No Attack Surface**: No config files to inject, no parsing to exploit
 - **⚡ Lightning Fast**: Zero file I/O, zero parsing overhead
-- **🎯 Middleware Focused**: Lightweight, predictable, zero dependencies
+- **🎯 Decorator Focused**: Lightweight, predictable, zero dependencies
 - **👨‍💻 Developer Friendly**: Works immediately, no setup friction
 - **🔒 Security First**: Configuration in version-controlled code only
 
@@ -300,6 +306,14 @@ Run examples locally:
 ```bash
 git clone https://github.com/AnthemFlynn/cryptex-ai.git
 cd cryptex-ai
+
+# See working temporal isolation
+python simple_live_test.py
+
+# Compare protected vs unprotected 
+python comparison_test.py
+
+# Run basic examples
 python examples/basic_usage.py
 ```
 

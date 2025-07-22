@@ -16,16 +16,23 @@ from cryptex_ai import protect_secrets
 # Works immediately - no config needed!
 @protect_secrets(secrets=["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
-    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
-    # Tool gets: real API key for execution
-    return await openai_call(prompt, api_key)
+    # Function receives: real API key for processing
+    # AI service receives: {{OPENAI_API_KEY}} (intercepted)
+    import openai
+    return await openai.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        api_key=api_key  # Real key for function, placeholder to AI
+    )
 
 @protect_secrets(secrets=["file_path", "github_token"])
 async def file_tool(file_path: str, token: str) -> str:
-    # AI sees: file_tool("/{USER_HOME}/doc.txt", "{{GITHUB_TOKEN}}")
-    # Tool gets: real path and token
+    # Function uses real file path and token
+    # Any AI calls see {{FILE_PATH}} and {{GITHUB_TOKEN}}
     with open(file_path, 'r') as f:
-        return await github_api_call(f.read(), token)
+        content = f.read()
+    # If this called an AI service, it would receive placeholders
+    return await process_with_ai(content, token)
 ```
 
 ### Built-in Patterns (Work Out of the Box)
@@ -60,8 +67,9 @@ async def slack_tool(token: str) -> str:
 3. **Resolution**: Convert placeholders back to real values for tool execution
 
 ### Temporal Isolation Guarantees
-- **AI Context**: Sees safe placeholders like `{{OPENAI_API_KEY}}` or `/{USER_HOME}/...`
-- **Tool Execution**: Gets real values for actual operations
+- **AI Services**: Receive safe placeholders like `{{OPENAI_API_KEY}}` via monkey-patching
+- **Function Execution**: Gets real values for actual operations and processing
+- **Call Interception**: OpenAI/Anthropic calls automatically intercepted during execution
 - **Response Sanitization**: Tool outputs cleaned before returning to AI
 - **Context Expiration**: Automatic cleanup prevents secret accumulation
 
@@ -72,16 +80,17 @@ async def slack_tool(token: str) -> str:
 - **Zero config loading time** (no file I/O)
 
 ## Security Features
-- **Complete isolation**: AI models never see real secret values
+- **Complete isolation**: AI services never see real secret values via call interception
 - **Zero attack surface**: No config files, no parsing, no external dependencies
 - **Pattern validation**: Built-in patterns tested against real-world secrets
+- **Monkey-patch safety**: Temporary patches during execution only, automatic cleanup
 - **Response sanitization**: Tool outputs cleaned before AI access
 
 For comprehensive documentation and examples:
 https://github.com/AnthemFlynn/cryptex-ai
 """
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __author__ = "AnthemFlynn"
 __email__ = "noreply@github.com"
 
@@ -105,6 +114,7 @@ from .decorators import (
     protect_secrets,
     protect_tokens,
 )
+
 
 # Pattern registration API
 from .patterns import (

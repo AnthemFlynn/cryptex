@@ -111,13 +111,13 @@ DEFAULT_PATTERNS = [
     ),
     BaseSecretPattern(
         name="file_path",
-        pattern=r"(/[^/\s]+)+/?",
-        placeholder_template="/{USER_HOME}/.../{filename}",
+        pattern=r"/(?:Users|home|var|opt|etc|usr)/[^/\s]+(?:/[^/\s]*)*",
+        placeholder_template="{{FILE_PATH}}",
         description="File system path",
     ),
     BaseSecretPattern(
         name="database_url",
-        pattern=r"(?:postgresql|mysql|sqlite|redis)://[^\s]+",
+        pattern=r"(?:postgresql|postgres|mysql|sqlite|redis|mongodb)://[^\s]+",
         placeholder_template="{{DATABASE_URL}}",
         description="Database connection URL",
     ),

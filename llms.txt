@@ -1,8 +1,8 @@
 # Cryptex-AI
 
-> Zero-config temporal isolation engine for AI/LLM applications. Provides bulletproof secrets isolation with zero cognitive overhead - one decorator line = complete temporal isolation. Built-in patterns handle 95% of real-world usage with no configuration files, environment variables, or setup required.
+> Zero-config temporal isolation engine for AI/LLM applications. Provides bulletproof secrets isolation with zero cognitive overhead - one decorator line = complete temporal isolation. **Intercepts actual AI calls** to ensure AI services receive placeholders while functions use real secrets.
 
-Cryptex-AI follows a **95/5 rule**: 95% of users need zero configuration with built-in patterns for OpenAI, Anthropic, GitHub tokens, file paths, and database URLs. The remaining 5% use simple pattern registration for custom secrets. The library implements a three-phase temporal isolation model where AI sees safe placeholders (like `{{OPENAI_API_KEY}}`) while tools get real secrets for execution.
+Cryptex-AI follows a **95/5 rule**: 95% of users need zero configuration with built-in patterns for OpenAI, Anthropic, GitHub tokens, file paths, and database URLs. The remaining 5% use simple pattern registration for custom secrets. The library **monkey-patches AI libraries during function execution** to provide true temporal isolation where AI sees safe placeholders (like `{{OPENAI_API_KEY}}`) while tools get real secrets for execution.
 
 **Performance characteristics**: <5ms sanitization latency for 1KB payloads, <10ms resolution latency for 10 placeholders, <5% memory overhead, zero dependencies (Python 3.11+ standard library only).
 
@@ -12,9 +12,14 @@ from cryptex_ai import protect_secrets
 
 @protect_secrets(secrets=["openai_key"])
 async def ai_tool(prompt: str, api_key: str) -> str:
-    # AI sees: ai_tool("Hello", "{{OPENAI_API_KEY}}")
-    # Tool gets: real API key for execution
-    return await openai_call(prompt, api_key)
+    # Function receives: real API key for processing
+    # AI service receives: {{OPENAI_API_KEY}} (intercepted)
+    import openai
+    return await openai.chat.completions.create(
+        model="gpt-4", 
+        messages=[{"role": "user", "content": prompt}],
+        api_key=api_key  # Real key for function, placeholder to AI
+    )
 ```
 
 ## Quick Start
@@ -42,8 +47,9 @@ async def ai_tool(prompt: str, api_key: str) -> str:
 
 ## Architecture
 
-- [Three-Phase Security](https://anthemflynn.github.io/cryptex-ai/#architecture): Sanitization → AI Processing → Resolution
-- [Temporal Isolation](https://anthemflynn.github.io/cryptex-ai/guide/architecture/): AI context vs tool execution separation
+- [AI Call Interception](https://anthemflynn.github.io/cryptex-ai/#architecture): Monkey-patches OpenAI/Anthropic during execution
+- [Temporal Isolation](https://anthemflynn.github.io/cryptex-ai/guide/architecture/): Functions get real secrets, AI services get placeholders
+- [Three-Phase Security](https://anthemflynn.github.io/cryptex-ai/#architecture): Sanitization → AI Processing → Resolution  
 - [Performance Model](https://anthemflynn.github.io/cryptex-ai/#performance): Sub-5ms sanitization, sub-10ms resolution guarantees
 - [Zero Attack Surface](https://anthemflynn.github.io/cryptex-ai/#security): No config files, no parsing, no external dependencies
 - [Pattern System](https://anthemflynn.github.io/cryptex-ai/guide/custom-patterns/): Built-in vs custom pattern registration

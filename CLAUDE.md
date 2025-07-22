@@ -8,9 +8,11 @@ Cryptex is a **zero-config** temporal isolation engine for AI/LLM applications. 
 
 **Key Philosophy**: No config files, no environment variables, no setup required. Built-in patterns handle 95% of real-world usage.
 
+**Implementation**: The decorator monkey-patches AI libraries (OpenAI, Anthropic) during function execution to intercept actual API calls, ensuring AI services receive placeholders while functions use real secrets.
+
 ## Key Directories
 
-- `src/cryptex/`: Main library source code
+- `src/cryptex_ai/`: Main library source code
   - `decorators/`: Universal decorator implementation
   - `patterns/`: Pattern system with base classes and registry
   - `core/`: Temporal isolation engine and security components
@@ -33,10 +35,14 @@ Cryptex is a **zero-config** temporal isolation engine for AI/LLM applications. 
 ```bash
 # Development setup
 make dev-setup              # Complete environment setup
-make test                   # Run all tests
+make test                   # Run all tests (135 tests including AI interception)
 make lint                   # Code quality checks
 make format                 # Code formatting
 make pre-commit             # All quality gates
+
+# Live testing
+python simple_live_test.py  # Demonstrate working temporal isolation
+python comparison_test.py   # Show protected vs unprotected difference
 
 # Available as slash commands
 /make:test, /make:lint, /make:format, etc.
