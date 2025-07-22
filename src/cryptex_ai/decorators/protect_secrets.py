@@ -175,7 +175,7 @@ class UniversalProtection:
     def _create_ai_interception_context(self):
         """
         Create a context manager that intercepts AI library calls.
-        
+
         This monkey-patches common AI libraries (OpenAI, Anthropic) during
         function execution to ensure they receive sanitized data instead
         of real secrets.

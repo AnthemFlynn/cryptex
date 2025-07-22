@@ -14,13 +14,13 @@ import os
 
 import pytest
 
+from cryptex_ai import protect_secrets
+
 # Only run if explicitly requested
 pytestmark = pytest.mark.skipif(
     not os.environ.get("RUN_LIVE_TESTS"),
     reason="Live tests require RUN_LIVE_TESTS=1 and real API keys"
 )
-
-from cryptex_ai import protect_secrets
 
 
 class TestLiveAIIntegration:
