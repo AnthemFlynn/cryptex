@@ -115,7 +115,6 @@ from .decorators import (
     protect_tokens,
 )
 
-
 # Pattern registration API
 from .patterns import (
     clear_custom_patterns,

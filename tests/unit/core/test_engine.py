@@ -273,7 +273,7 @@ class TestPerformanceMonitoring:
 
         with patch.object(engine, "_detect_secrets", side_effect=slow_detect_secrets):
             try:
-                result = await engine.sanitize_for_ai("test data")
+                await engine.sanitize_for_ai("test data")
                 # If we get here, the performance error wasn't raised
                 pytest.fail("Expected PerformanceError was not raised")
             except PerformanceError:
