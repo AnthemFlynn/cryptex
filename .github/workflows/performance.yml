@@ -94,7 +94,7 @@ jobs:
         uv run python -c "
         import tracemalloc
         import sys
-        from cryptex import protect_secrets
+        from cryptex_ai import protect_secrets
         
         # Measure baseline memory
         tracemalloc.start()
