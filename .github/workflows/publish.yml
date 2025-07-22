@@ -32,7 +32,7 @@ jobs:
 
     - name: Run full test suite
       run: |
-        uv run pytest tests/ -v --cov=src/cryptex
+        uv run pytest tests/ -v --cov=src/cryptex_ai
 
     - name: Build package
       run: |
@@ -41,7 +41,7 @@ jobs:
     - name: Test package installation
       run: |
         uv pip install dist/*.whl
-        python -c "import cryptex; print('✅ Package imports successfully')"
+        python -c "import cryptex_ai; print('✅ Package imports successfully')"
 
   publish:
     needs: test-before-publish
