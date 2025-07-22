@@ -16,6 +16,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned for v0.6.0
 - Plugin system for custom secret sources
 
+## [0.3.3] - 2025-07-22
+
+### Major Fix - True Temporal Isolation
+- **BREAKING FIX**: Fixed core decorator to implement genuine temporal isolation
+- AI services now receive placeholders while functions get real secrets through monkey-patching
+- Added context manager for temporary AI library interception during function execution
+
+### Test Infrastructure Overhaul
+- Reorganized test suite into proper unit/integration/security/performance structure
+- Added comprehensive AI call interception tests (135 total tests passing)
+- Created live demonstration scripts proving temporal isolation works
+- Removed outdated example files that didn't reflect working implementation
+
+### Documentation Updates
+- Updated README.md with accurate implementation examples showing real AI call interception
+- Fixed llms.txt to reflect monkey-patching architecture and true temporal isolation
+- Updated all docstrings to show working examples
+- Added comprehensive live test documentation
+
+### Architecture Changes
+- Implemented monkey-patching of OpenAI/Anthropic libraries during decorated function execution
+- Added automatic cleanup and restoration of original methods
+- Enhanced security model with three-phase isolation: Sanitization → AI Processing → Resolution
+
 ## [0.3.2] - 2025-07-18
 
 ### Documentation
