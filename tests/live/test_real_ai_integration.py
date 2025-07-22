@@ -19,7 +19,7 @@ from cryptex_ai import protect_secrets
 # Only run if explicitly requested
 pytestmark = pytest.mark.skipif(
     not os.environ.get("RUN_LIVE_TESTS"),
-    reason="Live tests require RUN_LIVE_TESTS=1 and real API keys"
+    reason="Live tests require RUN_LIVE_TESTS=1 and real API keys",
 )
 
 
@@ -49,18 +49,19 @@ class TestLiveAIIntegration:
             # Use the cheapest model and minimal tokens
             try:
                 import openai
-                client = openai.OpenAI(api_key=kwargs.get('api_key'))
+
+                client = openai.OpenAI(api_key=kwargs.get("api_key"))
                 response = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[{"role": "user", "content": "Hi"}],
-                    max_tokens=1
+                    max_tokens=1,
                 )
                 return response
             except Exception as e:
                 # Return the error so we can analyze what happened
-                return {"error": str(e), "received_api_key": kwargs.get('api_key')}
+                return {"error": str(e), "received_api_key": kwargs.get("api_key")}
 
-        @protect_secrets(['openai_key'])
+        @protect_secrets(["openai_key"])
         async def ai_function(api_key: str, user_message: str):
             """Function that makes real AI call - should be intercepted."""
 
@@ -69,25 +70,29 @@ class TestLiveAIIntegration:
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": user_message}],
                 api_key=api_key,
-                max_tokens=1
+                max_tokens=1,
             )
             return result
 
         # Execute the protected function with real API key
         result = await ai_function(
             api_key=self.openai_key,
-            user_message="Test message with secret path: /Users/alice/secrets/key.txt"
+            user_message="Test message with secret path: /Users/alice/secrets/key.txt",
         )
 
         print("\n🔍 Live Test Results:")
         print(f"   Real API key: {self.openai_key[:20]}...")
-        print(f"   AI received key: {self.ai_received_data.get('api_key', 'NOT_CAPTURED')}")
-        print(f"   AI received message: {self.ai_received_data.get('messages', [{}])[0].get('content', 'NOT_CAPTURED')}")
+        print(
+            f"   AI received key: {self.ai_received_data.get('api_key', 'NOT_CAPTURED')}"
+        )
+        print(
+            f"   AI received message: {self.ai_received_data.get('messages', [{}])[0].get('content', 'NOT_CAPTURED')}"
+        )
 
         # Validate temporal isolation
-        received_key = self.ai_received_data.get('api_key')
+        received_key = self.ai_received_data.get("api_key")
 
-        if received_key == '{{OPENAI_API_KEY}}':
+        if received_key == "{{OPENAI_API_KEY}}":
             print("✅ SUCCESS: AI service received placeholder!")
             print("🔒 True temporal isolation confirmed with live AI service")
             assert True
@@ -103,7 +108,7 @@ class TestLiveAIIntegration:
     def test_dogfooding_protection(self):
         """Test the library protecting itself - dogfooding/self-referential test."""
 
-        @protect_secrets(['openai_key'])
+        @protect_secrets(["openai_key"])
         def analyze_library_code(api_key: str, file_path: str):
             """
             Function that would analyze this library's code.
@@ -123,17 +128,18 @@ class TestLiveAIIntegration:
             return {
                 "prompt": code_analysis_prompt,
                 "api_key": api_key,
-                "file_path": file_path
+                "file_path": file_path,
             }
 
         # Test with real-looking data
-        real_api_key = self.openai_key if self.openai_key else "sk-test1234567890abcdefghijklmnopqrstuvwxyz"
+        real_api_key = (
+            self.openai_key
+            if self.openai_key
+            else "sk-test1234567890abcdefghijklmnopqrstuvwxyz"
+        )
         real_file_path = "/Users/developer/cryptex-ai/src/cryptex_ai/core/engine.py"
 
-        result = analyze_library_code(
-            api_key=real_api_key,
-            file_path=real_file_path
-        )
+        result = analyze_library_code(api_key=real_api_key, file_path=real_file_path)
 
         print("\n🔄 Dogfooding Test Results:")
         print(f"   Input API key: {real_api_key[:20]}...")
@@ -143,12 +149,14 @@ class TestLiveAIIntegration:
 
         # The function should receive real values (for processing)
         # but any AI service would receive placeholders
-        assert result['api_key'] == real_api_key, "Function should receive real API key"
-        assert result['file_path'] == real_file_path, "Function should receive real file path"
+        assert result["api_key"] == real_api_key, "Function should receive real API key"
+        assert result["file_path"] == real_file_path, (
+            "Function should receive real file path"
+        )
 
         # Check that the prompt contains placeholders (what would go to AI)
-        prompt = result['prompt']
-        if '{{OPENAI_API_KEY}}' in prompt and '{{FILE_PATH}}' in prompt:
+        prompt = result["prompt"]
+        if "{{OPENAI_API_KEY}}" in prompt and "{{FILE_PATH}}" in prompt:
             print("✅ SUCCESS: Library protected itself - placeholders in AI prompt")
         else:
             print("❌ FAILURE: Real secrets in prompt that would go to AI")
@@ -164,7 +172,9 @@ class TestLiveAIIntegration:
         print("   2. Run with pytest:")
         print("      pytest tests/live/test_real_ai_integration.py -v -s")
         print("   3. This will make real API calls and cost money!")
-        print("   4. Only run this when you want to validate temporal isolation works with real AI services")
+        print(
+            "   4. Only run this when you want to validate temporal isolation works with real AI services"
+        )
 
         # This test always passes - it's just for instructions
         assert True

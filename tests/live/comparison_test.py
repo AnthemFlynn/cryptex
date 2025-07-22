@@ -11,7 +11,7 @@ import os
 import sys
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from cryptex_ai import protect_secrets
 
@@ -22,12 +22,14 @@ class MockAIService:
     async def chat_completion(**kwargs):
         return {"received_data": kwargs}
 
+
 class MockOpenAI:
     class chat:
         class completions:
             create = MockAIService.chat_completion
 
-sys.modules['openai'] = MockOpenAI()
+
+sys.modules["openai"] = MockOpenAI()
 
 
 # UNPROTECTED function - exposes secrets to AI
@@ -35,30 +37,30 @@ async def analyze_data_UNSAFE(api_key: str, file_path: str, query: str):
     """UNSAFE function that exposes secrets to AI."""
 
     import openai
+
     ai_response = await openai.chat.completions.create(
         model="gpt-4",
-        messages=[{
-            "role": "user",
-            "content": f"Analyze file {file_path}. Query: {query}"
-        }],
-        api_key=api_key
+        messages=[
+            {"role": "user", "content": f"Analyze file {file_path}. Query: {query}"}
+        ],
+        api_key=api_key,
     )
     return ai_response
 
 
 # PROTECTED function - temporal isolation
-@protect_secrets(['openai_key', 'file_path'])
+@protect_secrets(["openai_key", "file_path"])
 async def analyze_data_SAFE(api_key: str, file_path: str, query: str):
     """SAFE function with temporal isolation."""
 
     import openai
+
     ai_response = await openai.chat.completions.create(
         model="gpt-4",
-        messages=[{
-            "role": "user",
-            "content": f"Analyze file {file_path}. Query: {query}"
-        }],
-        api_key=api_key
+        messages=[
+            {"role": "user", "content": f"Analyze file {file_path}. Query: {query}"}
+        ],
+        api_key=api_key,
     )
     return ai_response
 
@@ -90,15 +92,13 @@ async def main():
     print("   (This is what most AI apps do - DANGEROUS!)")
 
     unsafe_result = await analyze_data_UNSAFE(
-        api_key=real_api_key,
-        file_path=sensitive_file,
-        query=query
+        api_key=real_api_key, file_path=sensitive_file, query=query
     )
 
-    unsafe_data = unsafe_result['received_data']
-    unsafe_key = unsafe_data.get('api_key', 'NOT_FOUND')
-    unsafe_messages = unsafe_data.get('messages', [{}])
-    unsafe_content = unsafe_messages[0].get('content', 'NOT_FOUND')
+    unsafe_data = unsafe_result["received_data"]
+    unsafe_key = unsafe_data.get("api_key", "NOT_FOUND")
+    unsafe_messages = unsafe_data.get("messages", [{}])
+    unsafe_content = unsafe_messages[0].get("content", "NOT_FOUND")
 
     print(f"   🤖 AI received API key: {unsafe_key}")
     print(f"   🤖 AI received message: {unsafe_content}")
@@ -113,15 +113,13 @@ async def main():
     print("   (With @protect_secrets decorator - SAFE!)")
 
     safe_result = await analyze_data_SAFE(
-        api_key=real_api_key,
-        file_path=sensitive_file,
-        query=query
+        api_key=real_api_key, file_path=sensitive_file, query=query
     )
 
-    safe_data = safe_result['received_data']
-    safe_key = safe_data.get('api_key', 'NOT_FOUND')
-    safe_messages = safe_data.get('messages', [{}])
-    safe_content = safe_messages[0].get('content', 'NOT_FOUND')
+    safe_data = safe_result["received_data"]
+    safe_key = safe_data.get("api_key", "NOT_FOUND")
+    safe_messages = safe_data.get("messages", [{}])
+    safe_content = safe_messages[0].get("content", "NOT_FOUND")
 
     print(f"   🤖 AI received API key: {safe_key}")
     print(f"   🤖 AI received message: {safe_content}")
@@ -172,5 +170,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Comparison failed with error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

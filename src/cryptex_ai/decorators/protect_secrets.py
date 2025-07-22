@@ -184,8 +184,8 @@ class UniversalProtection:
 
         try:
             # Patch OpenAI if available
-            if 'openai' in sys.modules:
-                openai_module = sys.modules['openai']
+            if "openai" in sys.modules:
+                openai_module = sys.modules["openai"]
 
                 # Create sanitizing wrapper for OpenAI calls
                 def sanitize_openai_call(original_method):
@@ -195,19 +195,24 @@ class UniversalProtection:
                             sanitized_data = await self._engine.sanitize_for_ai(kwargs)
                             kwargs = sanitized_data.data
                         return await original_method(*args, **kwargs)
+
                     return wrapper
 
                 # Patch common OpenAI methods
-                if hasattr(openai_module, 'chat') and hasattr(openai_module.chat, 'completions'):
-                    if hasattr(openai_module.chat.completions, 'create'):
+                if hasattr(openai_module, "chat") and hasattr(
+                    openai_module.chat, "completions"
+                ):
+                    if hasattr(openai_module.chat.completions, "create"):
                         original_create = openai_module.chat.completions.create
                         patched_create = sanitize_openai_call(original_create)
                         openai_module.chat.completions.create = patched_create
-                        patches.append((openai_module.chat.completions, 'create', original_create))
+                        patches.append(
+                            (openai_module.chat.completions, "create", original_create)
+                        )
 
             # Patch Anthropic if available
-            if 'anthropic' in sys.modules:
-                anthropic_module = sys.modules['anthropic']
+            if "anthropic" in sys.modules:
+                anthropic_module = sys.modules["anthropic"]
 
                 # Create sanitizing wrapper for Anthropic calls
                 def sanitize_anthropic_call(original_method):
@@ -217,14 +222,19 @@ class UniversalProtection:
                             sanitized_data = await self._engine.sanitize_for_ai(kwargs)
                             kwargs = sanitized_data.data
                         return await original_method(*args, **kwargs)
+
                     return wrapper
 
                 # Patch common Anthropic methods
-                if hasattr(anthropic_module, 'messages') and hasattr(anthropic_module.messages, 'create'):
+                if hasattr(anthropic_module, "messages") and hasattr(
+                    anthropic_module.messages, "create"
+                ):
                     original_create = anthropic_module.messages.create
                     patched_create = sanitize_anthropic_call(original_create)
                     anthropic_module.messages.create = patched_create
-                    patches.append((anthropic_module.messages, 'create', original_create))
+                    patches.append(
+                        (anthropic_module.messages, "create", original_create)
+                    )
 
             # Yield control to the function execution
             yield

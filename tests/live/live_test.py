@@ -14,12 +14,12 @@ import os
 import sys
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from cryptex_ai import protect_secrets
 
 
-@protect_secrets(['openai_key'])
+@protect_secrets(["openai_key"])
 async def real_openai_call(prompt: str, api_key: str) -> str:
     """Make a real OpenAI API call with temporal isolation."""
 
@@ -36,7 +36,7 @@ async def real_openai_call(prompt: str, api_key: str) -> str:
         response = await client.chat.completions.acreate(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=50
+            max_tokens=50,
         )
 
         return response.choices[0].message.content
@@ -122,5 +122,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Live test failed: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

@@ -11,7 +11,7 @@ import os
 import sys
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from cryptex_ai import protect_secrets
 
@@ -22,16 +22,18 @@ class MockAIService:
     async def chat_completion(**kwargs):
         return {"ai_received": kwargs}
 
+
 class MockOpenAI:
     class chat:
         class completions:
             create = MockAIService.chat_completion
 
+
 # Install mock before importing
-sys.modules['openai'] = MockOpenAI()
+sys.modules["openai"] = MockOpenAI()
 
 
-@protect_secrets(['openai_key'])
+@protect_secrets(["openai_key"])
 async def ai_function(prompt: str, api_key: str) -> dict:
     """Function with temporal isolation - AI gets placeholders, function gets real values."""
 
@@ -41,10 +43,9 @@ async def ai_function(prompt: str, api_key: str) -> dict:
 
     # This AI call will be intercepted
     import openai
+
     ai_response = await openai.chat.completions.create(
-        model="gpt-4",
-        messages=[{"role": "user", "content": prompt}],
-        api_key=api_key
+        model="gpt-4", messages=[{"role": "user", "content": prompt}], api_key=api_key
     )
 
     ai_data = ai_response["ai_received"]
@@ -80,8 +81,8 @@ async def main():
 
     # Verify temporal isolation worked
     ai_data = result["ai_received"]
-    ai_key = ai_data.get('api_key', '')
-    ai_content = ai_data.get('messages', [{}])[0].get('content', '')
+    ai_key = ai_data.get("api_key", "")
+    ai_content = ai_data.get("messages", [{}])[0].get("content", "")
 
     print("")
     print("📊 TEMPORAL ISOLATION RESULTS:")
@@ -121,5 +122,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Demonstration failed: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
