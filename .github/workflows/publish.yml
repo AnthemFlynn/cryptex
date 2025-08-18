@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     
     - name: Install uv
       uses: astral-sh/setup-uv@v6
@@ -51,7 +51,7 @@ jobs:
       url: ${{ github.event.inputs.environment == 'testpypi' && 'https://test.pypi.org/project/cryptex-ai/' || 'https://pypi.org/project/cryptex-ai/' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Install uv
       uses: astral-sh/setup-uv@v6
